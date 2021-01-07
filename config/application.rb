@@ -23,5 +23,8 @@ module RemindfulServer
     config.time_zone = 'America/Sao_Paulo'
     config.eager_load_paths << Rails.root.join('lib')
     config.active_job.queue_adapter = :sidekiq
+
+    config.i18n.available_locales = %i[en pt]
+    config.i18n.default_locale = :en
   end
 end

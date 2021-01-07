@@ -10,10 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_06_021119) do
+ActiveRecord::Schema.define(version: 2021_01_07_205342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "habit_events", force: :cascade do |t|
+    t.bigint "habit_id", null: false
+    t.date "event_date"
+    t.string "status"
+    t.datetime "acted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.date "original_date"
+    t.index ["habit_id"], name: "index_habit_events_on_habit_id"
+  end
+
+  create_table "habits", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "repeat_interval", null: false
+    t.string "repeat_interval_unit", null: false
+    t.date "start_date", null: false
+    t.boolean "notify", null: false
+    t.time "notification_time"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["user_id"], name: "index_habits_on_user_id"
+  end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.bigint "resource_owner_id"
@@ -56,6 +81,8 @@ ActiveRecord::Schema.define(version: 2021_01_06_021119) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "habit_events", "habits"
+  add_foreign_key "habits", "users"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
 end
