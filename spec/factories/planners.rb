@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :planner do
-    user { nil }
+    user
     plan_date { '2021-01-08' }
   end
 end

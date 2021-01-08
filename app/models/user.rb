@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :habits, dependent: :destroy
   has_many :habit_events, through: :habits, dependent: :destroy
   has_many :planners, dependent: :destroy
-  has_many :planner_events, dependent: :destroy
+  has_many :planner_events, through: :planners, dependent: :destroy
 
   class << self
     def authenticate(email, password)

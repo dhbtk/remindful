@@ -13,5 +13,9 @@ Rails.application.routes.draw do
     end
 
     resources :habit_events, only: %i[index update]
+
+    resources :planners, only: :index do
+      resources :planner_events, only: %i[index create update destroy], shallow: true
+    end
   end
 end
