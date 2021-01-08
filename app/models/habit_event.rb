@@ -4,12 +4,6 @@ class HabitEvent < ApplicationRecord
   include EventStatus
   belongs_to :habit
 
-  enum status: {
-    pending: 'pending',
-    done: 'done',
-    dismissed: 'dismissed'
-  }
-
   validates :event_date, uniqueness: { scope: %i[habit] }
   validates :event_date, presence: true
 
