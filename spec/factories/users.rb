@@ -6,5 +6,10 @@ FactoryBot.define do
     email { Faker::Internet.email }
     password { SecureRandom.hex(6) }
     password_confirmation { password }
+
+    factory :light_user do
+      email { "#{username}@#{username}" }
+      anonymous { true }
+    end
   end
 end

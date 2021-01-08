@@ -6,4 +6,11 @@ FactoryBot.define do
     status { 'pending' }
     habit
   end
+
+  factory :habit_event_params, class: Hash do
+    initialize_with { attributes }
+
+    status { 'done' }
+    acted_at { Time.current }
+  end
 end

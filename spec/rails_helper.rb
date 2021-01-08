@@ -34,6 +34,15 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
+  config.include UserAuthorization
+
+  # rubocop:disable RSpec/AnyInstance
+  config.before(:each, type: :request) do
+    next unless respond_to?(:user) && described_class
+
+    allow_any_instance_of(described_class).to receive(:current_user).and_return(user)
+  end
+  # rubocop:enable RSpec/AnyInstance
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 

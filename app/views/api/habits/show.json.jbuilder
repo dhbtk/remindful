@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.partial! 'habits/habit', habit: @habit
+json.partial! 'habit', habit: @habit

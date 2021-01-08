@@ -7,6 +7,12 @@ class HabitEvent < ApplicationRecord
   validates :event_date, uniqueness: { scope: %i[habit] }
   validates :event_date, presence: true
 
+  def self.for_date(date)
+    date ||= Time.zone.today
+
+    where(event_date: date).includes(:habit)
+  end
+
   def recreate_pending(new_date)
     HabitEvent.create(
       habit: habit,

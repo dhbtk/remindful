@@ -14,7 +14,7 @@ class LightUser
   def save
     return false if invalid?
 
-    self.user = User.create(username: username, email: bogus_email, password: password, password_confirmation: password)
+    self.user = create_user
     self.access_token = create_access_token
     true
   end
@@ -24,6 +24,11 @@ class LightUser
   end
 
   private
+
+  def create_user
+    User.create(username: username, email: bogus_email, password: password, password_confirmation: password,
+                anonymous: true)
+  end
 
   def create_access_token
     Doorkeeper::AccessToken.create(

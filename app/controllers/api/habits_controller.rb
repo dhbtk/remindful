@@ -40,7 +40,7 @@ module Api
     private
 
     def set_habit
-      @habit = Habit.find(params[:id])
+      @habit = policy_scope(Habit).find(params[:id])
       authorize @habit
     end
 

@@ -4,7 +4,12 @@ Doorkeeper.configure do
   orm :active_record
 
   resource_owner_from_credentials do |_routes|
-    User.authenticate(params[:email], params[:password])
+    request.params[:user] = { email: request.params[:username], password: request.params[:password] }
+    request.env['warden'].logout(:user)
+    request.env['devise.allow_params_authentication'] = true
+    # Set `store: false` to stop Warden from storing user in session
+    # https://github.com/doorkeeper-gem/doorkeeper/issues/475#issuecomment-305517549
+    request.env['warden'].authenticate!(scope: :user, store: false)
   end
 
   access_token_expires_in nil

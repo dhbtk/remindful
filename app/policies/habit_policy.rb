@@ -3,7 +3,7 @@
 class HabitPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope.where(user: user)
+      scope.not_deleted.where(user: user)
     end
   end
 

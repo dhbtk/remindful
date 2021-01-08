@@ -2,7 +2,12 @@
 
 module Api
   class ApiController < ActionController::API
+    include Pundit
     before_action :doorkeeper_authorize!
+
+    rescue_from ActiveRecord::RecordNotFound do
+      head :not_found
+    end
 
     protected
 

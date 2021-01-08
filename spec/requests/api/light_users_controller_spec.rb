@@ -12,9 +12,7 @@ RSpec.describe Api::LightUsersController do
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to render_template(:create) }
 
-      it 'renders the expected fields' do
-        expect(JSON.parse(response.body)).to include('username', 'access_token')
-      end
+      it { expect(response).to include_json(:username, :access_token) }
     end
 
     context 'when no client_id is passed' do

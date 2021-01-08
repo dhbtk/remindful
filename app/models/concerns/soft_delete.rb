@@ -3,6 +3,10 @@
 module SoftDelete
   extend ActiveSupport::Concern
 
+  included do |base|
+    base.scope :not_deleted, -> { where(deleted_at: nil) }
+  end
+
   def soft_delete
     return true if deleted_at.present?
 
