@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 class Habit < ApplicationRecord
+  include SoftDelete
   belongs_to :user
-  has_many :habit_events
+  has_many :habit_events, dependent: :restrict_with_error
 
   validates :name, uniqueness: { scope: %i[user] }
   validates :name, :repeat_interval, :repeat_interval_unit, :start_date, presence: true
@@ -18,15 +21,23 @@ class Habit < ApplicationRecord
   end
 
   def visible_at(date)
-    if repeat_interval_day?
-      (date - start_date) % repeat_interval == 0
-    elsif repeat_interval_week?
-      interval = repeat_interval * 7
-      (date - start_date) % interval == 0
-    elsif repeat_interval_month?
-      start_date.day == date.day
-    else
-      false
-    end
+    return false if deleted_at.present? && deleted_at < date.end_of_day
+
+    send(:"visible_at_#{repeat_interval_unit}", date)
+  end
+
+  private
+
+  def visible_at_day(date)
+    ((date - start_date) % repeat_interval).zero?
+  end
+
+  def visible_at_week(date)
+    interval = repeat_interval * 7
+    ((date - start_date) % interval).zero?
+  end
+
+  def visible_at_month(date)
+    start_date.day == date.day
   end
 end

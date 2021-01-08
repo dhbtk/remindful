@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 class HabitEvent < ApplicationRecord
+  include EventStatus
   belongs_to :habit
 
   enum status: {
@@ -8,8 +11,7 @@ class HabitEvent < ApplicationRecord
   }
 
   validates :event_date, uniqueness: { scope: %i[habit] }
-  validates :event_date, :status, presence: true
-  validates :acted_at, presence: true, unless: -> { pending? }
+  validates :event_date, presence: true
 
   def recreate_pending(new_date)
     HabitEvent.create(

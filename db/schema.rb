@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_07_205342) do
+ActiveRecord::Schema.define(version: 2021_01_08_154403) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 2021_01_07_205342) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.date "original_date"
+    t.index ["event_date", "habit_id"], name: "index_habit_events_on_event_date_and_habit_id", unique: true
     t.index ["habit_id"], name: "index_habit_events_on_habit_id"
   end
 
@@ -37,6 +38,7 @@ ActiveRecord::Schema.define(version: 2021_01_07_205342) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.index ["name", "user_id"], name: "index_habits_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
 
@@ -68,6 +70,26 @@ ActiveRecord::Schema.define(version: 2021_01_07_205342) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
+  create_table "planner_events", force: :cascade do |t|
+    t.bigint "planner_id", null: false
+    t.date "original_date"
+    t.text "content", null: false
+    t.string "status", null: false
+    t.datetime "acted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["planner_id"], name: "index_planner_events_on_planner_id"
+  end
+
+  create_table "planners", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "plan_date", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_planners_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "username", default: "", null: false
@@ -85,4 +107,6 @@ ActiveRecord::Schema.define(version: 2021_01_07_205342) do
   add_foreign_key "habits", "users"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
+  add_foreign_key "planner_events", "planners"
+  add_foreign_key "planners", "users"
 end

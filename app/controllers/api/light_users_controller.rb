@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   class LightUsersController < ApiController
     skip_before_action :doorkeeper_authorize!, only: :create

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   class HabitsController < ApiController
     before_action :set_habit, only: %i[show update destroy]
@@ -10,6 +12,7 @@ module Api
       @habit = current_user.habits.build(habit_params)
 
       if @habit.save
+        current_user.update_current_events
         render :show
       else
         head :unprocessable_entity
@@ -20,6 +23,7 @@ module Api
 
     def update
       if @habit.update(habit_params)
+        current_user.update_current_events
         render :show
       else
         head :unprocessable_entity
@@ -29,6 +33,7 @@ module Api
     def destroy
       @habit.soft_delete
 
+      current_user.update_current_events
       head :ok
     end
 
@@ -40,7 +45,8 @@ module Api
     end
 
     def habit_params
-      params.require(:habit).permit(:name, :repeat_interval, :repeat_interval_unit, :start_date, :notify, :notification_time)
+      params.require(:habit).permit(:name, :repeat_interval, :repeat_interval_unit, :start_date, :notify,
+                                    :notification_time)
     end
   end
 end

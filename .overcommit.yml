@@ -1,0 +1,58 @@
+CommitMsg:
+  CapitalizedSubject:
+    enabled: false
+
+PreCommit:
+  ALL:
+    exclude:
+      - vendor/**/*
+      - app/assets/fonts/**/*
+      - tmp/**/*
+      - log/**/*
+      - bin/**/*
+      - db/migrate
+      - spec/fixtures/vcr_cassettes/**/*
+
+  Jscs:
+    enabled: false
+
+  RailsSchemaUpToDate:
+    enabled: false
+
+  Reek:
+    enabled: false
+
+  HardTabs:
+    enabled: true
+    exclude:
+      - vendor/**/*
+      - app/assets/fonts/**/*
+      - tmp/**/*
+      - log/**/*
+      - bin/**/*
+      - spec/fixtures/vcr_cassettes/**/*
+
+#  EsLint:
+#    enabled: true
+#    required_executable: 'node_modules/.bin/eslint'
+#    include:
+#      - app/javascript/**/*
+#      - .eslintrc
+#    exclude:
+#      - app/javascript/vendor/**/*
+#    command: ['node_modules/.bin/eslint']
+
+  TrailingWhitespace:
+    enabled: true
+    exclude:
+      - vendor/**/*
+      - app/assets/fonts/**/*
+      - tmp/**/*
+      - log/**/*
+      - bin/**/*
+      - import/**/*
+      - spec/fixtures/vcr_cassettes/**/*
+
+  RuboCop:
+    enabled: true
+verify_signatures: false

@@ -1,0 +1,36 @@
+require:
+  - rubocop-rspec
+  - rubocop-rails
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/schema.rb'
+    - 'db/seeds.rb'
+    - 'db/migrate/*'
+    - 'db/data/*'
+    - 'db/default/*'
+    - 'bin/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'spec/simplecov_helper.rb'
+
+Layout/LineLength:
+  Max: 120
+#
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/**/*'
+
+RSpec/NestedGroups:
+  Max: 4
+
+Style/Documentation:
+  Enabled: false
+
+Style/ModuleFunction:
+  StyleGuide: '#module-function'
+
+Style/SignalException:
+  EnforcedStyle: only_raise
