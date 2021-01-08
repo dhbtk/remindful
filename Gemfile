@@ -34,6 +34,7 @@ gem 'sidekiq'
 gem 'sidekiq-cron'
 gem 'redis'
 gem 'rexml'
+gem 'pundit'
 
 group :development, :test do
   gem 'pry-rails'
