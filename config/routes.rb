@@ -17,5 +17,7 @@ Rails.application.routes.draw do
     resources :planners, only: :index do
       resources :planner_events, only: %i[index create update destroy], shallow: true
     end
+
+    resources :water_glasses, only: %i[index create destroy]
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_08_204410) do
+ActiveRecord::Schema.define(version: 2021_01_09_005222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,9 +99,19 @@ ActiveRecord::Schema.define(version: 2021_01_08_204410) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "anonymous", default: false, null: false
+    t.integer "water_glasses_per_day", default: 8, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
+  end
+
+  create_table "water_glasses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "day", null: false
+    t.datetime "drank_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_water_glasses_on_user_id"
   end
 
   add_foreign_key "habit_events", "habits"
@@ -110,4 +120,5 @@ ActiveRecord::Schema.define(version: 2021_01_08_204410) do
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "planner_events", "planners"
   add_foreign_key "planners", "users"
+  add_foreign_key "water_glasses", "users"
 end

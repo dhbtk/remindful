@@ -8,13 +8,9 @@ class User < ApplicationRecord
   has_many :habit_events, through: :habits, dependent: :destroy
   has_many :planners, dependent: :destroy
   has_many :planner_events, through: :planners, dependent: :destroy
+  has_many :water_glasses, dependent: :destroy
 
   class << self
-    def authenticate(email, password)
-      user = find_for_database_authentication(email: email)
-      user&.valid_password?(password) ? user : nil
-    end
-
     def find_for_database_authentication(warden_conditions)
       conditions = warden_conditions.dup
       if (login = conditions.delete(:email))
