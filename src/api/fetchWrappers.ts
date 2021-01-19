@@ -1,6 +1,7 @@
 import store from '../store'
 import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
+import { clearUserInfo } from '../store/user'
 
 const baseUrl: string = process.env.API_URL || 'https://localhost'
 
@@ -23,11 +24,18 @@ function handleStatus(response: Response): Promise<any> {
 }
 
 function toJson(response: Response): Promise<any> {
+  if (response.status === 204) {
+    return Promise.resolve()
+  }
   return response.json().then(obj => camelcaseKeys(obj, {deep: true}));
 }
 
 function handleError(...args: any[]): Promise<any> {
   console.log(...args)
+  const response = args[0] as Response
+  if (response?.status === 401) {
+    store.dispatch(clearUserInfo())
+  }
   return Promise.reject(...args)
 }
 
@@ -54,9 +62,9 @@ function jsonBody(method: string) {
   return function <T>(path: string, body: any): Promise<T> {
     return fetch(url(path), {
       method,
-      headers: headers(),
+      headers: {...headers(), 'Content-Type': 'application/json; charset=utf-8'},
       body: JSON.stringify(snakecaseKeys(body))
-    }).then(handleStatus).then(toJson);
+    }).then(handleStatus).then(toJson).catch(handleError);
   }
 }
 

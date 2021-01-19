@@ -24,3 +24,5 @@ const plannerEventsSlice = createSlice({
 })
 
 export const { addPlannerEvent } = plannerEventsSlice.actions
+
+export default plannerEventsSlice

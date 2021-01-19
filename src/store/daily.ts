@@ -44,7 +44,17 @@ export const saveNewPlannerEvent = (date: string) => async (dispatch: (a: any) =
     content: dailyData.days[date].newPlannerEvent.content
   }
   dispatch(addPlannerEvent(newPlanner))
+  dispatch(updateNewPlannerEvent({date, content: ''}))
   await plannerEventApi.create(newPlanner)
+  dispatch(loadDayData(date))
+}
+
+export const reorderPlannerEvents = (date: string, startIndex: number, endIndex: number) => async (dispatch: (a: any) => any, getState: () => any) => {
+  const currentIds = Array.from(getState().daily.days[date].plannerEventIds as number[])
+  const [removed] = currentIds.splice(startIndex, 1)
+  currentIds.splice(endIndex, 0, removed)
+  dispatch(updatePlannerEventIds({ date, ids: currentIds }))
+  await plannerEventApi.reorder(currentIds)
   dispatch(loadDayData(date))
 }
 
@@ -58,14 +68,20 @@ export const loadDayData = createAsyncThunk('today/loadDayData', async (date: st
   return {date, habitEvents, plannerEvents, waterGlasses} as DayData
 })
 
-export const setAndLoadToday = (date: string) => (dispatch: (a: any) => any) => {
-  dispatch(setTodayDate(date))
-  dispatch(loadDayData(date))
+export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
+  const dateString = format(date, 'yyyy-MM-dd')
+  dispatch(setTodayDate(dateString))
+  dispatch(loadDayData(dateString))
 }
 
 const dailyInitialState: DailyState = {
-  todayDate: format(new Date(), 'YYYY-MM-dd'),
+  todayDate: format(new Date(), 'yyyy-MM-dd'),
   days: {}
+}
+
+export interface NewPlannerEventUpdate {
+  date: string
+  content: string
 }
 
 const dailySlice = createSlice({
@@ -74,25 +90,39 @@ const dailySlice = createSlice({
   reducers: {
     setTodayDate(state: DailyState, {payload}: PayloadAction<string>) {
       state.todayDate = payload
-      state.days[payload] ||= {
-        date: payload,
-        status: 'loading',
-        habitEventIds: [],
-        plannerEventIds: [],
-        waterGlassIds: [],
-        newPlannerEvent: {content: ''}
+      if (state.days[payload]) {
+        state.days[payload].status = 'loading'
+      } else {
+        state.days[payload] = {
+          date: payload,
+          status: 'loading',
+          habitEventIds: [],
+          plannerEventIds: [],
+          waterGlassIds: [],
+          newPlannerEvent: {content: ''}
+        }
       }
+    },
+    updateNewPlannerEvent(state: DailyState, {payload}: PayloadAction<NewPlannerEventUpdate>) {
+      state.days[payload.date].newPlannerEvent.content = payload.content
+    },
+    updatePlannerEventIds(state: DailyState, {payload}: PayloadAction<{ date: string, ids: number[] }>) {
+      state.days[payload.date].plannerEventIds = payload.ids
     }
   },
   extraReducers: builder => {
     builder.addCase(loadDayData.pending, (state: DailyState, {meta: {arg}}) => {
-      state.days[arg] ||= {
-        date: arg,
-        status: 'loading',
-        habitEventIds: [],
-        plannerEventIds: [],
-        waterGlassIds: [],
-        newPlannerEvent: {content: ''}
+      if (state.days[arg]) {
+        state.days[arg].status = 'loading'
+      } else {
+        state.days[arg] = {
+          date: arg,
+          status: 'loading',
+          habitEventIds: [],
+          plannerEventIds: [],
+          waterGlassIds: [],
+          newPlannerEvent: {content: ''}
+        }
       }
     })
     builder.addCase(loadDayData.rejected, (state: DailyState, {meta: {arg}}) => {
@@ -108,5 +138,5 @@ const dailySlice = createSlice({
   }
 })
 
-export const {setTodayDate} = dailySlice.actions
+export const {setTodayDate, updateNewPlannerEvent, updatePlannerEventIds} = dailySlice.actions
 export default dailySlice

@@ -1,10 +1,28 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import clsx from 'clsx'
-import { AppBar, Badge, Box, Container, Drawer, Grid, IconButton, Paper, Toolbar, Typography } from '@material-ui/core'
+import {
+  AppBar,
+  Badge,
+  Box,
+  Container,
+  Drawer,
+  Grid,
+  Hidden,
+  IconButton,
+  Paper,
+  Toolbar,
+  Typography
+} from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import { makeStyles } from '@material-ui/core/styles'
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/rootReducer";
+import DaySummary from "./DaySummary";
+import PlannerEventList from "../plannerEvents/PlannerEventList";
+import {setAndLoadToday} from "../../store/daily";
+import {useAppDispatch} from "../../store";
 
 const drawerWidth = 240;
 
@@ -98,19 +116,25 @@ export default function TodayPage() {
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
+  const dispatch = useAppDispatch()
+  useEffect(() => dispatch(setAndLoadToday(new Date())), [])
+  const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
+
   return (
     <div className={classes.root}>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
+          <Hidden lgUp>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Hidden>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
@@ -129,31 +153,37 @@ export default function TodayPage() {
         open={open}
       >
         <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
+          <Hidden lgUp>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Hidden>
         </div>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Box>one</Box>
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Box>two</Box>
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
+          <Grid container spacing={2}>
             <Grid item xs={12}>
+              <Paper className={fixedHeightPaper}>
+                <Grid container spacing={2}>
+                  <Grid item xs={8} md={9}>
+                    <DaySummary date={todayDate} />
+                  </Grid>
+                  <Grid item xs={4} md={3}>
+                    {"water glasses"}
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+            <Grid item xs={6}>
               <Paper className={classes.paper}>
-                <Box>three</Box>
+                <Box>habits</Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={6}>
+              <Paper className={classes.paper}>
+                <PlannerEventList date={todayDate} />
               </Paper>
             </Grid>
           </Grid>

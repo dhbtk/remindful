@@ -1,8 +1,8 @@
 import {formPost} from "./fetchWrappers";
 import {UserInfo} from "../store/user";
 
-const CLIENT_ID = 'fo5gp2IksBAq7ArIs49TFcZBlohYKaAiwysFaQdj_HM'
-const CLIENT_SECRET = '1vZJLuK4MvGnlaxezQN0djwzKxmnCulSBlNduXHN1nc'
+const CLIENT_ID = '8eI-VWlFrqAwaUHTpynIK9iuTJo9Hz0b40pxwjZwpEQ'
+const CLIENT_SECRET = 'Cu9z0g0sAPR1vRebVCzCweGmNR4JXF8gHtpMcmHNnek'
 
 interface LightUserResponse {
   username: string
