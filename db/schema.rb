@@ -71,7 +71,8 @@ ActiveRecord::Schema.define(version: 2021_01_09_005222) do
   end
 
   create_table "planner_events", force: :cascade do |t|
-    t.bigint "planner_id", null: false
+    t.bigint "user_id", null: false
+    t.date "event_date", null: false
     t.date "original_date"
     t.text "content", null: false
     t.string "status", null: false
@@ -79,15 +80,7 @@ ActiveRecord::Schema.define(version: 2021_01_09_005222) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
-    t.index ["planner_id"], name: "index_planner_events_on_planner_id"
-  end
-
-  create_table "planners", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.date "plan_date", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_planners_on_user_id"
+    t.index ["user_id"], name: "index_planner_events_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -118,7 +111,6 @@ ActiveRecord::Schema.define(version: 2021_01_09_005222) do
   add_foreign_key "habits", "users"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
-  add_foreign_key "planner_events", "planners"
-  add_foreign_key "planners", "users"
+  add_foreign_key "planner_events", "users"
   add_foreign_key "water_glasses", "users"
 end

@@ -6,8 +6,7 @@ class User < ApplicationRecord
 
   has_many :habits, dependent: :destroy
   has_many :habit_events, through: :habits, dependent: :destroy
-  has_many :planners, dependent: :destroy
-  has_many :planner_events, through: :planners, dependent: :destroy
+  has_many :planner_events, dependent: :destroy
   has_many :water_glasses, dependent: :destroy
 
   class << self
@@ -25,9 +24,16 @@ class User < ApplicationRecord
     recreate_pending_habits(date)
     create_events_for_date(date)
     destroy_stale_events(date)
+    recreate_pending_planner_events(date)
   end
 
   private
+
+  def recreate_pending_planner_events(date)
+    planner_events.pending.where(event_date: date.prev_day).find_each do |planner_event|
+      planner_event.recreate_pending(date)
+    end
+  end
 
   def recreate_pending_habits(date)
     habit_events.pending.where(event_date: date.prev_day).find_each do |habit_event|

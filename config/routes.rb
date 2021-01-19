@@ -13,11 +13,12 @@ Rails.application.routes.draw do
     end
 
     resources :habit_events, only: %i[index update]
-
-    resources :planners, only: :index do
-      resources :planner_events, only: %i[index create update destroy], shallow: true
-    end
+    resources :planner_events, only: %i[index create update destroy]
 
     resources :water_glasses, only: %i[index create destroy]
   end
+
+  resource :web_app, controller: :web_app, only: :show
+
+  get 'web_app/*other', to: 'web_app#show'
 end

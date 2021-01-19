@@ -2,7 +2,8 @@
 
 FactoryBot.define do
   factory :planner_event do
-    planner
+    user
+    event_date { '2021-01-08' }
     content { Faker::Hipster.sentence }
     status { 'pending' }
     acted_at { nil }
@@ -13,5 +14,6 @@ FactoryBot.define do
 
     content { Faker::Hipster.sentence }
     status { 'pending' }
+    event_date { '2021-01-08' }
   end
 end

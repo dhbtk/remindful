@@ -102,6 +102,6 @@ RSpec.describe Api::HabitsController do
     end
 
     it { expect(user).to have_received(:update_current_events) }
-    it { expect(response).to have_http_status(:ok) }
+    it { expect(response).to have_http_status(:no_content) }
   end
 end

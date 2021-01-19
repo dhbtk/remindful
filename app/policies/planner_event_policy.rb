@@ -8,6 +8,6 @@ class PlannerEventPolicy < ApplicationPolicy
   end
 
   all_actions do
-    record.planner.user == user
+    record.user == user
   end
 end

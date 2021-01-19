@@ -34,7 +34,7 @@ module Api
       @habit.soft_delete
 
       current_user.update_current_events
-      head :ok
+      head :no_content
     end
 
     private

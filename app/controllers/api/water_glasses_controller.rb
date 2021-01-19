@@ -10,7 +10,7 @@ module Api
       @water_glass = current_user.water_glasses.build(water_glass_params)
 
       if @water_glass.save
-        head :ok
+        head :no_content
       else
         head :unprocessable_entity
       end
@@ -19,7 +19,7 @@ module Api
     def destroy
       @water_glass = current_user.water_glasses.find(params[:id])
       @water_glass.destroy
-      head :ok
+      head :no_content
     end
 
     private

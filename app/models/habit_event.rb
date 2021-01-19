@@ -10,7 +10,7 @@ class HabitEvent < ApplicationRecord
   def self.for_date(date)
     date ||= Time.zone.today
 
-    where(event_date: date).includes(:habit)
+    where(event_date: date).includes(:habit).order(:created_at)
   end
 
   def recreate_pending(new_date)

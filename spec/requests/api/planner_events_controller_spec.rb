@@ -7,11 +7,10 @@ RSpec.describe Api::PlannerEventsController do
 
   describe '#index' do
     context 'when the planner already exists' do
-      let(:planner) { create(:planner, user: user) }
-      let!(:planner_event) { create(:planner_event, planner: planner) }
+      let!(:planner_event) { create(:planner_event, user: user) }
 
       before do
-        get api_planner_planner_events_path(planner.plan_date), headers: user_authorization
+        get api_planner_events_path(date: planner_event.event_date), headers: user_authorization
       end
 
       it { expect(response).to have_http_status(:ok) }
@@ -21,7 +20,7 @@ RSpec.describe Api::PlannerEventsController do
 
     context 'when the planner does not exist yet' do
       before do
-        get api_planner_planner_events_path(Time.zone.today), headers: user_authorization
+        get api_planner_events_path(date: Time.zone.today), headers: user_authorization
       end
 
       it { expect(response).to have_http_status(:ok) }
@@ -30,54 +29,39 @@ RSpec.describe Api::PlannerEventsController do
   end
 
   describe '#create' do
-    context 'when the planner already exists' do
-      let(:planner) { create(:planner, user: user) }
-
+    context 'when all fields are present' do
       before do
-        post api_planner_planner_events_path(planner.plan_date, planner_event: build(:planner_event_params)),
+        post api_planner_events_path(planner_event: build(:planner_event_params)),
              headers: user_authorization
       end
 
-      it { expect(response).to have_http_status(:ok) }
+      it { expect(response).to have_http_status(:no_content) }
     end
 
     context 'when fields are missing' do
-      let(:planner) { create(:planner, user: user) }
-
       before do
-        post api_planner_planner_events_path(planner.plan_date, planner_event: { status: 'done' }),
+        post api_planner_events_path(planner_event: { status: 'done' }),
              headers: user_authorization
       end
 
       it { expect(response).to have_http_status(:unprocessable_entity) }
     end
-
-    context 'when the planner does not exist yet' do
-      before do
-        post api_planner_planner_events_path(Time.zone.today, planner_event: build(:planner_event_params)),
-             headers: user_authorization
-      end
-
-      it { expect(response).to have_http_status(:ok) }
-    end
   end
 
   describe '#update' do
     context 'when required fields are present' do
-      let(:planner) { create(:planner, user: user) }
-      let(:planner_event) { create(:planner_event, planner: planner) }
+      let(:planner_event) { create(:planner_event, user: user) }
 
       before do
         patch api_planner_event_path(planner_event, planner_event: { status: 'done', acted_at: Time.current }),
               headers: user_authorization
       end
 
-      it { expect(response).to have_http_status(:ok) }
+      it { expect(response).to have_http_status(:no_content) }
     end
 
     context 'when required fields are absent' do
-      let(:planner) { create(:planner, user: user) }
-      let(:planner_event) { create(:planner_event, planner: planner) }
+      let(:planner_event) { create(:planner_event, user: user) }
 
       before do
         patch api_planner_event_path(planner_event, planner_event: { status: 'done' }),
@@ -109,14 +93,13 @@ RSpec.describe Api::PlannerEventsController do
   end
 
   describe '#destroy' do
-    let(:planner) { create(:planner, user: user) }
-    let(:planner_event) { create(:planner_event, planner: planner) }
+    let(:planner_event) { create(:planner_event, user: user) }
 
     before do
       delete api_planner_event_path(planner_event),
              headers: user_authorization
     end
 
-    it { expect(response).to have_http_status(:ok) }
+    it { expect(response).to have_http_status(:no_content) }
   end
 end

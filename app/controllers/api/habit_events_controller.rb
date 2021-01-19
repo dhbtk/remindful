@@ -10,7 +10,7 @@ module Api
       @habit_event = policy_scope(HabitEvent).find(params[:id])
 
       if @habit_event.update(habit_event_params)
-        head :ok
+        head :no_content
       else
         head :unprocessable_entity
       end

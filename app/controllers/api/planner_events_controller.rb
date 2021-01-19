@@ -3,14 +3,14 @@
 module Api
   class PlannerEventsController < ApiController
     def index
-      @planner_events = planner.planner_events
+      @planner_events = policy_scope(PlannerEvent).for_date(params[:date]&.to_date)
     end
 
     def create
-      @planner_event = planner.planner_events.build(planner_event_params)
+      @planner_event = policy_scope(PlannerEvent).build(planner_event_params)
 
       if @planner_event.save
-        head :ok
+        head :no_content
       else
         head :unprocessable_entity
       end
@@ -20,7 +20,7 @@ module Api
       @planner_event = policy_scope(PlannerEvent).find(params[:id])
 
       if @planner_event.update(planner_event_params)
-        head :ok
+        head :no_content
       else
         head :unprocessable_entity
       end
@@ -30,7 +30,7 @@ module Api
       @planner_event = policy_scope(PlannerEvent).find(params[:id])
       @planner_event.soft_delete
 
-      head :ok
+      head :no_content
     end
 
     private
@@ -40,7 +40,7 @@ module Api
     end
 
     def planner_event_params
-      params.require(:planner_event).permit(:content, :status, :acted_at)
+      params.require(:planner_event).permit(:content, :status, :event_date, :acted_at, :deleted_at)
     end
   end
 end

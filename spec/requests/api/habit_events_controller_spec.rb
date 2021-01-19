@@ -27,7 +27,7 @@ RSpec.describe Api::HabitEventsController do
         patch api_habit_event_path(habit_event, habit_event: build(:habit_event_params)), headers: user_authorization
       end
 
-      it { expect(response).to have_http_status(:ok) }
+      it { expect(response).to have_http_status(:no_content) }
     end
 
     context 'when required params are missing' do
