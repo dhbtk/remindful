@@ -43,7 +43,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     outline: 'none',
     border: 'none',
     borderBottom: '2px solid transparent',
-    padding: theme.spacing(0.5)
+    padding: theme.spacing(0.5),
+    background: 'none'
   },
   struck: {
     textDecoration: 'line-through',
@@ -57,24 +58,28 @@ export interface ListInputProps {
   onBlur?: () => void
   onKeyPress?: (e: React.KeyboardEvent<HTMLDivElement>) => void
   struck?: boolean
+  placeholder?: string
 }
 
 export default function ListInput ({
-  value, onChange, onBlur = () => {
-  }, onKeyPress = (e) => {
-  }, struck = false
+  value, onChange, onBlur, onKeyPress, struck = false, placeholder
 }: ListInputProps): React.ReactElement {
   const classes = useStyles()
   const [focused, setFocused] = useState(false)
 
   return (
     <div className={clsx(classes.content, focused && classes.contentFocused)}>
-      <input type="text" className={clsx(classes.contentInput, struck && classes.struck)} value={value} onChange={(e) => onChange(e.target.value)}
+      <input
+        type="text"
+        className={clsx(classes.contentInput, struck && classes.struck)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => {
           setFocused(false)
-          onBlur()
+          onBlur?.()
         }}
+        placeholder={placeholder ?? ''}
         onKeyPress={onKeyPress}/>
     </div>
   )

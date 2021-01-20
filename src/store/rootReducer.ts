@@ -1,12 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import userInfoSlice from './user'
-import plannerEventsSlice from './plannerEvents'
+import plannerEvents from './plannerEvents'
 import dailySlice from './daily'
 import layoutSlice from './layout'
 
 export const rootReducer = combineReducers({
   user: userInfoSlice.reducer,
-  plannerEvents: plannerEventsSlice.reducer,
+  plannerEvents: plannerEvents,
   daily: dailySlice.reducer,
   layout: layoutSlice.reducer
 })

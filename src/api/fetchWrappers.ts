@@ -54,7 +54,7 @@ export async function apiGet<T> (path: string, query: Record<string, string>): P
 }
 
 function jsonBody (method: string) {
-  return async function <T>(path: string, body: any): Promise<T> {
+  return async function <T>(path: string, body: any = {}): Promise<T> {
     return await fetch(url(path), {
       method,
       headers: { ...headers(), 'Content-Type': 'application/json; charset=utf-8' },

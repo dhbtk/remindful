@@ -1,10 +1,10 @@
 import { PlannerEvent } from './common'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { loadDayData } from './daily'
+import { createReducer } from '@reduxjs/toolkit'
 import { formatISO } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { debounce } from 'underscore'
 import { AppThunk } from './index'
+import { loadDayData, setPlannerEvent, unsetPlannerEvent } from './commonActions'
 
 export interface PlannerEventsState {
   entities: { [id: number]: PlannerEvent }
@@ -33,25 +33,22 @@ export const updatePlannerEventText: (id: number, content: string) => AppThunk =
   await debouncedUpdate(updatedPlannerEvent)
 }
 
+export const deletePlannerEvent: (id: number) => AppThunk = id => async (dispatch, getState) => {
+  dispatch(unsetPlannerEvent(id))
+  await plannerEventApi.destroy(id)
+}
+
 const initialState: PlannerEventsState = { entities: {} }
 
-const plannerEventsSlice = createSlice({
-  name: 'plannerEvents',
-  initialState,
-  reducers: {
-    setPlannerEvent (state: PlannerEventsState, { payload }: PayloadAction<PlannerEvent>) {
-      state.entities[payload.id] = payload
-    }
-  },
-  extraReducers: builder => {
-    builder.addCase(loadDayData.fulfilled, (state: PlannerEventsState, { payload }) => {
-      payload.plannerEvents.forEach(plannerEvent => {
-        state.entities[plannerEvent.id] = plannerEvent
-      })
+const plannerEvents = createReducer(initialState, builder => {
+  builder.addCase(loadDayData.fulfilled, (state: PlannerEventsState, { payload }) => {
+    payload.plannerEvents.forEach(plannerEvent => {
+      state.entities[plannerEvent.id] = plannerEvent
     })
-  }
+  })
+  builder.addCase(setPlannerEvent, (state: PlannerEventsState, { payload }) => {
+    state.entities[payload.id] = payload
+  })
 })
 
-export const { setPlannerEvent } = plannerEventsSlice.actions
-
-export default plannerEventsSlice
+export default plannerEvents

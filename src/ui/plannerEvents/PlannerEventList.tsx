@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Checkbox, createStyles, IconButton, Theme, Typography } from '@material-ui/core'
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, useIntl } from 'react-intl'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { PlannerEvent } from '../../store/common'
@@ -12,7 +12,14 @@ import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } 
 import ListInput from '../ListInput'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { completePlannerEvent, undoCompletePlannerEvent, updatePlannerEventText } from '../../store/plannerEvents'
+import {
+  completePlannerEvent,
+  deletePlannerEvent,
+  undoCompletePlannerEvent,
+  updatePlannerEventText
+} from '../../store/plannerEvents'
+import clsx from 'clsx'
+import yellow from '@material-ui/core/colors/yellow'
 
 export interface PlannerEventListProps {
   date: string
@@ -21,11 +28,14 @@ export interface PlannerEventListProps {
 const useStyles = makeStyles((theme: Theme) => createStyles({
   listContainer: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    '&:not(:empty)': {
+      borderBottom: '1px solid rgba(0, 0, 0, 0.23)'
+    }
   },
   listItem: {
     display: 'flex',
-    padding: 0,
+    padding: theme.spacing(0.5),
     alignItems: 'center'
   },
   actions: {
@@ -35,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   dragHandle: {
     display: 'flex',
     alignItems: 'center'
+  },
+  overdue: {
+    background: yellow[100]
   }
 }))
 
@@ -54,19 +67,22 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
   const onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => void = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!e.shiftKey && e.key === 'Enter') {
       e.preventDefault()
-      await dispatch(saveNewPlannerEvent(date))
+      dispatch(saveNewPlannerEvent(date))
     }
   }
   const onDragEnd: (result: DropResult) => void = async (result: DropResult) => {
     if (result.destination === undefined || result.destination.index === result.source.index) {
       return
     }
-    await dispatch(reorderPlannerEvents(date, result.source.index, result.destination.index))
+    dispatch(reorderPlannerEvents(date, result.source.index, result.destination.index))
   }
+  const intl = useIntl()
   return (
     <React.Fragment>
       <Typography variant="h6">
-        <FormattedMessage id="PlannerEventList.title" defaultMessage="{count} things to do"
+        <FormattedMessage
+          id="PlannerEventList.title"
+          defaultMessage="{count} things to do"
           values={{ count: pendingPlannerEvents.length }}/>
       </Typography>
       {plannerEvents.length === 0 && (
@@ -82,19 +98,23 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
                 {pendingPlannerEvents.map((plannerEvent, index) => (
                   <Draggable draggableId={plannerEvent.id.toString()} index={index} key={plannerEvent.id}>
                     {(draggableProvided) => (
-                      <div className={classes.listItem}
+                      <div
+                        className={clsx(classes.listItem, plannerEvent.originalDate !== null && classes.overdue)}
                         ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
                         <div className={classes.actions}>
                           <span className={classes.dragHandle} {...draggableProvided.dragHandleProps}>
                             <DragHandleIcon/>
                           </span>
-                          <Checkbox size="small" checked={false}
-                            onChange={async () => await dispatch(completePlannerEvent(plannerEvent.id))}/>
+                          <Checkbox
+                            size="small"
+                            checked={false}
+                            onChange={async () => dispatch(completePlannerEvent(plannerEvent.id))}/>
                         </div>
-                        <ListInput value={plannerEvent.content}
-                          onChange={async (text) => await dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
+                        <ListInput
+                          value={plannerEvent.content}
+                          onChange={async (text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
                         <div className={classes.actions}>
-                          <IconButton size="small">
+                          <IconButton size="small" onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
                             <DeleteIcon/>
                           </IconButton>
                         </div>
@@ -114,22 +134,33 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
             <AddIcon/>
           </span>
         </div>
-        <ListInput value={newPlannerEvent} onChange={onTextChange} onKeyPress={onKeyUp}/>
+        <ListInput
+          placeholder={intl.formatMessage({ id: 'PlannerEventList.newPlannerEvent', defaultMessage: 'New entry' })}
+          value={newPlannerEvent}
+          onChange={onTextChange}
+          onKeyPress={onKeyUp}/>
       </div>
       {donePlannerEvents.length > 0 && <Typography variant="h6">
-        <FormattedMessage id="PlannerEventList.doneItems" defaultMessage="{count} done items"
+        <FormattedMessage
+          id="PlannerEventList.doneItems"
+          defaultMessage="{count} done items"
           values={{ count: donePlannerEvents.length }}/>
       </Typography>}
       <div className={classes.listContainer}>
         {donePlannerEvents.map(plannerEvent => (
           <div className={classes.listItem} key={plannerEvent.id}>
             <div className={classes.actions}>
-              <Checkbox size="small" checked onChange={async () => await dispatch(undoCompletePlannerEvent(plannerEvent.id))}/>
+              <Checkbox
+                size="small"
+                checked
+                onChange={async () => dispatch(undoCompletePlannerEvent(plannerEvent.id))}/>
             </div>
-            <ListInput struck value={plannerEvent.content}
-              onChange={async (text) => await dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
+            <ListInput
+              struck
+              value={plannerEvent.content}
+              onChange={async (text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
             <div className={classes.actions}>
-              <IconButton size="small">
+              <IconButton size="small" onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
                 <DeleteIcon/>
               </IconButton>
             </div>

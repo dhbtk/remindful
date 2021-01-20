@@ -1,11 +1,9 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { HabitEvent, LoadStatus, PlannerEvent, WaterGlass } from './common'
 import { format } from 'date-fns'
-import habitEventApi from '../api/habitEventApi'
 import plannerEventApi from '../api/plannerEventApi'
-import waterGlassApi from '../api/waterGlassApi'
-import { setPlannerEvent } from './plannerEvents'
 import { AppThunk } from './index'
+import { loadDayData, setPlannerEvent, unsetPlannerEvent } from './commonActions'
 
 export interface NewPlannerEvent {
   content: string
@@ -52,24 +50,15 @@ export const saveNewPlannerEvent: (date: string) => AppThunk = (date) => async (
 
 export const reorderPlannerEvents: (date: string, startIndex: number, endIndex: number) => AppThunk =
   (date, startIndex, endIndex) => async (dispatch, getState) => {
-    const currentIds = Array.from(getState().daily.days[date].plannerEventIds)
+    const allIds = getState().daily.days[date].plannerEventIds
+    const currentIds = allIds.filter(id => getState().plannerEvents.entities[id].status === 'pending')
+    const doneIds = allIds.filter(id => getState().plannerEvents.entities[id].status !== 'pending')
     const [removed] = currentIds.splice(startIndex, 1)
     currentIds.splice(endIndex, 0, removed)
-    dispatch(updatePlannerEventIds({ date, ids: currentIds }))
+    dispatch(updatePlannerEventIds({ date, ids: currentIds.concat(doneIds) }))
     await plannerEventApi.reorder(currentIds)
     await dispatch(loadDayData(date))
   }
-
-export const loadDayData = createAsyncThunk('today/loadDayData', async (date: string) => {
-  const [habitEvents, plannerEvents, waterGlasses]: [HabitEvent[], PlannerEvent[], WaterGlass[]] = await Promise.all([
-    habitEventApi.forDate(date),
-    plannerEventApi.forDate(date),
-    waterGlassApi.forDate(date)
-  ])
-  const dayData: DayData = { date, habitEvents, plannerEvents, waterGlasses }
-
-  return dayData
-})
 
 export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
   const dateString = format(date, 'yyyy-MM-dd')
@@ -139,6 +128,13 @@ const dailySlice = createSlice({
       state.days[date].habitEventIds = habitEvents.map(h => h.id)
       state.days[date].plannerEventIds = plannerEvents.map(p => p.id)
       state.days[date].waterGlassIds = waterGlasses.map(w => w.id)
+    })
+    builder.addCase(unsetPlannerEvent, (state: DailyState, { payload }) => {
+      Object.values(state.days).forEach(dayState => {
+        if (dayState.plannerEventIds.includes(payload)) {
+          dayState.plannerEventIds = dayState.plannerEventIds.filter(id => id !== payload)
+        }
+      })
     })
   }
 })

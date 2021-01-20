@@ -1,6 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
+import { Link, useLocation } from 'react-router-dom'
+import { createStyles, ListItem, ListItemIcon, ListItemText, Theme } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 
 interface Props {
   icon: React.ReactNode
@@ -8,8 +10,16 @@ interface Props {
   to: string
 }
 
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  current: {
+    background: theme.palette.grey[200]
+  }
+}))
+
 export default function ListItemLink (props: Props): React.ReactElement {
   const { icon, primary, to } = props
+  const { pathname } = useLocation()
+  const classes = useStyles()
 
   const CustomLink = React.useMemo(
     () =>
@@ -20,7 +30,7 @@ export default function ListItemLink (props: Props): React.ReactElement {
   )
 
   return (
-    <li>
+    <li className={clsx(pathname === to && classes.current)}>
       <ListItem button component={CustomLink}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={primary} />

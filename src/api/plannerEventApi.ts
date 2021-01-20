@@ -1,5 +1,5 @@
 import { PlannerEvent } from '../store/common'
-import { apiGet, apiPatch, apiPost } from './fetchWrappers'
+import { apiDelete, apiGet, apiPatch, apiPost } from './fetchWrappers'
 
 const plannerEventApi = {
   forDate: async (date: string): Promise<PlannerEvent[]> => {
@@ -13,6 +13,9 @@ const plannerEventApi = {
   },
   update: async (plannerEvent: PlannerEvent): Promise<void> => {
     return await apiPatch(`/api/planner_events/${plannerEvent.id}`, { plannerEvent })
+  },
+  destroy: async (id: number): Promise<void> => {
+    return await apiDelete(`/api/planner_events/${id}`)
   }
 }
 
