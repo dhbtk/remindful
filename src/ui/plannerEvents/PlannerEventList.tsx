@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from 'react'
-import {Box, Checkbox, createStyles, TextField, Theme, Typography} from "@material-ui/core";
+import {Box, Checkbox, createStyles, IconButton, TextField, Theme, Typography} from "@material-ui/core";
 import {FormattedMessage} from "react-intl";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store/rootReducer";
@@ -9,6 +9,10 @@ import {reorderPlannerEvents, saveNewPlannerEvent, updateNewPlannerEvent} from '
 import {makeStyles} from "@material-ui/core/styles";
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import {DragDropContext, Draggable, Droppable, DroppableProvided, DropResult} from "react-beautiful-dnd";
+import ListInput from "../ListInput";
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import {completePlannerEvent, undoCompletePlannerEvent, updatePlannerEventText} from "../../store/plannerEvents";
 
 export interface PlannerEventListProps {
   date: string
@@ -21,7 +25,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   listItem: {
     display: 'flex',
-    padding: 0
+    padding: 0,
+    alignItems: 'center'
   },
   actions: {
     display: 'flex',
@@ -30,29 +35,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   dragHandle: {
     display: 'flex',
     alignItems: 'center'
-  },
-  content: {
-    flex: '1',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  contentInput: {
-    flex: '1',
-    outline: 'none',
-    border: 'none',
-    borderBottom: '2px solid transparent',
-    padding: theme.spacing(1),
-    '&:after': {
-      left: 0,
-      right: 0,
-      bottom: 0,
-      content: '""',
-      position: 'absolute',
-      transform: 'scaleX(0)',
-      transition: 'transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms',
-      borderBottom: `2px solid ${theme.palette.primary}`,
-      pointerEvents: 'none'
-    }
   }
 }))
 
@@ -64,9 +46,11 @@ export default function PlannerEventList({date}: PlannerEventListProps) {
     }
     return state.daily.days[date].plannerEventIds.map(id => state.plannerEvents.entities[id])
   })
+  const pendingPlannerEvents = plannerEvents.filter(it => it.status === 'pending')
+  const donePlannerEvents = plannerEvents.filter(it => it.status === 'done')
   const newPlannerEvent = useSelector<RootState, string | undefined>(state => state.daily.days[date]?.newPlannerEvent?.content) || ''
   const dispatch = useAppDispatch()
-  const onTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => dispatch(updateNewPlannerEvent({ date, content: e.target.value }))
+  const onTextChange = (e: string) => dispatch(updateNewPlannerEvent({date, content: e}))
   const onKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!e.shiftKey && e.key === 'Enter') {
       dispatch(saveNewPlannerEvent(date))
@@ -81,8 +65,9 @@ export default function PlannerEventList({date}: PlannerEventListProps) {
   }
   return (
     <React.Fragment>
-      <Typography variant="h5">
-        <FormattedMessage id="PlannerEventList.title" defaultMessage="Things to do"/>
+      <Typography variant="h6">
+        <FormattedMessage id="PlannerEventList.title" defaultMessage="{count} things to do"
+                          values={{count: pendingPlannerEvents.length}}/>
       </Typography>
       {plannerEvents.length === 0 && (
         <Box style={{textAlign: 'center'}}>
@@ -94,18 +79,24 @@ export default function PlannerEventList({date}: PlannerEventListProps) {
           <Droppable droppableId="list">
             {(provided: DroppableProvided) => (
               <div className={classes.listContainer} ref={provided.innerRef} {...provided.droppableProps}>
-                {plannerEvents.map((plannerEvent, index) => (
+                {pendingPlannerEvents.map((plannerEvent, index) => (
                   <Draggable draggableId={plannerEvent.id.toString()} index={index} key={plannerEvent.id}>
                     {(draggableProvided) => (
-                      <div className={classes.listItem} ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
+                      <div className={classes.listItem}
+                           ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
                         <div className={classes.actions}>
                           <span className={classes.dragHandle} {...draggableProvided.dragHandleProps}>
-                            <DragHandleIcon />
+                            <DragHandleIcon/>
                           </span>
-                          <Checkbox checked={plannerEvent.status === 'done'}/>
+                          <Checkbox size="small" checked={false}
+                                    onChange={() => dispatch(completePlannerEvent(plannerEvent.id))}/>
                         </div>
-                        <div className={classes.content}>
-                          <input type="text" className={classes.contentInput} value={plannerEvent.content} />
+                        <ListInput value={plannerEvent.content}
+                                   onChange={(text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
+                        <div className={classes.actions}>
+                          <IconButton size="small">
+                            <DeleteIcon/>
+                          </IconButton>
                         </div>
                       </div>
                     )}
@@ -117,8 +108,34 @@ export default function PlannerEventList({date}: PlannerEventListProps) {
           </Droppable>
         </DragDropContext>
       )}
-      <TextField label={<FormattedMessage id="PlannerEventList.newPlannerEvent" defaultMessage="New entry"/>}
-                 variant="filled" multiline value={newPlannerEvent} onChange={onTextChange} onKeyPress={onKeyUp}/>
+      <div className={classes.listItem}>
+        <div className={classes.actions}>
+          <span className={classes.dragHandle}>
+            <AddIcon/>
+          </span>
+        </div>
+        <ListInput value={newPlannerEvent} onChange={onTextChange} onKeyPress={onKeyUp}/>
+      </div>
+      {donePlannerEvents.length > 0 && <Typography variant="h6">
+        <FormattedMessage id="PlannerEventList.doneItems" defaultMessage="{count} done items"
+                          values={{count: donePlannerEvents.length}}/>
+      </Typography>}
+      <div className={classes.listContainer}>
+        {donePlannerEvents.map(plannerEvent => (
+          <div className={classes.listItem} key={plannerEvent.id}>
+            <div className={classes.actions}>
+              <Checkbox size="small" checked onChange={() => dispatch(undoCompletePlannerEvent(plannerEvent.id))}/>
+            </div>
+            <ListInput struck value={plannerEvent.content}
+                       onChange={(text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
+            <div className={classes.actions}>
+              <IconButton size="small">
+                <DeleteIcon/>
+              </IconButton>
+            </div>
+          </div>
+        ))}
+      </div>
     </React.Fragment>
   )
 }

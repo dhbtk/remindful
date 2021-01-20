@@ -1,9 +1,12 @@
 import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom'
-import TodayPage from '../ui/today/TodayPage'
+import DailyPage from '../ui/daily/DailyPage'
 import {createMuiTheme, CssBaseline, ThemeProvider} from '@material-ui/core'
 import {PrivateRoute} from "./PrivateRoute";
 import WelcomePage from "../ui/welcome/WelcomePage";
 import LocaleProvider from "./LocaleProvider";
+import {useAppDispatch} from "../store";
+import {useEffect} from "react";
+import {setAndLoadToday} from "../store/daily";
 
 const theme = createMuiTheme({
   palette: {
@@ -17,6 +20,12 @@ const theme = createMuiTheme({
 })
 
 function App() {
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    dispatch(setAndLoadToday(new Date()))
+    const interval = setInterval(() => dispatch(setAndLoadToday(new Date())), 60000)
+    return () => clearInterval(interval)
+  }, [dispatch])
   return (
     <LocaleProvider>
       <ThemeProvider theme={theme}>
@@ -27,7 +36,7 @@ function App() {
               <Redirect to="/today"/>
             </PrivateRoute>
             <PrivateRoute exact path="/today">
-              <TodayPage/>
+              <DailyPage/>
             </PrivateRoute>
             <Route path="/welcome">
               <WelcomePage/>

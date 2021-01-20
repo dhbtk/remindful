@@ -4,7 +4,7 @@ import {format} from 'date-fns'
 import habitEventApi from "../api/habitEventApi";
 import plannerEventApi from "../api/plannerEventApi";
 import waterGlassApi from "../api/waterGlassApi";
-import {addPlannerEvent, PlannerEventsState} from "./plannerEvents";
+import {setPlannerEvent, PlannerEventsState} from "./plannerEvents";
 
 export interface NewPlannerEvent {
   content: string
@@ -43,7 +43,7 @@ export const saveNewPlannerEvent = (date: string) => async (dispatch: (a: any) =
     actedAt: null,
     content: dailyData.days[date].newPlannerEvent.content
   }
-  dispatch(addPlannerEvent(newPlanner))
+  dispatch(setPlannerEvent(newPlanner))
   dispatch(updateNewPlannerEvent({date, content: ''}))
   await plannerEventApi.create(newPlanner)
   dispatch(loadDayData(date))
