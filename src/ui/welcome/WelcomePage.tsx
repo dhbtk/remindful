@@ -1,34 +1,35 @@
-import {makeStyles} from "@material-ui/core/styles";
-import {Redirect, useLocation} from 'react-router-dom'
-import {Button, Container, Grid, Link, TextField, Typography} from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles'
+import { Redirect, useLocation } from 'react-router-dom'
+import { Button, Container, Grid, Link, TextField, Typography } from '@material-ui/core'
 import logo from '../logo.svg'
-import {useAuth} from "../../store/auth";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../store/rootReducer";
-import {registerLightUser} from "../../store/user";
+import { useAuth } from '../../store/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../store/rootReducer'
+import { registerLightUser } from '../../store/user'
+import React from 'react'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(1)
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(3, 0, 2)
   },
   startNow: {
     margin: theme.spacing(3, 0, 2)
   }
 }))
 
-export default function WelcomePage() {
+export default function WelcomePage (): React.ReactElement {
   const classes = useStyles()
-  const {from} = useLocation().state as any
+  const { from } = useLocation().state as any
   const auth = useAuth()
   const dispatch = useDispatch()
   const userStatus = useSelector<RootState>(state => state.user.status)
@@ -45,9 +46,9 @@ export default function WelcomePage() {
           Sign in
         </Typography>
         <Button disabled={userStatus === 'loading'} type="button" fullWidth variant="outlined" color="primary"
-                onClick={() => dispatch(registerLightUser())}
-                className={classes.startNow}>
-          {"Start Now"}
+          onClick={() => dispatch(registerLightUser())}
+          className={classes.startNow}>
+          {'Start Now'}
         </Button>
         <form className={classes.form} noValidate>
           <TextField

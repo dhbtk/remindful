@@ -1,5 +1,5 @@
-import {PlannerEvent} from "../store/common";
-import {apiGet, apiPatch, apiPost} from "./fetchWrappers";
+import { PlannerEvent } from '../store/common'
+import { apiGet, apiPatch, apiPost } from './fetchWrappers'
 
 const plannerEventApi = {
   forDate: async (date: string): Promise<PlannerEvent[]> => {

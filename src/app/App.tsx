@@ -1,12 +1,12 @@
-import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import DailyPage from '../ui/daily/DailyPage'
-import {createMuiTheme, CssBaseline, ThemeProvider} from '@material-ui/core'
-import {PrivateRoute} from "./PrivateRoute";
-import WelcomePage from "../ui/welcome/WelcomePage";
-import LocaleProvider from "./LocaleProvider";
-import {useAppDispatch} from "../store";
-import {useEffect} from "react";
-import {setAndLoadToday} from "../store/daily";
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core'
+import { PrivateRoute } from './PrivateRoute'
+import WelcomePage from '../ui/welcome/WelcomePage'
+import LocaleProvider from './LocaleProvider'
+import { useAppDispatch } from '../store'
+import React, { useEffect } from 'react'
+import { setAndLoadToday } from '../store/daily'
 
 const theme = createMuiTheme({
   palette: {
@@ -19,7 +19,7 @@ const theme = createMuiTheme({
   }
 })
 
-function App() {
+function App (): React.ReactElement {
   const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(setAndLoadToday(new Date()))

@@ -1,10 +1,11 @@
-import {createAsyncThunk, createSlice, Dispatch, PayloadAction} from "@reduxjs/toolkit";
-import {HabitEvent, LoadStatus, PlannerEvent, WaterGlass} from "./common";
-import {format} from 'date-fns'
-import habitEventApi from "../api/habitEventApi";
-import plannerEventApi from "../api/plannerEventApi";
-import waterGlassApi from "../api/waterGlassApi";
-import {setPlannerEvent, PlannerEventsState} from "./plannerEvents";
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { HabitEvent, LoadStatus, PlannerEvent, WaterGlass } from './common'
+import { format } from 'date-fns'
+import habitEventApi from '../api/habitEventApi'
+import plannerEventApi from '../api/plannerEventApi'
+import waterGlassApi from '../api/waterGlassApi'
+import { setPlannerEvent } from './plannerEvents'
+import { AppThunk } from './index'
 
 export interface NewPlannerEvent {
   content: string
@@ -32,9 +33,9 @@ export interface DayData {
   waterGlasses: WaterGlass[]
 }
 
-export const saveNewPlannerEvent = (date: string) => async (dispatch: (a: any) => any, getState: () => any) => {
-  const dailyData = getState().daily as DailyState
-  const planners = getState().plannerEvents as PlannerEventsState
+export const saveNewPlannerEvent: (date: string) => AppThunk = (date) => async (dispatch, getState) => {
+  const dailyData = getState().daily
+  const planners = getState().plannerEvents
   const tempId = Math.max(...Object.values(planners.entities).map(p => p.id)) + 1
   const newPlanner: PlannerEvent = {
     id: tempId,
@@ -44,28 +45,30 @@ export const saveNewPlannerEvent = (date: string) => async (dispatch: (a: any) =
     content: dailyData.days[date].newPlannerEvent.content
   }
   dispatch(setPlannerEvent(newPlanner))
-  dispatch(updateNewPlannerEvent({date, content: ''}))
+  dispatch(updateNewPlannerEvent({ date, content: '' }))
   await plannerEventApi.create(newPlanner)
-  dispatch(loadDayData(date))
+  await dispatch(loadDayData(date))
 }
 
-export const reorderPlannerEvents = (date: string, startIndex: number, endIndex: number) => async (dispatch: (a: any) => any, getState: () => any) => {
-  const currentIds = Array.from(getState().daily.days[date].plannerEventIds as number[])
-  const [removed] = currentIds.splice(startIndex, 1)
-  currentIds.splice(endIndex, 0, removed)
-  dispatch(updatePlannerEventIds({ date, ids: currentIds }))
-  await plannerEventApi.reorder(currentIds)
-  dispatch(loadDayData(date))
-}
+export const reorderPlannerEvents: (date: string, startIndex: number, endIndex: number) => AppThunk =
+  (date, startIndex, endIndex) => async (dispatch, getState) => {
+    const currentIds = Array.from(getState().daily.days[date].plannerEventIds)
+    const [removed] = currentIds.splice(startIndex, 1)
+    currentIds.splice(endIndex, 0, removed)
+    dispatch(updatePlannerEventIds({ date, ids: currentIds }))
+    await plannerEventApi.reorder(currentIds)
+    await dispatch(loadDayData(date))
+  }
 
 export const loadDayData = createAsyncThunk('today/loadDayData', async (date: string) => {
-  const [habitEvents, plannerEvents, waterGlasses] = await Promise.all([
+  const [habitEvents, plannerEvents, waterGlasses]: [HabitEvent[], PlannerEvent[], WaterGlass[]] = await Promise.all([
     habitEventApi.forDate(date),
     plannerEventApi.forDate(date),
     waterGlassApi.forDate(date)
   ])
+  const dayData: DayData = { date, habitEvents, plannerEvents, waterGlasses }
 
-  return {date, habitEvents, plannerEvents, waterGlasses} as DayData
+  return dayData
 })
 
 export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
@@ -88,8 +91,9 @@ const dailySlice = createSlice({
   name: 'daily',
   initialState: dailyInitialState,
   reducers: {
-    setTodayDate(state: DailyState, {payload}: PayloadAction<string>) {
+    setTodayDate (state: DailyState, { payload }: PayloadAction<string>) {
       state.todayDate = payload
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (state.days[payload]) {
         state.days[payload].status = 'loading'
       } else {
@@ -99,19 +103,20 @@ const dailySlice = createSlice({
           habitEventIds: [],
           plannerEventIds: [],
           waterGlassIds: [],
-          newPlannerEvent: {content: ''}
+          newPlannerEvent: { content: '' }
         }
       }
     },
-    updateNewPlannerEvent(state: DailyState, {payload}: PayloadAction<NewPlannerEventUpdate>) {
+    updateNewPlannerEvent (state: DailyState, { payload }: PayloadAction<NewPlannerEventUpdate>) {
       state.days[payload.date].newPlannerEvent.content = payload.content
     },
-    updatePlannerEventIds(state: DailyState, {payload}: PayloadAction<{ date: string, ids: number[] }>) {
+    updatePlannerEventIds (state: DailyState, { payload }: PayloadAction<{ date: string, ids: number[] }>) {
       state.days[payload.date].plannerEventIds = payload.ids
     }
   },
   extraReducers: builder => {
-    builder.addCase(loadDayData.pending, (state: DailyState, {meta: {arg}}) => {
+    builder.addCase(loadDayData.pending, (state: DailyState, { meta: { arg } }) => {
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (state.days[arg]) {
         state.days[arg].status = 'loading'
       } else {
@@ -121,22 +126,22 @@ const dailySlice = createSlice({
           habitEventIds: [],
           plannerEventIds: [],
           waterGlassIds: [],
-          newPlannerEvent: {content: ''}
+          newPlannerEvent: { content: '' }
         }
       }
     })
-    builder.addCase(loadDayData.rejected, (state: DailyState, {meta: {arg}}) => {
+    builder.addCase(loadDayData.rejected, (state: DailyState, { meta: { arg } }) => {
       state.days[arg].status = 'failed'
     })
-    builder.addCase(loadDayData.fulfilled, (state: DailyState, {payload}) => {
-      const {date, habitEvents, plannerEvents, waterGlasses} = payload
+    builder.addCase(loadDayData.fulfilled, (state: DailyState, { payload }) => {
+      const { date, habitEvents, plannerEvents, waterGlasses } = payload
       state.days[date].status = 'idle'
       state.days[date].habitEventIds = habitEvents.map(h => h.id)
-      state.days[date].plannerEventIds = plannerEvents.map(p => p.id as number)
+      state.days[date].plannerEventIds = plannerEvents.map(p => p.id)
       state.days[date].waterGlassIds = waterGlasses.map(w => w.id)
     })
   }
 })
 
-export const {setTodayDate, updateNewPlannerEvent, updatePlannerEventIds} = dailySlice.actions
+export const { setTodayDate, updateNewPlannerEvent, updatePlannerEventIds } = dailySlice.actions
 export default dailySlice

@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 export interface LayoutState {
   drawerOpen: boolean
@@ -12,10 +12,11 @@ const layoutSlice = createSlice({
   name: 'layout',
   initialState,
   reducers: {
-    toggleDrawer(state: LayoutState) {
+    toggleDrawer (state: LayoutState) {
       state.drawerOpen = !state.drawerOpen
     }
   }
 })
+
 export const { toggleDrawer } = layoutSlice.actions
 export default layoutSlice

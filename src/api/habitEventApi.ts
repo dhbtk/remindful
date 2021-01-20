@@ -1,5 +1,5 @@
-import {HabitEvent} from "../store/common";
-import {apiGet} from "./fetchWrappers";
+import { HabitEvent } from '../store/common'
+import { apiGet } from './fetchWrappers'
 
 const habitEventApi = {
   forDate: async (date: string): Promise<HabitEvent[]> => {

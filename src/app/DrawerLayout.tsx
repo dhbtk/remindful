@@ -1,60 +1,60 @@
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {AppBar, Divider, List, Theme} from "@material-ui/core";
-import React from "react";
-import {useAppDispatch} from "../store";
-import {useSelector} from "react-redux";
-import {RootState} from "../store/rootReducer";
-import {toggleDrawer} from '../store/layout'
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import ListItemLink from "./ListItemLink";
-import HomeIcon from '@material-ui/icons/Home';
-import ViewWeekIcon from '@material-ui/icons/ViewWeek';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import { createStyles, makeStyles } from '@material-ui/core/styles'
+import { AppBar, Divider, List, Theme } from '@material-ui/core'
+import React from 'react'
+import { useAppDispatch } from '../store'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store/rootReducer'
+import { toggleDrawer } from '../store/layout'
+import Drawer from '@material-ui/core/Drawer'
+import Hidden from '@material-ui/core/Hidden'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import ListItemLink from './ListItemLink'
+import HomeIcon from '@material-ui/icons/Home'
+import ViewWeekIcon from '@material-ui/icons/ViewWeek'
+import ScheduleIcon from '@material-ui/icons/Schedule'
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
+      display: 'flex'
     },
     drawer: {
       [theme.breakpoints.up('sm')]: {
         width: drawerWidth,
-        flexShrink: 0,
-      },
+        flexShrink: 0
+      }
     },
     appBar: {
       [theme.breakpoints.up('sm')]: {
         width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-      },
+        marginLeft: drawerWidth
+      }
     },
     menuButton: {
       marginRight: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
-        display: 'none',
-      },
+        display: 'none'
+      }
     },
     // necessary for content to be below app bar
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
-      width: drawerWidth,
+      width: drawerWidth
     },
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3),
+      padding: theme.spacing(3)
     },
     title: {
-      flexGrow: 1,
-    },
-  }),
-);
+      flexGrow: 1
+    }
+  })
+)
 
 interface Props {
   title: React.ReactNode
@@ -62,20 +62,20 @@ interface Props {
   children: React.ReactNode
 }
 
-export default function DrawerLayout({title, actions, children}: Props) {
+export default function DrawerLayout ({ title, actions, children }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const drawerOpen = useSelector<RootState, boolean>(state => state.layout.drawerOpen)
-  const toggleDrawerAction = () => dispatch(toggleDrawer())
+  const toggleDrawerAction: () => void = () => dispatch(toggleDrawer())
 
   const drawer = (
     <div>
       <div className={classes.toolbar}/>
       <Divider/>
       <List component="nav">
-        <ListItemLink icon={<HomeIcon/>} primary={"Home"} to={"/today"}/>
-        <ListItemLink icon={<ViewWeekIcon/>} primary={"My Week"} to={"/weekly"}/>
-        <ListItemLink icon={<ScheduleIcon/>} primary={"Habits"} to={"/habits"}/>
+        <ListItemLink icon={<HomeIcon/>} primary={'Home'} to={'/today'}/>
+        <ListItemLink icon={<ViewWeekIcon/>} primary={'My Week'} to={'/weekly'}/>
+        <ListItemLink icon={<ScheduleIcon/>} primary={'Habits'} to={'/habits'}/>
       </List>
     </div>
   )
@@ -107,10 +107,10 @@ export default function DrawerLayout({title, actions, children}: Props) {
             open={drawerOpen}
             onClose={toggleDrawerAction}
             classes={{
-              paper: classes.drawerPaper,
+              paper: classes.drawerPaper
             }}
             ModalProps={{
-              keepMounted: true,
+              keepMounted: true
             }}
           >
             {drawer}
@@ -119,7 +119,7 @@ export default function DrawerLayout({title, actions, children}: Props) {
         <Hidden xsDown implementation="css">
           <Drawer
             classes={{
-              paper: classes.drawerPaper,
+              paper: classes.drawerPaper
             }}
             variant="permanent"
             open

@@ -1,6 +1,6 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import { Link } from 'react-router-dom'
+import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
 
 interface Props {
   icon: React.ReactNode
@@ -8,16 +8,16 @@ interface Props {
   to: string
 }
 
-export default function ListItemLink(props: Props) {
-  const { icon, primary, to } = props;
+export default function ListItemLink (props: Props): React.ReactElement {
+  const { icon, primary, to } = props
 
   const CustomLink = React.useMemo(
     () =>
       React.forwardRef<HTMLAnchorElement, any>((linkProps, ref) => (
         <Link ref={ref} to={to} {...linkProps} />
       )),
-    [to],
-  );
+    [to]
+  )
 
   return (
     <li>
@@ -26,5 +26,5 @@ export default function ListItemLink(props: Props) {
         <ListItemText primary={primary} />
       </ListItem>
     </li>
-  );
+  )
 }

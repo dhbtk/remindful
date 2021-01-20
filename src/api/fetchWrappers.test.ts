@@ -1,7 +1,6 @@
-import fetchMock, { enableFetchMocks } from "jest-fetch-mock"
-import { get, def } from 'bdd-lazy-var'
-import store from "../store";
-import { setUserInfo, clearUserInfo } from '../store/user'
+import { enableFetchMocks } from 'jest-fetch-mock'
+import store from '../store'
+import { clearUserInfo } from '../store/user'
 
 enableFetchMocks()
 

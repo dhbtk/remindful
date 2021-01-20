@@ -1,7 +1,7 @@
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Theme} from "@material-ui/core";
-import React, {useState} from "react";
-import clsx from "clsx";
+import { createStyles, makeStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core'
+import React, { useState } from 'react'
+import clsx from 'clsx'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   content: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     outline: 'none',
     border: 'none',
     borderBottom: '2px solid transparent',
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.5)
   },
   struck: {
     textDecoration: 'line-through',
@@ -59,23 +59,23 @@ export interface ListInputProps {
   struck?: boolean
 }
 
-export default function ListInput({
-                                    value, onChange, onBlur = () => {
+export default function ListInput ({
+  value, onChange, onBlur = () => {
   }, onKeyPress = (e) => {
   }, struck = false
-                                  }: ListInputProps) {
+}: ListInputProps): React.ReactElement {
   const classes = useStyles()
   const [focused, setFocused] = useState(false)
 
   return (
     <div className={clsx(classes.content, focused && classes.contentFocused)}>
       <input type="text" className={clsx(classes.contentInput, struck && classes.struck)} value={value} onChange={(e) => onChange(e.target.value)}
-             onFocus={() => setFocused(true)}
-             onBlur={() => {
-               setFocused(false)
-               onBlur()
-             }}
-             onKeyPress={onKeyPress}/>
+        onFocus={() => setFocused(true)}
+        onBlur={() => {
+          setFocused(false)
+          onBlur()
+        }}
+        onKeyPress={onKeyPress}/>
     </div>
   )
 }
