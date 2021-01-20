@@ -7,6 +7,8 @@ import LocaleProvider from './LocaleProvider'
 import { useAppDispatch } from '../store'
 import React, { useEffect } from 'react'
 import { setAndLoadToday } from '../store/daily'
+import Notifier from './Notifier'
+import { SnackbarProvider } from 'notistack'
 
 const theme = createMuiTheme({
   palette: {
@@ -26,26 +28,30 @@ function App (): React.ReactElement {
     const interval = setInterval(() => dispatch(setAndLoadToday(new Date())), 60000)
     return () => clearInterval(interval)
   }, [dispatch])
+
   return (
     <LocaleProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <BrowserRouter>
-          <Switch>
-            <PrivateRoute exact path="/">
-              <Redirect to="/today"/>
-            </PrivateRoute>
-            <PrivateRoute exact path="/today">
-              <DailyPage/>
-            </PrivateRoute>
-            <Route path="/welcome">
-              <WelcomePage/>
-            </Route>
-            <Route path="*">
-              <Redirect to="/"/>
-            </Route>
-          </Switch>
-        </BrowserRouter>
+        <SnackbarProvider>
+          <Notifier />
+          <BrowserRouter>
+            <Switch>
+              <PrivateRoute exact path="/">
+                <Redirect to="/today"/>
+              </PrivateRoute>
+              <PrivateRoute exact path="/today">
+                <DailyPage/>
+              </PrivateRoute>
+              <Route path="/welcome">
+                <WelcomePage/>
+              </Route>
+              <Route path="*">
+                <Redirect to="/"/>
+              </Route>
+            </Switch>
+          </BrowserRouter>
+        </SnackbarProvider>
       </ThemeProvider>
     </LocaleProvider>
   )

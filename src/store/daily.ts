@@ -15,6 +15,7 @@ export interface DayState {
   status: LoadStatus
   habitEventIds: number[]
   plannerEventIds: number[]
+  deletedPlannerEventIds: number[]
   waterGlassIds: number[]
   newPlannerEvent: NewPlannerEvent
 }
@@ -91,6 +92,7 @@ const dailySlice = createSlice({
           status: 'loading',
           habitEventIds: [],
           plannerEventIds: [],
+          deletedPlannerEventIds: [],
           waterGlassIds: [],
           newPlannerEvent: { content: '' }
         }
@@ -114,6 +116,7 @@ const dailySlice = createSlice({
           status: 'loading',
           habitEventIds: [],
           plannerEventIds: [],
+          deletedPlannerEventIds: [],
           waterGlassIds: [],
           newPlannerEvent: { content: '' }
         }
