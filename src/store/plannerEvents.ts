@@ -4,7 +4,7 @@ import { formatISO } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { debounce } from 'underscore'
 import { AppThunk } from './index'
-import { loadDayData, setPlannerEvent, unsetPlannerEvent } from './commonActions'
+import { loadDayData, loadPlannerEvents, setPlannerEvent, unsetPlannerEvent } from './commonActions'
 
 export interface PlannerEventsState {
   entities: { [id: number]: PlannerEvent }
@@ -43,6 +43,11 @@ const initialState: PlannerEventsState = { entities: {} }
 const plannerEvents = createReducer(initialState, builder => {
   builder.addCase(loadDayData.fulfilled, (state: PlannerEventsState, { payload }) => {
     payload.plannerEvents.forEach(plannerEvent => {
+      state.entities[plannerEvent.id] = plannerEvent
+    })
+  })
+  builder.addCase(loadPlannerEvents.fulfilled, (state: PlannerEventsState, { payload }) => {
+    payload.forEach(plannerEvent => {
       state.entities[plannerEvent.id] = plannerEvent
     })
   })

@@ -1,10 +1,10 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { AppBar, Divider, List, Theme } from '@material-ui/core'
+import { AppBar, Button, Divider, List, Theme } from '@material-ui/core'
 import React from 'react'
-import { useAppDispatch } from '../store'
+import { useAppDispatch } from '../../store'
 import { useSelector } from 'react-redux'
-import { RootState } from '../store/rootReducer'
-import { toggleDrawer } from '../store/layout'
+import { RootState } from '../../store/rootReducer'
+import { toggleDrawer } from '../../store/layout'
 import Drawer from '@material-ui/core/Drawer'
 import Hidden from '@material-ui/core/Hidden'
 import IconButton from '@material-ui/core/IconButton'
@@ -15,13 +15,18 @@ import ListItemLink from './ListItemLink'
 import HomeIcon from '@material-ui/icons/Home'
 import ViewWeekIcon from '@material-ui/icons/ViewWeek'
 import ScheduleIcon from '@material-ui/icons/Schedule'
+import clsx from 'clsx'
+import logo from '../logo.svg'
+import { useAuth } from '../../store/auth'
+import { FormattedMessage } from 'react-intl'
 
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex'
+      display: 'flex',
+      height: '100vh'
     },
     drawer: {
       [theme.breakpoints.up('sm')]: {
@@ -46,12 +51,34 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth
     },
+    drawerLogo: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    logo: {
+      height: '40px',
+      width: 'auto'
+    },
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3)
+      display: 'flex',
+      flexDirection: 'column'
     },
     title: {
       flexGrow: 1
+    },
+    anonymousUserInfo: {
+      padding: theme.spacing(2),
+      display: 'flex',
+      flexDirection: 'column'
+    },
+    anonymousHello: {
+      marginBottom: theme.spacing(3)
+    },
+    anonymousActions: {
+      display: 'flex',
+      justifyContent: 'flex-end'
     }
   })
 )
@@ -67,11 +94,28 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
   const dispatch = useAppDispatch()
   const drawerOpen = useSelector<RootState, boolean>(state => state.layout.drawerOpen)
   const toggleDrawerAction: () => void = () => dispatch(toggleDrawer())
+  const auth = useAuth()
 
   const drawer = (
     <div>
-      <div className={classes.toolbar}/>
+      <div className={clsx(classes.toolbar, classes.drawerLogo)}>
+        <img className={classes.logo} alt="Remindful" src={logo} />
+      </div>
       <Divider/>
+      {auth.isLightUser() && (
+        <React.Fragment>
+          <div className={classes.anonymousUserInfo}>
+            <Typography className={classes.anonymousHello} variant="body2">
+              <FormattedMessage id="DrawerLayout.welcomeAnonymous" defaultMessage="Hello, anonymous!" />
+            </Typography>
+            <div className={classes.anonymousActions}>
+              <Button variant="text">Sign In</Button>
+              <Button variant="text">Register</Button>
+            </div>
+          </div>
+          <Divider />
+        </React.Fragment>
+      )}
       <List component="nav">
         <ListItemLink icon={<HomeIcon/>} primary={'Home'} to={'/today'}/>
         <ListItemLink icon={<ViewWeekIcon/>} primary={'My Week'} to={'/weekly'}/>

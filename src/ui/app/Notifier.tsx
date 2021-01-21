@@ -1,9 +1,9 @@
 import { ProviderContext, SnackbarKey, withSnackbar } from 'notistack'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../store/rootReducer'
-import { removeNotification, SnackNotification } from '../store/layout'
-import { useAppDispatch } from '../store'
+import { RootState } from '../../store/rootReducer'
+import { removeNotification, SnackNotification } from '../../store/layout'
+import { useAppDispatch } from '../../store'
 
 let displayed: SnackbarKey[] = []
 

@@ -3,7 +3,7 @@ import { HabitEvent, LoadStatus, PlannerEvent, WaterGlass } from './common'
 import { format } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { AppThunk } from './index'
-import { loadDayData, setPlannerEvent, unsetPlannerEvent } from './commonActions'
+import { loadDayData, loadPlannerEvents, setPlannerEvent, unsetPlannerEvent } from './commonActions'
 
 export interface NewPlannerEvent {
   content: string
@@ -67,7 +67,7 @@ export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
   dispatch(loadDayData(dateString))
 }
 
-const dailyInitialState: DailyState = {
+const initialState: DailyState = {
   todayDate: format(new Date(), 'yyyy-MM-dd'),
   days: {}
 }
@@ -77,25 +77,26 @@ export interface NewPlannerEventUpdate {
   content: string
 }
 
+const dayInitialState: (date: string) => DayState = date => ({
+  date,
+  status: 'loading',
+  habitEventIds: [],
+  plannerEventIds: [],
+  deletedPlannerEventIds: [],
+  waterGlassIds: [],
+  newPlannerEvent: { content: '' }
+})
+
 const dailySlice = createSlice({
   name: 'daily',
-  initialState: dailyInitialState,
+  initialState: initialState,
   reducers: {
     setTodayDate (state: DailyState, { payload }: PayloadAction<string>) {
       state.todayDate = payload
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      if (state.days[payload]) {
+      if (state.days[payload] !== undefined) {
         state.days[payload].status = 'loading'
       } else {
-        state.days[payload] = {
-          date: payload,
-          status: 'loading',
-          habitEventIds: [],
-          plannerEventIds: [],
-          deletedPlannerEventIds: [],
-          waterGlassIds: [],
-          newPlannerEvent: { content: '' }
-        }
+        state.days[payload] = dayInitialState(payload)
       }
     },
     updateNewPlannerEvent (state: DailyState, { payload }: PayloadAction<NewPlannerEventUpdate>) {
@@ -107,19 +108,10 @@ const dailySlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(loadDayData.pending, (state: DailyState, { meta: { arg } }) => {
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      if (state.days[arg]) {
+      if (state.days[arg] !== undefined) {
         state.days[arg].status = 'loading'
       } else {
-        state.days[arg] = {
-          date: arg,
-          status: 'loading',
-          habitEventIds: [],
-          plannerEventIds: [],
-          deletedPlannerEventIds: [],
-          waterGlassIds: [],
-          newPlannerEvent: { content: '' }
-        }
+        state.days[arg] = dayInitialState(arg)
       }
     })
     builder.addCase(loadDayData.rejected, (state: DailyState, { meta: { arg } }) => {
@@ -138,6 +130,13 @@ const dailySlice = createSlice({
           dayState.plannerEventIds = dayState.plannerEventIds.filter(id => id !== payload)
         }
       })
+    })
+    builder.addCase(loadPlannerEvents.fulfilled, (state: DailyState, { payload }) => {
+      const date = payload[0].eventDate
+      if (state.days[date] === undefined) {
+        state.days[date] = dayInitialState(date)
+      }
+      state.days[date].plannerEventIds = payload.map(it => it.id)
     })
   }
 })

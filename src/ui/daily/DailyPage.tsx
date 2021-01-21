@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import DaySummary from './DaySummary'
 import PlannerEventList from '../plannerEvents/PlannerEventList'
-import DrawerLayout from '../../app/DrawerLayout'
+import DrawerLayout from '../app/DrawerLayout'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -39,7 +39,7 @@ export default function DailyPage (): React.ReactElement {
   )
 
   return (
-    <DrawerLayout title="Dashboard" actions={actions}>
+    <DrawerLayout title="Today" actions={actions}>
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

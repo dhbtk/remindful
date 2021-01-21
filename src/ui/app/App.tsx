@@ -1,14 +1,15 @@
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
-import DailyPage from '../ui/daily/DailyPage'
+import DailyPage from '../daily/DailyPage'
 import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core'
 import { PrivateRoute } from './PrivateRoute'
-import WelcomePage from '../ui/welcome/WelcomePage'
+import WelcomePage from '../welcome/WelcomePage'
 import LocaleProvider from './LocaleProvider'
-import { useAppDispatch } from '../store'
+import { useAppDispatch } from '../../store'
 import React, { useEffect } from 'react'
-import { setAndLoadToday } from '../store/daily'
+import { setAndLoadToday } from '../../store/daily'
 import Notifier from './Notifier'
 import { SnackbarProvider } from 'notistack'
+import WeeklyPage from '../weekly/WeeklyPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -42,6 +43,9 @@ function App (): React.ReactElement {
               </PrivateRoute>
               <PrivateRoute exact path="/today">
                 <DailyPage/>
+              </PrivateRoute>
+              <PrivateRoute exact path={['/weekly', '/weekly/:weekDate']}>
+                <WeeklyPage/>
               </PrivateRoute>
               <Route path="/welcome">
                 <WelcomePage/>

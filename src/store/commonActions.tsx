@@ -19,3 +19,7 @@ export const loadDayData = createAsyncThunk('today/loadDayData', async (date: st
 
   return dayData
 })
+
+export const loadPlannerEvents = createAsyncThunk('loadPlannerEvents', async (date: string) => {
+  return await plannerEventApi.forDate(date)
+})

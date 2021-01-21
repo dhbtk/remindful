@@ -30,12 +30,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     display: 'flex',
     flexDirection: 'column',
     '&:not(:empty)': {
+      paddingBottom: theme.spacing(1),
       borderBottom: '1px solid rgba(0, 0, 0, 0.23)'
     }
   },
   listItem: {
     display: 'flex',
-    padding: theme.spacing(0.5),
     alignItems: 'center'
   },
   actions: {
@@ -48,6 +48,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   overdue: {
     background: yellow[100]
+  },
+  checkbox: {
+    padding: theme.spacing(0.5)
+  },
+  heading: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(0.5)
   }
 }))
 
@@ -79,7 +86,7 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
   const intl = useIntl()
   return (
     <React.Fragment>
-      <Typography variant="h6">
+      <Typography variant="subtitle2" className={classes.heading}>
         <FormattedMessage
           id="PlannerEventList.title"
           defaultMessage="{count} things to do"
@@ -106,6 +113,7 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
                             <DragHandleIcon/>
                           </span>
                           <Checkbox
+                            className={classes.checkbox}
                             size="small"
                             checked={false}
                             onChange={async () => dispatch(completePlannerEvent(plannerEvent.id))}/>
@@ -140,7 +148,7 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
           onChange={onTextChange}
           onKeyPress={onKeyUp}/>
       </div>
-      {donePlannerEvents.length > 0 && <Typography variant="h6">
+      {donePlannerEvents.length > 0 && <Typography variant="subtitle2" className={classes.heading}>
         <FormattedMessage
           id="PlannerEventList.doneItems"
           defaultMessage="{count} done items"
@@ -151,6 +159,7 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
           <div className={classes.listItem} key={plannerEvent.id}>
             <div className={classes.actions}>
               <Checkbox
+                className={classes.checkbox}
                 size="small"
                 checked
                 onChange={async () => dispatch(undoCompletePlannerEvent(plannerEvent.id))}/>

@@ -1,4 +1,4 @@
-import { useAuth } from '../store/auth'
+import { useAuth } from '../../store/auth'
 import { Route, RouteProps, Redirect } from 'react-router-dom'
 import React from 'react'
 

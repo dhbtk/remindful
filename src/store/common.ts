@@ -1,15 +1,13 @@
-import { createAction } from '@reduxjs/toolkit'
-
 export type LoadStatus = 'idle' | 'loading' | 'failed'
 
 export interface Habit {
-  id?: number
+  id: number
   name: string
   repeatInterval: number
   repeatIntervalUnit: 'day' | 'week' | 'month'
   startDate: string
   notify: boolean
-  notificationTime?: string | null
+  notificationTime: string | null
   deletedAt: string | null
 }
 
