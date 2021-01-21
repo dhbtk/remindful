@@ -10,7 +10,13 @@ class PlannerEvent < ApplicationRecord
   def self.for_date(date)
     date ||= Time.zone.today
 
-    where(event_date: date).not_deleted.order(:created_at)
+    where(event_date: date).not_deleted.order(Arel.sql('coalesce("order", id)'))
+  end
+
+  def self.reorder(entities, sorted_ids)
+    sorted_ids.each_with_index do |id, index|
+      entities.find { |e| e.id == id }.update(order: index)
+    end
   end
 
   def recreate_pending(new_date)

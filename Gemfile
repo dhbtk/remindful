@@ -21,6 +21,7 @@ gem 'sidekiq'
 gem 'sidekiq-cron'
 gem 'turbolinks', '~> 5'
 gem 'webpacker', '~> 5.0'
+gem 'with_advisory_lock'
 
 group :development, :test do
   gem 'dotenv-rails'

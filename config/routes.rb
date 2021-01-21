@@ -13,7 +13,9 @@ Rails.application.routes.draw do
     end
 
     resources :habit_events, only: %i[index update]
-    resources :planner_events, only: %i[index create update destroy]
+    resources :planner_events, only: %i[index create update destroy] do
+      post :reorder, on: :collection
+    end
 
     resources :water_glasses, only: %i[index create destroy]
   end

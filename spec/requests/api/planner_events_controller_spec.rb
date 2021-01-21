@@ -28,6 +28,16 @@ RSpec.describe Api::PlannerEventsController do
     end
   end
 
+  describe '#reorder' do
+    before do
+      allow(PlannerEvent).to receive(:reorder)
+      post reorder_api_planner_events_path(ids: %w[1 2 3 4 5]), headers: user_authorization
+    end
+
+    it { expect(PlannerEvent).to have_received(:reorder).with(anything, [1, 2, 3, 4, 5]) }
+    it { expect(response).to have_http_status(:no_content) }
+  end
+
   describe '#create' do
     context 'when all fields are present' do
       before do

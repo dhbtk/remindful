@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_09_005222) do
+ActiveRecord::Schema.define(version: 2021_01_19_134842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2021_01_09_005222) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "order"
     t.index ["name", "user_id"], name: "index_habits_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
@@ -80,6 +81,7 @@ ActiveRecord::Schema.define(version: 2021_01_09_005222) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "order"
     t.index ["user_id"], name: "index_planner_events_on_user_id"
   end
 

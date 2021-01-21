@@ -6,6 +6,11 @@ module Api
       @planner_events = policy_scope(PlannerEvent).for_date(params[:date]&.to_date)
     end
 
+    def reorder
+      PlannerEvent.reorder(policy_scope(PlannerEvent).where(id: reorder_params), reorder_params)
+      head :no_content
+    end
+
     def create
       @planner_event = policy_scope(PlannerEvent).build(planner_event_params)
 
@@ -37,6 +42,10 @@ module Api
 
     def planner
       current_user.planners.find_or_create_by(plan_date: params[:planner_id].to_date)
+    end
+
+    def reorder_params
+      Array(params.permit(ids: [])&.dig(:ids)).map(&:to_i)
     end
 
     def planner_event_params
