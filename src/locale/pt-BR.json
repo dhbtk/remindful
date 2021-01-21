@@ -1,0 +1,7 @@
+{
+  "DaySummary.today": "{today, date, full}",
+  "PlannerEventList.title": "{count, plural, \n=0 {Tarefas}\none {Tarefas}\nother {{count} Tarefas}}",
+  "PlannerEventList.doneItems": "{count, plural, \none {Concluídas}\nother {{count} Concluídas}}",
+  "PlannerEventList.empty": "Nada até agora!",
+  "PlannerEventList.newPlannerEvent": "Nova tarefa"
+}
