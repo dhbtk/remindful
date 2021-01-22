@@ -6,6 +6,10 @@ import { Redirect, useParams } from 'react-router-dom'
 import { addDays, format, isMonday, parse, startOfWeek } from 'date-fns'
 import clsx from 'clsx'
 import DayInformation from './DayInformation'
+import { FormattedMessage } from 'react-intl'
+import { lastMonday, ymd, ymdToDate } from '../ymdUtils'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store/rootReducer'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -37,22 +41,21 @@ const useStyles = makeStyles((theme) => createStyles({
 }))
 
 export default function WeeklyPage (): React.ReactElement {
+  const classes = useStyles()
+  const presentDate = useSelector<RootState, string>(state => state.daily.todayDate)
   const { weekDate } = useParams<{ weekDate?: string }>()
-  const parsedDate = (weekDate !== undefined && parse(weekDate, 'yyyy-MM-dd', new Date())) as Date
   if (weekDate === undefined) {
-    const newStartOfWeek = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd')
+    const newStartOfWeek = lastMonday(presentDate)
     return <Redirect to={`/weekly/${newStartOfWeek}`} />
   } else {
-    if (!isMonday(parsedDate)) {
-      const newStartOfWeek = format(startOfWeek(parsedDate, { weekStartsOn: 1 }), 'yyyy-MM-dd')
+    if (!isMonday(ymdToDate(weekDate))) {
+      const newStartOfWeek = lastMonday(weekDate)
       return <Redirect to={`/weekly/${newStartOfWeek}`} />
     }
   }
-  const classes = useStyles()
-  const presentDate = format(new Date(), 'yyyy-MM-dd')
-  const dateOffset: (offset: number) => string = offset => format(addDays(parsedDate, offset), 'yyyy-MM-dd')
+  const dateOffset: (offset: number) => string = offset => ymd(addDays(ymdToDate(weekDate), offset))
   return (
-    <DrawerLayout title="My week" actions={[]}>
+    <DrawerLayout title={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>} actions={[]}>
       <div className={classes.container}>
         <Paper className={classes.daySlice}>
           <DayInformation date={weekDate} presentDate={presentDate} />

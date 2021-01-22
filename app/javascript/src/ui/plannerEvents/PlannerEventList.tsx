@@ -20,6 +20,8 @@ import {
 } from '../../store/plannerEvents'
 import clsx from 'clsx'
 import yellow from '@material-ui/core/colors/yellow'
+import { differenceInCalendarDays, parse } from 'date-fns'
+import { ymdToDate } from '../ymdUtils'
 
 export interface PlannerEventListProps {
   date: string
@@ -71,6 +73,8 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
   const newPlannerEvent = useSelector<RootState, string | undefined>(state => state.daily.days[date]?.newPlannerEvent?.content) ?? ''
   const dispatch = useAppDispatch()
   const onTextChange: (e: string) => void = (e: string) => dispatch(updateNewPlannerEvent({ date, content: e }))
+  const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
+  const isPastDate = differenceInCalendarDays(ymdToDate(todayDate), ymdToDate(date)) > 0
   const onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => void = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!e.shiftKey && e.key === 'Enter') {
       e.preventDefault()
@@ -116,13 +120,16 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
                             className={classes.checkbox}
                             size="small"
                             checked={false}
+                            disabled={todayDate !== date}
                             onChange={async () => dispatch(completePlannerEvent(plannerEvent.id))}/>
                         </div>
                         <ListInput
                           value={plannerEvent.content}
                           onChange={async (text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
                         <div className={classes.actions}>
-                          <IconButton size="small" onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
+                          <IconButton
+                            disabled={isPastDate} size="small"
+                            onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
                             <DeleteIcon/>
                           </IconButton>
                         </div>
@@ -136,24 +143,26 @@ export default function PlannerEventList ({ date }: PlannerEventListProps): Reac
           </Droppable>
         </DragDropContext>
       )}
-      <div className={classes.listItem}>
-        <div className={classes.actions}>
-          <span className={classes.dragHandle}>
-            <AddIcon/>
-          </span>
+      {!isPastDate && (
+        <div className={classes.listItem}>
+          <div className={classes.actions}>
+            <span className={classes.dragHandle}><AddIcon/></span>
+          </div>
+          <ListInput
+            placeholder={intl.formatMessage({ id: 'PlannerEventList.newPlannerEvent', defaultMessage: 'New entry' })}
+            value={newPlannerEvent}
+            onChange={onTextChange}
+            onKeyPress={onKeyUp}/>
         </div>
-        <ListInput
-          placeholder={intl.formatMessage({ id: 'PlannerEventList.newPlannerEvent', defaultMessage: 'New entry' })}
-          value={newPlannerEvent}
-          onChange={onTextChange}
-          onKeyPress={onKeyUp}/>
-      </div>
-      {donePlannerEvents.length > 0 && <Typography variant="subtitle2" className={classes.heading}>
-        <FormattedMessage
-          id="PlannerEventList.doneItems"
-          defaultMessage="{count} done items"
-          values={{ count: donePlannerEvents.length }}/>
-      </Typography>}
+      )}
+      {donePlannerEvents.length > 0 && (
+        <Typography variant="subtitle2" className={classes.heading}>
+          <FormattedMessage
+            id="PlannerEventList.doneItems"
+            defaultMessage="{count} done items"
+            values={{ count: donePlannerEvents.length }}/>
+        </Typography>
+      )}
       <div className={classes.listContainer}>
         {donePlannerEvents.map(plannerEvent => (
           <div className={classes.listItem} key={plannerEvent.id}>

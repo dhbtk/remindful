@@ -4,7 +4,6 @@ Rails.application.routes.draw do
   use_doorkeeper do
     skip_controllers :authorizations, :applications, :authorized_applications
   end
-  devise_for :users
   namespace :api, defaults: { format: :json } do
     resource :light_user, only: :create
 
@@ -23,4 +22,5 @@ Rails.application.routes.draw do
   resource :web_app, controller: :web_app, only: :show
 
   get 'web_app/*other', to: 'web_app#show'
+  root to: redirect('/web_app')
 end

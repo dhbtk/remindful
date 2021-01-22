@@ -1,0 +1,27 @@
+DaySummary:
+  today: "{today, date, full}"
+PlannerEventList:
+  title: |
+    {count, plural,
+    =0 {Tarefas}
+    one {Tarefas}
+    other {{count} Tarefas}}
+  doneItems: |
+    {count, plural,
+    one {Concluídas}
+    other {{count} Concluídas}}
+  empty: Nenhuma tarefa
+  newPlannerEvent: Nova tarefa
+DrawerLayout:
+  welcomeAnonymous: Bem-vinde, anônime!
+  signIn: Entrar
+  register: Registrar
+HomePage:
+  title: Home
+DailyPage:
+  title: "{today, date, long}"
+  todayLink: Hoje
+WeeklyPage:
+  title: Minha Semana
+HabitsPage:
+  title: Hábitos

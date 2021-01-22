@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { createStyles, ListItem, ListItemIcon, ListItemText, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import linkRef from './linkRef'
 
 interface Props {
   icon: React.ReactNode
@@ -22,11 +23,8 @@ export default function ListItemLink (props: Props): React.ReactElement {
   const classes = useStyles()
 
   const CustomLink = React.useMemo(
-    () =>
-      React.forwardRef<HTMLAnchorElement, any>((linkProps, ref) => (
-        <Link ref={ref} to={to} {...linkProps} />
-      )),
-    [to]
+    () => linkRef(to),
+    [to, linkRef]
   )
 
   return (

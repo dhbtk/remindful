@@ -19,6 +19,8 @@ import clsx from 'clsx'
 import logo from '../logo.svg'
 import { useAuth } from '../../store/auth'
 import { FormattedMessage } from 'react-intl'
+import { format, parse, startOfWeek } from 'date-fns'
+import { lastMonday } from '../ymdUtils'
 
 const drawerWidth = 240
 
@@ -93,33 +95,46 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const drawerOpen = useSelector<RootState, boolean>(state => state.layout.drawerOpen)
+  const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
+  const mondayDate = lastMonday(todayDate)
   const toggleDrawerAction: () => void = () => dispatch(toggleDrawer())
   const auth = useAuth()
 
   const drawer = (
     <div>
       <div className={clsx(classes.toolbar, classes.drawerLogo)}>
-        <img className={classes.logo} alt="Remindful" src={logo} />
+        <img className={classes.logo} alt="Remindful" src={logo}/>
       </div>
       <Divider/>
       {auth.isLightUser() && (
         <React.Fragment>
           <div className={classes.anonymousUserInfo}>
             <Typography className={classes.anonymousHello} variant="body2">
-              <FormattedMessage id="DrawerLayout.welcomeAnonymous" defaultMessage="Hello, anonymous!" />
+              <FormattedMessage id="DrawerLayout.welcomeAnonymous" defaultMessage="Hello, anonymous!"/>
             </Typography>
             <div className={classes.anonymousActions}>
-              <Button variant="text">Sign In</Button>
-              <Button variant="text">Register</Button>
+              <Button variant="text">
+                <FormattedMessage id="DrawerLayout.signIn" defaultMessage="Sign In"/>
+              </Button>
+              <Button variant="text">
+                <FormattedMessage id="DrawerLayout.register" defaultMessage="Register"/>
+              </Button>
             </div>
           </div>
-          <Divider />
+          <Divider/>
         </React.Fragment>
       )}
       <List component="nav">
-        <ListItemLink icon={<HomeIcon/>} primary={'Home'} to={'/today'}/>
-        <ListItemLink icon={<ViewWeekIcon/>} primary={'My Week'} to={'/weekly'}/>
-        <ListItemLink icon={<ScheduleIcon/>} primary={'Habits'} to={'/habits'}/>
+        <ListItemLink
+          icon={<HomeIcon/>} primary={<FormattedMessage id="HomePage.title" defaultMessage="Home"/>}
+          to={`/daily/${todayDate}`}/>
+        <ListItemLink
+          icon={<ViewWeekIcon/>}
+          primary={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>}
+          to={`/weekly/${mondayDate}`}/>
+        <ListItemLink
+          icon={<ScheduleIcon/>} primary={<FormattedMessage id="HabitsPage.title" defaultMessage="Habits"/>}
+          to={'/habits'}/>
       </List>
     </div>
   )

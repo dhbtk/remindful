@@ -33,6 +33,9 @@ default: &default
     - .woff2
 
   extensions:
+    - .jsx
+    - .tsx
+    - .ts
     - .mjs
     - .js
     - .sass
@@ -53,7 +56,9 @@ development:
 
   # Reference: https://webpack.js.org/configuration/dev-server/
   dev_server:
-    https: false
+    https:
+      key: /etc/nginx/localhost.key
+      cert: /etc/nginx/localhost.crt
     host: localhost
     port: 3035
     public: localhost:3035
@@ -70,7 +75,6 @@ development:
       'Access-Control-Allow-Origin': '*'
     watch_options:
       ignored: '**/node_modules/**'
-
 
 test:
   <<: *default

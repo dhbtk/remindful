@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { AppThunk } from './index'
 import { loadDayData, loadPlannerEvents, setPlannerEvent, unsetPlannerEvent } from './commonActions'
+import { ymd } from '../ui/ymdUtils'
 
 export interface NewPlannerEvent {
   content: string
@@ -62,13 +63,13 @@ export const reorderPlannerEvents: (date: string, startIndex: number, endIndex: 
   }
 
 export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
-  const dateString = format(date, 'yyyy-MM-dd')
+  const dateString = ymd(date)
   dispatch(setTodayDate(dateString))
   dispatch(loadDayData(dateString))
 }
 
 const initialState: DailyState = {
-  todayDate: format(new Date(), 'yyyy-MM-dd'),
+  todayDate: ymd(new Date()),
   days: {}
 }
 
@@ -132,6 +133,10 @@ const dailySlice = createSlice({
       })
     })
     builder.addCase(loadPlannerEvents.fulfilled, (state: DailyState, { payload }) => {
+      if (payload.length === 0) {
+        return
+      }
+
       const date = payload[0].eventDate
       if (state.days[date] === undefined) {
         state.days[date] = dayInitialState(date)
