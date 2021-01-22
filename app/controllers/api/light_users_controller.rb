@@ -2,7 +2,7 @@
 
 module Api
   class LightUsersController < ApiController
-    skip_before_action :doorkeeper_authorize!, only: :create
+    skip_before_action :authenticate_user!, only: :create
 
     def create
       @light_user = LightUser.create(light_user_params)

@@ -19,8 +19,8 @@ import clsx from 'clsx'
 import logo from '../logo.svg'
 import { useAuth } from '../../store/auth'
 import { FormattedMessage } from 'react-intl'
-import { format, parse, startOfWeek } from 'date-fns'
 import { lastMonday } from '../ymdUtils'
+import { clearUserInfo } from '../../store/user'
 
 const drawerWidth = 240
 
@@ -113,7 +113,7 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
               <FormattedMessage id="DrawerLayout.welcomeAnonymous" defaultMessage="Hello, anonymous!"/>
             </Typography>
             <div className={classes.anonymousActions}>
-              <Button variant="text">
+              <Button variant="text" onClick={() => dispatch(clearUserInfo())}>
                 <FormattedMessage id="DrawerLayout.signIn" defaultMessage="Sign In"/>
               </Button>
               <Button variant="text">
