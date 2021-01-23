@@ -1,0 +1,44 @@
+@import "email_boilerplate";
+
+.greeting-td {
+  padding-bottom: 15px;
+  font-family: Roboto, sans-serif;
+  font-size: 26px;
+  line-height: 34px;
+  color: #1b2733;
+}
+
+.content-td {
+  padding-bottom: 15px;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  color: #1B2733;
+}
+
+.cta-td {
+  padding-bottom: 15px;
+}
+
+.cta-container {
+  background: #8c82fc;
+  border-radius: 3px;
+}
+
+.cta {
+  font-size: 18px;
+  font-family: Roboto, sans-serif;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 15px 25px;
+  display: inline-block;
+}
+
+.footer td {
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  line-height: 16px;
+  color: #aaaaaa;
+}

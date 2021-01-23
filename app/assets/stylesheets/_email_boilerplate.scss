@@ -1,0 +1,106 @@
+/* Box sizing. Gets decent support. (https://freshmail.com/developers/best-practices-for-email-coding) */
+*,
+*:after,
+*:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* Prevents small text resizing. */
+* {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Basic reset. Removes default spacing around emails in various clients. (https://templates.mailchimp.com/development/css/reset-styles) */
+html,
+body,
+.document {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Improves text rendering when supported. */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Centers email to device width in Android 4.4. (https://blog.jmwhite.co.uk/2015/09/19/revealing-why-emails-appear-off-centre-in-android-4-4-kitkat) */
+div[style*="margin: 16px 0"] {
+  margin: 0 !important;
+}
+
+/* Removes added spacing within tables in Outlook. (https://templates.mailchimp.com/development/css/client-specific-styles) */
+table,
+td {
+  mso-table-lspace: 0pt;
+  mso-table-rspace: 0pt;
+}
+
+/* Removes added spacing within tables in WebKit. */
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0 auto;
+}
+
+/* Responsive images. Improves rendering of scaled images in IE. */
+img {
+  -ms-interpolation-mode: bicubic;
+  max-width: 100%;
+  border: 0;
+}
+
+/* Overrules triggered links in iOS. */
+*[x-apple-data-detectors] {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Overrules triggered links in Gmail. */
+.x-gmail-data-detectors,
+.x-gmail-data-detectors *,
+.aBn {
+  border-bottom: 0 !important;
+  cursor: default !important;
+}
+
+/* Adds hover effects on buttons. */
+.btn {
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+}
+.btn:hover {
+  background-color: darken(#8c82fc, 5)
+}
+
+/* Media queries o' doom. */
+@media screen and (max-width: 450px) {
+
+  /* Transitions container to a fluid layout. */
+  .container {
+    width: 100%;
+    margin: auto;
+  }
+
+  /* Collapses table cells into full-width rows. */
+  .stack {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Centers and expands CTA. */
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+}
