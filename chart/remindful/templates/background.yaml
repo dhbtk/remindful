@@ -1,0 +1,40 @@
+{{- $scope := merge (dict "serviceName" "background") . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "remindful.fullname" . }}-background
+  namespace: {{ .Release.Name }}
+  labels:
+    {{- include "remindful.labels" $scope | nindent 4 }}
+spec:
+  replicas: {{ .Values.background.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "remindful.selectorLabels" $scope | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "remindful.selectorLabels" $scope | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-background
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+          envFrom:
+            - configMapRef:
+                name: {{ template "remindful.fullname" . }}
+          resources:
+  {{ toYaml .Values.background.resources | indent 12 }}
+  {{- with .Values.nodeSelector }}
+nodeSelector:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+affinity:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+tolerations:
+  {{ toYaml . | indent 8 }}
+  {{- end }}

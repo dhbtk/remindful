@@ -36,8 +36,6 @@ RUN gem install bundler:2.2.3 \
 
 COPY . $APP_HOME/
 
-RUN yarn install --pure-lockfile
-
 RUN \
  DATABASE_URL=postgresql://nohost \
  REDIS_URL=redis:does_not_exist \

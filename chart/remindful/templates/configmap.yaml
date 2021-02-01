@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "remindful.fullname" . }}
+  namespace: {{ .Release.Name }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: {{ template "remindful.name" . }}
+data:
+  {{- range $name, $value := .Values.configMap }}
+    {{ $name | upper }}: {{ $value | quote }}
+    {{- end }}

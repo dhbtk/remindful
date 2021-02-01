@@ -1,0 +1,71 @@
+# Default values for remindful.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: 770742559283.dkr.ecr.us-east-1.amazonaws.com/remindful
+  pullPolicy: IfNotPresent
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+configMap:
+  redis_namespace: remindful
+
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+  hosts:
+    - host: remindful.dhbtk.com
+      paths:
+        - "/"
+  tls:
+    - secretName: remindful-dhbtk-com-tls
+      hosts:
+        - remindful.dhbtk.com
+
+background:
+  replicaCount: 1
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      memory: 256Mi
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+  #   cpu: 100m
+    memory: 256Mi
+  requests:
+  #   cpu: 100m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
