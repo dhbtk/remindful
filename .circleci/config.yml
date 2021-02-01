@@ -88,9 +88,6 @@ jobs:
           repo: dhbtk
           tag: '$(git describe --abbrev=0 --tags HEAD).$(git show -s --format=%ct),latest'
           extra-build-args: "--build-arg MASTER_KEY=$MASTER_KEY"
-      - run:
-          name: Run deployment webhook
-          command: true
 workflows:
   version: 2
   test_build_deploy:
