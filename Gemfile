@@ -10,6 +10,7 @@ gem 'devise'
 gem 'doorkeeper'
 gem 'jbuilder', '~> 2.7'
 gem 'pg', '~> 1.1'
+gem 'premailer-rails'
 gem 'puma', '~> 5.0'
 gem 'pundit'
 gem 'rack-cors'
@@ -22,7 +23,6 @@ gem 'sidekiq-cron'
 gem 'turbolinks', '~> 5'
 gem 'webpacker', '~> 5.0'
 gem 'with_advisory_lock'
-gem 'premailer-rails'
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -31,6 +31,7 @@ group :development, :test do
   gem 'overcommit'
   gem 'pry-rails'
   gem 'rails-controller-testing'
+  gem 'rspec_junit_formatter'
   gem 'rspec-rails'
   gem 'rubocop'
   gem 'rubocop-rails', require: false

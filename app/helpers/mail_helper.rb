@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MailHelper
   def mail_greeting(&block)
     tag.tr(tag.td(capture(&block), class: 'greeting-td'))
@@ -8,17 +10,6 @@ module MailHelper
   end
 
   def mail_cta(url, text)
-    tag.tr(
-      tag.td(
-        tag.table(
-          tag.tr(
-            tag.td(
-              link_to(text, url, target: '_blank', class: 'btn cta'),
-              class: 'cta-container'
-            )
-          ), class: 'container', role: 'presentation', cellspacing: '0', cellpadding: '0', border: '0', align: 'left'
-        ), align: 'left', class: 'cta-td'
-      )
-    )
+    render(partial: 'shared/mail_cta', locals: { url: url, text: text })
   end
 end
