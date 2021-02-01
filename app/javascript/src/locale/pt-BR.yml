@@ -25,3 +25,43 @@ WeeklyPage:
   title: Minha Semana
 HabitsPage:
   title: Hábitos
+FormValidation:
+  Defaults:
+    required: Esse campo é obrigatório.
+RegistrationPage:
+  signUpTitle: Inscreva-se
+  signUpAction: Inscrever
+RegistrationForm:
+  email:
+    label: Email
+    email: Insira um endereço de email válido.
+    uniqueness: Esse endereço de email já está em uso.
+  name:
+    label: Nome
+  pronouns:
+    label: Pronomes
+    female:
+      label: Femininos (ela/dela)
+    male:
+      label: Masculinos (ele/dele)
+    neutral:
+      label: Neutros (elu/delu)
+  password:
+    label: Senha
+    min: "Sua senha deve ter no mínimo {min} caracteres."
+  passwordConfirmation:
+    label: Confirmação de Senha
+    oneOf: Não coincide com o campo anterior.
+  agreeToTerms:
+    label: Estou de acordo com os Termos de Serviço, que ainda estão por definir.
+    oneOf: Você deve concordar com os termos para se inscrever.
+WelcomePage:
+  startNow: Começar agora
+  signIn: Entrar
+  forgotPassword: Esqueceu sua senha?
+  register: Inscrever-se
+SignInForm:
+  email:
+    label: Email
+  password:
+    label: Senha

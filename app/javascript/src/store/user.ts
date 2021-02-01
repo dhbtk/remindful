@@ -1,43 +1,36 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import lightUserApi from '../api/lightUserApi'
+import userApi from '../api/userApi'
 import { LoadStatus } from './common'
+import { Pronouns } from './registrationForm'
+import { string } from 'yup'
 
-export interface UserInfo {
-  username: string | null
-  email: string | null
-  accessToken: string | null
-  name: string | null
-  avatarUrl: string | null
-  anonymous: boolean | null
+export interface AnonymousUserInfo {
+  anonymous: true
 }
+
+export interface RegisteredUserInfo {
+  email: string
+  name: string
+  avatarUrl: string
+  anonymous: false
+  pronouns: Pronouns
+}
+
+export type UserInfo = AnonymousUserInfo | RegisteredUserInfo
 
 export interface UserState {
   status: LoadStatus
   user: UserInfo
+  accessToken: string | null
 }
 
-function initialUserInfo (): UserInfo {
-  const storedUserInfo: string | null = window.localStorage.getItem('userInfo')
-  if (storedUserInfo === null) {
-    return {
-      username: null,
-      email: null,
-      accessToken: null,
-      name: null,
-      avatarUrl: null,
-      anonymous: null
-    }
-  } else {
-    return JSON.parse(storedUserInfo)
-  }
-}
-
-const initialState: UserState = { status: 'idle', user: initialUserInfo() }
+const initialState: UserState = { status: 'idle', user: { anonymous: true }, accessToken: null }
 
 export const registerLightUser = createAsyncThunk('user/registerLightUser', async () => {
-  const userInfo = await lightUserApi.register()
-  window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-  return userInfo
+  return await userApi.registerLightUser()
+})
+export const loadUserInfo = createAsyncThunk('user/loadUserInfo', async () => {
+  return await userApi.loadUserInfo()
 })
 
 const userInfoSlice = createSlice({
@@ -47,15 +40,12 @@ const userInfoSlice = createSlice({
     setUserInfo (state: UserState, action: PayloadAction<UserInfo>) {
       state.user = action.payload
     },
+    setAccessToken (state: UserState, action: PayloadAction<string>) {
+      state.accessToken = action.payload
+    },
     clearUserInfo (state: UserState) {
-      state.user = {
-        username: null,
-        email: null,
-        accessToken: null,
-        name: null,
-        avatarUrl: null,
-        anonymous: null
-      }
+      state.user = { anonymous: true }
+      state.accessToken = null
     },
     loadingStart (state: UserState) {
       state.status = 'loading'
@@ -71,16 +61,23 @@ const userInfoSlice = createSlice({
     builder.addCase(registerLightUser.pending, (state: UserState) => {
       state.status = 'loading'
     })
+    builder.addCase(loadUserInfo.pending, (state: UserState) => {
+      state.status = 'loading'
+    })
     builder.addCase(registerLightUser.rejected, (state: UserState) => {
       state.status = 'failed'
     })
     builder.addCase(registerLightUser.fulfilled, (state: UserState, { payload }) => {
+      state.status = 'idle'
+      state.accessToken = payload
+    })
+    builder.addCase(loadUserInfo.fulfilled, (state: UserState, { payload }) => {
       state.status = 'idle'
       state.user = payload
     })
   }
 })
 
-export const { setUserInfo, clearUserInfo, loadingStart, loadingFinish, loadingFail } = userInfoSlice.actions
+export const { setUserInfo, clearUserInfo, setAccessToken, loadingStart, loadingFinish, loadingFail } = userInfoSlice.actions
 
 export default userInfoSlice

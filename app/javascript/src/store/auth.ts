@@ -1,16 +1,16 @@
-import { UserInfo } from './user'
+import { UserState } from './user'
 import { useSelector } from 'react-redux'
 import { RootState } from './rootReducer'
 
 export class Authentication {
-  private readonly user: UserInfo
+  private readonly user: UserState
 
-  constructor (user: UserInfo) {
+  constructor (user: UserState) {
     this.user = user
   }
 
   isLightUser (): boolean {
-    return this.user?.anonymous ?? false
+    return this.user.user.anonymous
   }
 
   isAuthenticated (): boolean {
@@ -18,4 +18,4 @@ export class Authentication {
   }
 }
 
-export const useAuth: () => Authentication = () => new Authentication(useSelector<RootState, UserInfo>(state => state.user.user))
+export const useAuth: () => Authentication = () => new Authentication(useSelector<RootState, UserState>(state => state.user))

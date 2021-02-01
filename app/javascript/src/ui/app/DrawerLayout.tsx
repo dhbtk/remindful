@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { AppBar, Button, Divider, List, Theme } from '@material-ui/core'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useAppDispatch } from '../../store'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
@@ -21,6 +21,7 @@ import { useAuth } from '../../store/auth'
 import { FormattedMessage } from 'react-intl'
 import { lastMonday } from '../ymdUtils'
 import { clearUserInfo } from '../../store/user'
+import linkRef from './linkRef'
 
 const drawerWidth = 240
 
@@ -99,6 +100,8 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
   const mondayDate = lastMonday(todayDate)
   const toggleDrawerAction: () => void = () => dispatch(toggleDrawer())
   const auth = useAuth()
+  const WelcomeLink = useMemo(() => linkRef('/welcome'), [linkRef])
+  const RegisterLink = useMemo(() => linkRef('/registration'), [linkRef])
 
   const drawer = (
     <div>
@@ -113,10 +116,10 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
               <FormattedMessage id="DrawerLayout.welcomeAnonymous" defaultMessage="Hello, anonymous!"/>
             </Typography>
             <div className={classes.anonymousActions}>
-              <Button variant="text" onClick={() => dispatch(clearUserInfo())}>
+              <Button variant="text" component={WelcomeLink}>
                 <FormattedMessage id="DrawerLayout.signIn" defaultMessage="Sign In"/>
               </Button>
-              <Button variant="text">
+              <Button variant="text" component={RegisterLink}>
                 <FormattedMessage id="DrawerLayout.register" defaultMessage="Register"/>
               </Button>
             </div>

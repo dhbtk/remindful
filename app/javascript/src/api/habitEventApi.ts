@@ -1,9 +1,9 @@
 import { HabitEvent } from '../store/common'
-import { apiGet } from './fetchWrappers'
+import { apiGet, unwrap } from './fetchWrappers'
 
 const habitEventApi = {
   forDate: async (date: string): Promise<HabitEvent[]> => {
-    return await apiGet('/api/habit_events', { date })
+    return await apiGet<HabitEvent[]>('/api/habit_events', { date }).then(unwrap)
   }
 }
 

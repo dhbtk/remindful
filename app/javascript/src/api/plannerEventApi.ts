@@ -1,21 +1,21 @@
 import { PlannerEvent } from '../store/common'
-import { apiDelete, apiGet, apiPatch, apiPost } from './fetchWrappers'
+import { apiDelete, apiGet, apiPatch, apiPost, unwrap } from './fetchWrappers'
 
 const plannerEventApi = {
   forDate: async (date: string): Promise<PlannerEvent[]> => {
-    return await apiGet('/api/planner_events', { date })
+    return await apiGet<PlannerEvent[]>('/api/planner_events', { date }).then(unwrap)
   },
   create: async (plannerEvent: PlannerEvent): Promise<void> => {
-    return await apiPost('/api/planner_events', { plannerEvent })
+    await apiPost('/api/planner_events', { plannerEvent }).then(unwrap)
   },
   reorder: async (ids: number[]): Promise<void> => {
-    return await apiPost('/api/planner_events/reorder', { ids })
+    await apiPost('/api/planner_events/reorder', { ids }).then(unwrap)
   },
   update: async (plannerEvent: PlannerEvent): Promise<void> => {
-    return await apiPatch(`/api/planner_events/${plannerEvent.id}`, { plannerEvent })
+    await apiPatch(`/api/planner_events/${plannerEvent.id}`, { plannerEvent }).then(unwrap)
   },
   destroy: async (id: number): Promise<void> => {
-    return await apiDelete(`/api/planner_events/${id}`)
+    await apiDelete(`/api/planner_events/${id}`).then(unwrap)
   }
 }
 

@@ -1,0 +1,12 @@
+.DS_Store
+.circleci
+.git
+/tmp/*
+/log/*
+/chart/*
+/coverage/*
+/db/*.sql.gz
+
+.env
+Dockerfile
+node_modules/

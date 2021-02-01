@@ -1,20 +1,23 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Redirect, useLocation } from 'react-router-dom'
-import { Button, Container, Grid, Link, TextField, Typography } from '@material-ui/core'
-import logo from '../logo.svg'
+import { Button, Grid, Link } from '@material-ui/core'
 import { useAuth } from '../../store/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import { registerLightUser } from '../../store/user'
-import React from 'react'
+import { registerLightUser, setAccessToken } from '../../store/user'
+import React, { useState } from 'react'
+import linkRef from '../app/linkRef'
+import RootLayout from '../app/RootLayout'
+import { FormattedMessage } from 'react-intl'
+import * as Yup from 'yup'
+import { useTranslator } from '../forms'
+import userApi from '../../api/userApi'
+import { FORM_ERROR } from 'final-form'
+import { makeValidate, TextField } from 'mui-rff'
+import { Alert } from '@material-ui/lab'
+import { Form } from 'react-final-form'
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
+const useStyles = makeStyles((theme) => createStyles({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1)
@@ -27,75 +30,109 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+interface SignInForm {
+  email: string
+  password: string
+}
+
+const initialValues: SignInForm = {
+  email: '',
+  password: ''
+}
+
+const schema = Yup.object().shape({
+  email: Yup.string().trim().lowercase().email().required(),
+  password: Yup.string().required()
+})
+
+const fieldLabel: (s: string) => React.ReactNode = (s) => (
+  <FormattedMessage
+    id={`SignInForm.${s}.label`}
+    defaultMessage={s}/>
+)
+
 export default function WelcomePage (): React.ReactElement {
   const classes = useStyles()
-  const { from } = useLocation().state as any
+  const location = useLocation()
   const auth = useAuth()
   const dispatch = useDispatch()
   const userStatus = useSelector<RootState>(state => state.user.status)
+  const [formActed, setFormActed] = useState(false)
 
-  if (auth.isAuthenticated()) {
-    return <Redirect to={from}/>
+  if (formActed && auth.isAuthenticated()) {
+    return <Redirect to={location.state?.from ?? '/'}/>
+  }
+  const startNow: () => void = () => {
+    if (!auth.isAuthenticated()) {
+      dispatch(registerLightUser())
+    }
+    setFormActed(true)
+  }
+  const { translateServerErrors, translator } = useTranslator('SignInForm')
+
+  async function onSubmit (values: SignInForm): Promise<any> {
+    setFormActed(true)
+    try {
+      const response = await userApi.logIn(values.email, values.password)
+      if ('errors' in response) {
+        return translateServerErrors(response)
+      } else {
+        dispatch(setAccessToken(response.accessToken))
+      }
+    } catch (e: Error) {
+      return { [FORM_ERROR]: `${e.name} - ${e.message}` }
+    }
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
-        <img src={logo} alt="Remindful"/>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <Button disabled={userStatus === 'loading'} type="button" fullWidth variant="outlined" color="primary"
-          onClick={() => dispatch(registerLightUser())}
-          className={classes.startNow}>
-          {'Start Now'}
-        </Button>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-    </Container>
+    <RootLayout>
+      <Button
+        disabled={userStatus === 'loading'} type="button" fullWidth variant="outlined" color="primary"
+        onClick={startNow}
+        className={classes.startNow}>
+        <FormattedMessage id="WelcomePage.startNow" defaultMessage="Start Now"/>
+      </Button>
+      <Form
+        onSubmit={onSubmit} initialValues={initialValues}
+        validate={makeValidate(schema, translator)}
+        render={({ handleSubmit, submitError }) => {
+          return (
+            <form onSubmit={handleSubmit} noValidate className={classes.form}>
+              {submitError !== undefined && (
+                <Alert severity="error">{submitError}</Alert>
+              )}
+              <TextField
+                margin="normal" variant="outlined" label={fieldLabel('email')} name="email" type="email" autoFocus
+                autoComplete="email"
+                required/>
+              <TextField
+                margin="normal" variant="outlined" label={fieldLabel('password')} name="password"
+                autoComplete="current-password"
+                type="password" required/>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                <FormattedMessage id="WelcomePage.signIn" defaultMessage="Sign In"/>
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2">
+                    <FormattedMessage id="WelcomePage.forgotPassword" defaultMessage="Forgot your password?"/>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link component={linkRef('/registration')} variant="body2">
+                    <FormattedMessage id="WelcomePage.register" defaultMessage="Register"/>
+                  </Link>
+                </Grid>
+              </Grid>
+            </form>
+          )
+        }}/>
+    </RootLayout>
   )
 }

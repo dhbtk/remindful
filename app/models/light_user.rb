@@ -16,7 +16,8 @@ class LightUser
 
     self.user = create_user
     self.access_token = create_access_token
-    true
+
+    saved?
   end
 
   def saved?
@@ -26,7 +27,7 @@ class LightUser
   private
 
   def create_user
-    User.create(username: username, email: bogus_email, password: password, password_confirmation: password,
+    User.create(username: username, password: password, password_confirmation: password,
                 anonymous: true)
   end
 
@@ -37,9 +38,5 @@ class LightUser
       scopes: '',
       use_refresh_token: true
     )
-  end
-
-  def bogus_email
-    "#{username}@#{username}"
   end
 end

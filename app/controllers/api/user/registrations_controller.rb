@@ -2,65 +2,26 @@
 
 module Api
   module User
-    class RegistrationsController < Devise::RegistrationsController
-      # before_action :configure_sign_up_params, only: [:create]
-      # before_action :configure_account_update_params, only: [:update]
+    class RegistrationsController < ApiController
+      def create
+        @user_registration = UserRegistration.new(user_registration_params)
 
-      # GET /resource/sign_up
-      # def new
-      #   super
-      # end
+        if @user_registration.save
+          UserMailer.with(user: @user_registration.user).welcome_email.deliver_later
+        else
+          render 'api/shared/errors', locals: { object: @user_registration }, status: :unprocessable_entity
+        end
+      end
 
-      # POST /resource
-      # def create
-      #   super
-      # end
+      def show; end
 
-      # GET /resource/edit
-      # def edit
-      #   super
-      # end
+      private
 
-      # PUT /resource
-      # def update
-      #   super
-      # end
-
-      # DELETE /resource
-      # def destroy
-      #   super
-      # end
-
-      # GET /resource/cancel
-      # Forces the session data which is usually expired after sign
-      # in to be expired now. This is useful if the user wants to
-      # cancel oauth signing in/up in the middle of the process,
-      # removing all OAuth session data.
-      # def cancel
-      #   super
-      # end
-
-      # protected
-
-      # If you have extra params to permit, append them to the sanitizer.
-      # def configure_sign_up_params
-      #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-      # end
-
-      # If you have extra params to permit, append them to the sanitizer.
-      # def configure_account_update_params
-      #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-      # end
-
-      # The path used after sign up.
-      # def after_sign_up_path_for(resource)
-      #   super(resource)
-      # end
-
-      # The path used after sign up for inactive accounts.
-      # def after_inactive_sign_up_path_for(resource)
-      #   super(resource)
-      # end
+      def user_registration_params
+        permitted_params = params.require(:registration_form)
+                                 .permit(:email, :name, :avatar_url, :password, :password_confirmation, :pronouns)
+        { user: current_user }.merge(permitted_params)
+      end
     end
   end
 end

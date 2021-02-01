@@ -12,6 +12,9 @@ import { SnackbarProvider } from 'notistack'
 import WeeklyPage from '../weekly/WeeklyPage'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
+import RegistrationPage from '../registration/RegistrationPage'
+import { useAuth } from '../../store/auth'
+import { loadUserInfo } from '../../store/user'
 
 const theme = createMuiTheme({
   palette: {
@@ -26,11 +29,16 @@ const theme = createMuiTheme({
 
 function App (): React.ReactElement {
   const dispatch = useAppDispatch()
+  const auth = useAuth()
+  const isLoggedIn = auth.isAuthenticated()
   useEffect(() => {
-    dispatch(setAndLoadToday(new Date()))
-    const interval = setInterval(() => dispatch(setAndLoadToday(new Date())), 60000)
-    return () => clearInterval(interval)
-  }, [dispatch])
+    if (isLoggedIn) {
+      dispatch(loadUserInfo())
+      dispatch(setAndLoadToday(new Date()))
+      const interval = setInterval(() => dispatch(setAndLoadToday(new Date())), 60000)
+      return () => clearInterval(interval)
+    }
+  }, [dispatch, isLoggedIn])
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
 
   return (
@@ -55,6 +63,9 @@ function App (): React.ReactElement {
               </PrivateRoute>
               <Route path="/welcome">
                 <WelcomePage/>
+              </Route>
+              <Route path="/registration">
+                <RegistrationPage/>
               </Route>
               <Route path="*">
                 <Redirect to="/"/>

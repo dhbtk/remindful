@@ -9,6 +9,15 @@ class User < ApplicationRecord
   has_many :planner_events, dependent: :destroy
   has_many :water_glasses, dependent: :destroy
 
+  enum pronouns: {
+    female: 'female',
+    male: 'male',
+    neutral: 'neutral'
+  }
+
+  validates :username, presence: true
+  validates :name, :avatar_url, presence: true, unless: :anonymous?
+
   class << self
     def find_for_database_authentication(warden_conditions)
       conditions = warden_conditions.dup
@@ -25,6 +34,16 @@ class User < ApplicationRecord
     create_events_for_date(date)
     destroy_stale_events(date)
     recreate_pending_planner_events(date)
+  end
+
+  protected
+
+  def email_required?
+    !anonymous?
+  end
+
+  def send_email_changed_notification?
+    saved_change_to_email? && email_before_last_save.present?
   end
 
   private
