@@ -1,4 +1,4 @@
-FROM ruby:3.0.0-alpine
+FROM ruby:3.0.0-buster
 
 # for build.
 # docker build -t cit/staging .
@@ -11,20 +11,27 @@ ENV RAILS_LOG_TO_STDOUT true
 ARG MASTER_KEY
 ENV RAILS_MASTER_KEY $MASTER_KEY
 
-RUN apk --update add \
-  build-base \
-  nodejs \
-  tzdata \
-  postgresql-dev \
-  libxslt-dev \
-  libxml2-dev \
-  imagemagick \
-  openssl \
-  openssh \
-  curl \
-  jq \
+RUN apt-get update -qq \
+ && apt-get -y upgrade --no-install-recommends \
+ && apt-get -y --fix-broken install --no-install-recommends \
+  apt-transport-https \
+  file \
+  g++ \
+  gcc \
   git \
-  less \
+  gnupg \
+  imagemagick \
+  libxml2-dev \
+  make \
+  ruby-dev \
+  wget \
+  libpq-dev \
+  \
+ && wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+ && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+ && wget -qO- https://deb.nodesource.com/setup_12.x | bash - \
+ && apt-get -y --fix-broken install --no-install-recommends \
+  nodejs \
   yarn
 
 WORKDIR $APP_HOME
