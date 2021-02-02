@@ -1,8 +1,5 @@
 FROM ruby:3.0.0-buster
 
-# for build.
-# docker build -t cit/staging .
-
 ENV APP_HOME /remindful
 ENV RACK_ENV production
 ENV RAILS_ENV production
@@ -29,7 +26,7 @@ RUN apt-get update -qq \
   \
  && wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
- && wget -qO- https://deb.nodesource.com/setup_12.x | bash - \
+ && wget -qO- https://deb.nodesource.com/setup_15.x | bash - \
  && apt-get -y --fix-broken install --no-install-recommends \
   nodejs \
   yarn
@@ -42,6 +39,8 @@ RUN gem install bundler:2.2.3 \
      && bundle install --jobs 20 --retry 5 --full-index
 
 COPY . $APP_HOME/
+
+RUN yarn install --pure-lockfile
 
 RUN \
  DATABASE_URL=postgresql://nohost \
