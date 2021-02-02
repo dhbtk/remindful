@@ -25,13 +25,13 @@ spec:
             - configMapRef:
                 name: {{ template "remindful.fullname" . }}
           env:
-            {{ - range .Values.secrets }}
+            {{- range .Values.secrets }}
             - name: {{ . | upper }}
               valueFrom:
                 secretKeyRef:
                   name: remindful-secret
                   key: {{ . }}
-            {{ - end }}
+            {{- end }}
           livenessProbe:
             initialDelaySeconds: 45
             timeoutSeconds: 30
@@ -45,16 +45,7 @@ spec:
               path: /
               port: 7433
           resources:
-  {{ toYaml .Values.background.resources | indent 12 }}
-  {{- with .Values.nodeSelector }}
-nodeSelector:
-  {{ toYaml . | indent 8 }}
-  {{- end }}
-  {{- with .Values.affinity }}
-affinity:
-  {{ toYaml . | indent 8 }}
-  {{- end }}
-  {{- with .Values.tolerations }}
-tolerations:
-  {{ toYaml . | indent 8 }}
-  {{- end }}
+{{ toYaml .Values.background.resources | indent 12 }}
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []

@@ -34,13 +34,13 @@ spec:
             - configMapRef:
                 name: {{ template "remindful.fullname" . }}
           env:
-            {{ - range .Values.secrets }}
+            {{- range .Values.secrets }}
             - name: {{ . | upper }}
               valueFrom:
                 secretKeyRef:
                   name: remindful-secret
                   key: {{ . }}
-            {{ - end }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
