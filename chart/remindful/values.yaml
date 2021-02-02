@@ -9,12 +9,17 @@ image:
   pullPolicy: IfNotPresent
   tag: latest
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: ecr-credentials
 nameOverride: ""
 fullnameOverride: ""
 
 configMap:
   redis_namespace: remindful
+
+secrets:
+  - redis_url
+  - database_url
 
 podAnnotations: {}
 

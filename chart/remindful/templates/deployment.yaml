@@ -32,7 +32,15 @@ spec:
           command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
           envFrom:
             - configMapRef:
-                name: { { template "remindful.fullname" . } }
+                name: {{ template "remindful.fullname" . }}
+          env:
+            {{ - range .Values.secrets }}
+            - name: {{ . | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: remindful-secret
+                  key: {{ . }}
+            {{ - end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
