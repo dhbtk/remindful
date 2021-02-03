@@ -101,7 +101,7 @@ jobs:
           name: Update helm chart
           command: |
             TAG="$(git describe --abbrev=0 --tags HEAD | sed "s/^\(.*\)\.[0-9]\{1,4\}\$/\1/").$(git show -s --format=%ct)"
-            git clone -q https://$GITHUB_TOKEN@github.com/dhbtk/dhbtk-charts /tmp/dhbtk-charts
+            git clone https://dhbtk:$GITHUB_TOKEN@github.com/dhbtk/dhbtk-charts /tmp/dhbtk-charts
             cd /tmp/dhbtk-charts
             sed -Ei 's/^version:\s+\"([0-9.]+).([0-9]+)"/echo "version: \"\1.$((\2+1))\""/e' remindful/Chart.yaml
             sed -Ei "s/^appVersion: .+/appVersion: \"$TAG\"/" remindful/Chart.yaml
