@@ -111,16 +111,7 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - aws-ecr/build-and-push-image:
-          account-url: ECR_PATH
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          create-repo: true
-          region: AWS_REGION
-          repo: remindful
-          tag: '$(git describe --abbrev=0 --tags HEAD | sed "s/^\(.*\)\.[0-9]\{1,4\}\$/\1/").$(git show -s --format=%ct),latest'
-          extra-build-args: "--build-arg MASTER_KEY=$MASTER_KEY"
-
+      - build_deploy:
           context: "ECR/nuvem"
           requires:
             - test
