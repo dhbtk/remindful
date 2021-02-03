@@ -21,11 +21,8 @@ defaults:
   run:
     shell: bash
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  test:
     runs-on: ubuntu-latest
     env:
       REDIS_URL: redis://localhost:6379
@@ -55,15 +52,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Set docker tag
         id: set-docker-tag
         run: |
           IMAGE_TAG=$(git describe --tags --always)
           echo "Image tag will be $IMAGE_TAG"
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" > docker-tag.sh
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -72,7 +70,6 @@ jobs:
           node-version: '15.x'
       - uses: actions/cache@v2
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.cache/yarn
           key: ${{ runner.OS }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
@@ -80,6 +77,26 @@ jobs:
             ${{ runner.OS }}-
       - run: bundle exec rake db:migrate --trace
       - run: bundle exec rspec --profile 10
+      - name: Store docker tag
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-tag
+          path: docker-tag.sh
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Load docker tag
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-tag
+      - name: Set docker tag
+        id: set-docker-tag
+        run: |
+          cat docker-tag.sh
+          cat docker-tag.sh >> $GITHUB_ENV
+      - uses: actions/checkout@v2
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -91,6 +108,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -111,6 +131,34 @@ jobs:
           sed -Ei "s/^appVersion: .+/appVersion: \"$TAG\"/" remindful/Chart.yaml
           git config --global user.email circleci@circleci
           git config --global user.name CircleCI
+          git add remindful
+          git commit -m "remindful build: $TAG"
+          git push
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Load docker tag
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-tag
+      - name: Set docker tag
+        id: set-docker-tag
+        run: |
+          cat docker-tag.sh
+          cat docker-tag.sh >> $GITHUB_ENV
+      - name: Checkout Helm repo
+        uses: actions/checkout@v2
+        with:
+          repository: dhbtk/dhbtk-charts
+          tokens: ${{ secrets.HELM_REPO_TOKEN }}
+      - name: Update versions
+        run: |
+          sed -Ei 's/^version:\s+\"([0-9.]+).([0-9]+)"/echo "version: \"\1.$((\2+1))\""/e' remindful/Chart.yaml
+          sed -Ei "s/^appVersion: .+/appVersion: \"$IMAGE_TAG\"/" remindful/Chart.yaml
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
           git add remindful
           git commit -m "remindful build: $TAG"
           git push
