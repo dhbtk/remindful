@@ -119,21 +119,6 @@ jobs:
         run: |
           docker build --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-      - name: Update helm chart repository
-        id: update-helm-chart
-        env:
-          HELM_REPO_TOKEN: ${{ secrets.HELM_REPO_TOKEN }}
-        run: |
-          cd /tmp
-          git clone https://dhbtk:$HELM_REPO_TOKEN@github.com/dhbtk/dhbtk-charts
-          sed -Ei 's/^version:\s+\"([0-9.]+).([0-9]+)"/echo "version: \"\1.$((\2+1))\""/e' remindful/Chart.yaml
-          sed -Ei "s/^appVersion: .+/appVersion: \"$TAG\"/" remindful/Chart.yaml
-          git config --global user.email circleci@circleci
-          git config --global user.name CircleCI
-          git add remindful
-          git commit -m "remindful build: $TAG"
-          git push
 
   deploy:
     runs-on: ubuntu-latest
