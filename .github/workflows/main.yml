@@ -61,7 +61,9 @@ jobs:
       - name: Set docker tag
         id: set-docker-tag
         run: |
-          echo "IMAGE_TAG=$(git describe --abbrev=0 --tags HEAD | sed "s/^\(.*\)\.[0-9]\{1,4\}\$/\1/").$(git show -s --format=%ct)" >> $GITHUB_ENV
+          IMAGE_TAG=$(git describe --tags --always)
+          echo "Image tag will be $IMAGE_TAG"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
