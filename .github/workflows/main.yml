@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -13,6 +13,14 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  AWS_REGION: sa-east-1
+  ECR_REPOSITORY: remindful
+
+defaults:
+  run:
+    shell: bash
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -22,6 +30,7 @@ jobs:
     env:
       REDIS_URL: redis://localhost:6379
       DATABASE_URL: postgresql://remindful:remindful@localhost/remindful_server_test
+      RAILS_ENV: test
     services:
       redis:
         image: redis
@@ -48,12 +57,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Set docker tag
+        id: set-docker-tag
+        run: |
+          echo "IMAGE_TAG=$(git describe --abbrev=0 --tags HEAD | sed "s/^\(.*\)\.[0-9]\{1,4\}\$/\1/").$(git show -s --format=%ct)" >> $GITHUB_ENV
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: bundle install
       - uses: actions/setup-node@v1
         with:
           node-version: '15.x'
@@ -67,3 +78,37 @@ jobs:
             ${{ runner.OS }}-
       - run: bundle exec rake db:migrate --trace
       - run: bundle exec rspec --profile 10
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: $AWS_REGION
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          MASTER_KEY: ${{ secrets.MASTER_KEY }}
+        run: |
+          docker build --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+      - name: Update helm chart repository
+        id: update-helm-chart
+        env:
+          HELM_REPO_TOKEN: ${{ secrets.HELM_REPO_TOKEN }}
+        run: |
+          cd /tmp
+          git clone https://dhbtk:$HELM_REPO_TOKEN@github.com/dhbtk/dhbtk-charts
+          sed -Ei 's/^version:\s+\"([0-9.]+).([0-9]+)"/echo "version: \"\1.$((\2+1))\""/e' remindful/Chart.yaml
+          sed -Ei "s/^appVersion: .+/appVersion: \"$TAG\"/" remindful/Chart.yaml
+          git config --global user.email circleci@circleci
+          git config --global user.name CircleCI
+          git add remindful
+          git commit -m "remindful build: $TAG"
+          git push
