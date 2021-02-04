@@ -145,5 +145,5 @@ jobs:
           git config --global user.email github-actions@github.com
           git config --global user.name github-actions
           git add remindful
-          git commit -m "remindful build: $TAG"
+          git commit -m "remindful build: $IMAGE_TAG"
           git push
