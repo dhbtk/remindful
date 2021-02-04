@@ -108,10 +108,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       - name: Pull base image
-        run: docker pull $ECR_REGISTRY/ruby-base-image:latest
+        run: docker pull $(head -n 1 Dockerfile | cut -d' ' -f 2)
       - run: echo "MONTH=$(date +%m)" >> $GITHUB_ENV
       - uses: satackey/action-docker-layer-caching@v0.0.11
-        # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
         with:
           key: ${{ github.workflow }}-${{ env.MONTH }}-{hash}
