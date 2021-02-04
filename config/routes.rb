@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     resources :water_glasses, only: %i[index create destroy]
   end
 
+  resource :heart_beat, only: :show
   resource :web_app, controller: :web_app, only: :show
   get 'web_app/password', as: :edit_password, to: 'web_app#show'
 

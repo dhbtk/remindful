@@ -36,7 +36,12 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV['SMTP_ADDRESS'],
+    port: ENV['SMTP_PORT'].to_i
+  }
 
   config.action_mailer.perform_caching = false
 
@@ -63,9 +68,7 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  config.hosts << 'remindful.dhbtk.com'
-
-  config.action_mailer.default_url_options = { host: 'https://remindful.dhbtk.com' }
+  config.action_mailer.default_url_options = { host: 'https://localhost' }
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

@@ -33,6 +33,15 @@ Rails.application.configure do
   config.assets.compile = false
 
   config.action_mailer.default_url_options = { host: 'https://remindful.dhbtk.com' }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV['SMTP_ADDRESS'],
+    port: ENV['SMTP_PORT'].to_i,
+    user_name: ENV['SMTP_USERNAME'],
+    password: ENV['SMTP_PASSWORD'],
+    authentication: 'plain',
+    enable_starttls_auto: true
+  }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   config.asset_host = 'https://remindful.dhbtk.com'
@@ -50,7 +59,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
@@ -67,15 +76,6 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "remindful_server_production"
 
   config.action_mailer.perform_caching = false
-
-  config.action_mailer.smtp_settings = {
-    address: 'mail.dianahorbatiuk.com',
-    port: 587,
-    user_name: 'remindful@remindful.dhbtk.com',
-    password: '<password>',
-    authentication: 'plain',
-    enable_starttls_auto: true
-  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -95,16 +95,28 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
-
-  # Use a different logger for distributed setups.
-  # require "syslog/logger"
-  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-
-  if ENV['RAILS_LOG_TO_STDOUT'].present?
-    logger = ActiveSupport::Logger.new($stdout)
-    logger.formatter = config.log_formatter
-    config.logger = ActiveSupport::TaggedLogging.new(logger)
+  config.log_formatter = Lograge::Formatters::Json.new
+  config.lograge.enabled = true
+  config.lograge.formatter = config.log_formatter
+  config.lograge.ignore_actions = ['HeartBeatsController#show']
+  config.lograge.custom_options = lambda do |event|
+    {
+      request_time: Time.current,
+      application: event.payload[:application],
+      process_id: Process.pid,
+      host: event.payload[:host],
+      remote_ip: event.payload[:remote_ip],
+      ip: event.payload[:ip],
+      x_forwarded_for: event.payload[:x_forwarded_for],
+      params: event.payload[:params].to_json,
+      level: event.payload[:level],
+      exception: event.payload[:exception]&.first,
+      request_id: event.payload[:headers]['action_dispatch.request_id'],
+      user_info: event.payload[:user_info],
+      user_agent: event.payload[:user_agent],
+      exception_message: event.payload[:exception]&.last,
+      exception_backtrace: event.payload[:exception_object]&.backtrace&.join(',')
+    }.compact
   end
 
   # Do not dump schema after migrations.

@@ -9,6 +9,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 gem 'devise'
 gem 'doorkeeper'
 gem 'jbuilder', '~> 2.7'
+gem 'lograge'
 gem 'pg', '~> 1.1'
 gem 'premailer-rails'
 gem 'puma', '~> 5.0'
