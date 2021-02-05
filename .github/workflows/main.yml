@@ -76,6 +76,7 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - run: bundle exec rake db:migrate --trace
+      - run: yarn install --pure-lockfile
       - run: bundle exec rspec --profile 10
       - name: Store docker tag
         uses: actions/upload-artifact@v2
