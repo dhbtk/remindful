@@ -3,7 +3,6 @@ FROM 770742559283.dkr.ecr.sa-east-1.amazonaws.com/ruby-base-image:latest
 ENV APP_HOME /remindful
 ENV RACK_ENV production
 ENV RAILS_ENV production
-ENV RAILS_SERVE_STATIC_FILES true
 ARG MASTER_KEY
 ENV RAILS_MASTER_KEY $MASTER_KEY
 
