@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/core_ext/integer/time'
+require_relative '../../lib/cloud_watch_logger'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -51,7 +52,7 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :amazon
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
@@ -76,7 +77,7 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "remindful_server_production"
 
   config.action_mailer.perform_caching = false
-  config.logger = ActiveSupport::Logger.new($stdout)
+  config.logger = CloudWatchLogger.create(group: 'remindful', stream: 'production')
   config.logger.formatter = lambda { |severity, timestamp, progname, msg|
     data = {
       severity: severity,
@@ -110,7 +111,7 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
 
   config.lograge.enabled = true
-  config.lograge.formatter = Lograge::Formatters::Json.new
+  config.lograge.formatter = Lograge::Formatters::Raw.new
   config.lograge.ignore_actions = ['HeartBeatsController#show']
   config.lograge.custom_options = lambda do |event|
     {
