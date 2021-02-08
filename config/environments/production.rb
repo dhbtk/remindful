@@ -77,6 +77,20 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
   config.logger = ActiveSupport::Logger.new($stdout)
+  config.logger.formatter = lambda { |severity, timestamp, progname, msg|
+    data = {
+      severity: severity,
+      progname: progname,
+      timestamp: timestamp.utc
+    }
+    if msg.is_a?(Hash)
+      data.merge!(msg)
+    else
+      data[:message] = msg
+    end
+
+    "#{JSON.dump(data.compact)}\n"
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
