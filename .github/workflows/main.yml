@@ -113,10 +113,10 @@ jobs:
       - run: echo "MONTH=$(date +%m)" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
-          path: ~/docker
+          path: ~/docker-tar
           key: docker-layers-${{ env.MONTH }}
       - run: |
-          if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar | xargs -I {file} sh -c "cat {file} | docker load"; fi
+          if [[ -d $HOME/docker-tar ]]; then ls $HOME/docker-tar/*.tar | xargs -I {file} sh -c "cat {file} | docker load"; fi
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -125,7 +125,7 @@ jobs:
         run: |
           docker build --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep $IMAGE_TAG | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 > $HOME/docker/$1.tar'
+          mkdir -p $HOME/docker-tar && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep $IMAGE_TAG | xargs -n 2 -t sh -c 'test -e $HOME/docker-tar/$1.tar || docker save $0 > $HOME/docker-tar/$1.tar'
 
   deploy:
     runs-on: ubuntu-latest
