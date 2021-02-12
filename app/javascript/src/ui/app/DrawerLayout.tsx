@@ -50,7 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     // necessary for content to be below app bar
-    toolbar: theme.mixins.toolbar,
+    toolbar: {
+      minHeight: '48px'
+    },
     drawerPaper: {
       width: drawerWidth
     },
@@ -145,7 +147,7 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
   return (
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
+        <Toolbar variant="dense">
           <IconButton
             color="inherit"
             aria-label="open drawer"

@@ -20,7 +20,9 @@ import { RootState } from '../../store/rootReducer'
 const useStyles = makeStyles((theme) => createStyles({
   container: {
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    paddingBottom: theme.spacing(4),
+    flex: '1',
+    background: '#fff'
   },
   paper: {
     padding: theme.spacing(2),
@@ -67,31 +69,9 @@ export default function DailyPage (): React.ReactElement {
     <DrawerLayout
       title={<FormattedMessage id="DailyPage.title" defaultMessage="{today, date, long}" values={{ today: ymdToDate(date) }}/>}
       actions={actions}>
-      <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Paper className={fixedHeightPaper}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
-                  <DaySummary date={date}/>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  {'water glasses'}
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-          <Grid item md={6} xs={12}>
-            <Paper className={classes.paper}>
-              <Box>habits</Box>
-            </Paper>
-          </Grid>
-          <Grid item md={6} xs={12}>
-            <Paper className={classes.paper}>
-              <PlannerEventList date={date}/>
-            </Paper>
-          </Grid>
-        </Grid>
+      <Container maxWidth="md" className={classes.container}>
+        <DaySummary date={date}/>
+        <PlannerEventList date={date}/>
       </Container>
     </DrawerLayout>
   )

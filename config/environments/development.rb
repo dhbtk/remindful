@@ -68,7 +68,9 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  config.action_mailer.default_url_options = { host: 'https://localhost' }
+  config.action_mailer.default_url_options = { host: 'https://remindful-local.dhbtk.com' }
+  config.hosts << 'remindful-local.dhbtk.com'
+  config.force_ssl = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
