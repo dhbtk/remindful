@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
-import { Badge, Box, Button, Container, createStyles, Grid, IconButton, Paper } from '@material-ui/core'
-import NotificationsIcon from '@material-ui/icons/Notifications'
+import { Button, Container, createStyles, IconButton } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DaySummary from './DaySummary'
 import PlannerEventList from '../plannerEvents/PlannerEventList'
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme) => createStyles({
 export default function DailyPage (): React.ReactElement {
   const classes = useStyles()
   const { date } = useParams<{ date: string }>()
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
   const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(loadDayData(date)).catch(console.error)
