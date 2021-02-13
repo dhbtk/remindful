@@ -3,7 +3,11 @@
 module Api
   class PlannerEventsController < ApiController
     def index
-      @planner_events = policy_scope(PlannerEvent).for_date(params[:date]&.to_date)
+      @planner_events = if params[:overdue].present?
+                          policy_scope(PlannerEvent).overdue(Time.zone.today)
+                        else
+                          policy_scope(PlannerEvent).for_date(params[:date].presence || Time.zone.today)
+                        end
     end
 
     def reorder

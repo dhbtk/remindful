@@ -65,3 +65,13 @@ SignInForm:
     label: Email
   password:
     label: Senha
+PlannerEventForm:
+  create: Adicionar tarefa
+  save: Atualizar tarefa
+  cancel: Cancelar
+  contentLabel: Tarefa
+  eventDate: Data
+  today: Hoje
+  tomorrow: Amanhã
+DayInformation:
+  overdue: Atrasadas

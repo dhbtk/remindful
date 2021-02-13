@@ -3,7 +3,8 @@ import { HabitEvent, PlannerEvent, WaterGlass } from './common'
 import habitEventApi from '../api/habitEventApi'
 import plannerEventApi from '../api/plannerEventApi'
 import waterGlassApi from '../api/waterGlassApi'
-import { DayData } from './daily'
+import { DayData, updatePlannerEventIds } from './daily'
+import { AppThunk } from './index'
 
 export const unsetPlannerEvent = createAction<number>('unsetPlannerEvent')
 
@@ -23,3 +24,13 @@ export const loadDayData = createAsyncThunk('today/loadDayData', async (date: st
 export const loadPlannerEvents = createAsyncThunk('loadPlannerEvents', async (date: string) => {
   return await plannerEventApi.forDate(date)
 })
+
+export const bulkLoadPlannerEvents = createAsyncThunk('bulkLoadPlannerEvents', async (dates: string[]) => {
+  return await plannerEventApi.forDates(dates)
+})
+
+export const loadOverduePlannerEvents = createAsyncThunk('loadOverduePlannerEvents', async () => {
+  return await plannerEventApi.overdue()
+})
+
+export const reorderOverduePlannerEvents = createAction<number[]>('reorderOverduePlannerEvents')

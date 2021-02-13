@@ -15,6 +15,7 @@ import { RootState } from '../../store/rootReducer'
 import RegistrationPage from '../registration/RegistrationPage'
 import { useAuth } from '../../store/auth'
 import { loadUserInfo } from '../../store/user'
+import { loadOverduePlannerEvents } from '../../store/commonActions'
 
 const theme = createMuiTheme({
   palette: {
@@ -40,6 +41,9 @@ function App (): React.ReactElement {
     }
   }, [dispatch, isLoggedIn])
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
+  useEffect(() => {
+    dispatch(loadOverduePlannerEvents()).catch(console.error)
+  }, [dispatch, todayDate])
 
   return (
     <LocaleProvider>

@@ -10,7 +10,11 @@ class PlannerEvent < ApplicationRecord
   def self.for_date(date)
     date ||= Time.zone.today
 
-    where(event_date: date).not_deleted.order(Arel.sql('coalesce("order", id)'))
+    where(event_date: date).not_deleted.order(Arel.sql('event_date, coalesce("order", id)'))
+  end
+
+  def self.overdue(date)
+    pending.where(arel_table[:event_date].lt(date)).not_deleted.order(Arel.sql('coalesce("order", id), event_date'))
   end
 
   def self.reorder(entities, sorted_ids)

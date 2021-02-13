@@ -3,8 +3,15 @@ import { HabitEvent, LoadStatus, PlannerEvent, WaterGlass } from './common'
 import { format } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { AppThunk } from './index'
-import { loadDayData, loadPlannerEvents, setPlannerEvent, unsetPlannerEvent } from './commonActions'
+import {
+  bulkLoadPlannerEvents,
+  loadDayData, loadOverduePlannerEvents,
+  loadPlannerEvents, reorderOverduePlannerEvents,
+  setPlannerEvent,
+  unsetPlannerEvent
+} from './commonActions'
 import { ymd } from '../ui/ymdUtils'
+import { PlannerEventsState } from './plannerEvents'
 
 export interface NewPlannerEvent {
   content: string
@@ -33,33 +40,52 @@ export interface DayData {
   waterGlasses: WaterGlass[]
 }
 
-export const saveNewPlannerEvent: (date: string) => AppThunk = (date) => async (dispatch, getState) => {
-  const dailyData = getState().daily
+export const saveNewPlannerEvent: (date: string, content: string) => AppThunk = (date, content) => async (dispatch, getState) => {
   const planners = getState().plannerEvents
-  const tempId = Math.max(...Object.values(planners.entities).map(p => p.id)) + 1
+  const tempId = (Object.values(planners.entities).length === 0) ? 1 : (Math.max(...Object.values(planners.entities).map(p => p.id)) + 1)
   const newPlanner: PlannerEvent = {
     id: tempId,
     eventDate: date,
     status: 'pending',
     actedAt: null,
-    content: dailyData.days[date].newPlannerEvent.content
+    content: content
   }
   dispatch(setPlannerEvent(newPlanner))
-  dispatch(updateNewPlannerEvent({ date, content: '' }))
   await plannerEventApi.create(newPlanner)
   await dispatch(loadDayData(date))
 }
 
-export const reorderPlannerEvents: (date: string, startIndex: number, endIndex: number) => AppThunk =
+export const updatePlannerEvent: (data: Partial<PlannerEvent> & Pick<PlannerEvent, 'id' | 'eventDate'>) => AppThunk = data => async (dispatch, getState) => {
+  const currentPlannerEvent = getState().plannerEvents.entities[data.id]
+  if (data.eventDate !== currentPlannerEvent.eventDate) {
+    const oldDayIds = getState().daily.days[currentPlannerEvent.eventDate].plannerEventIds.filter(id => id !== data.id)
+    const newIds = [...getState().daily.days[data.eventDate].plannerEventIds, data.id]
+    dispatch(updatePlannerEventIds({ date: data.eventDate, ids: newIds }))
+    dispatch(updatePlannerEventIds({ date: currentPlannerEvent.eventDate, ids: oldDayIds }))
+    await plannerEventApi.reorder(newIds)
+  }
+  const updatedEvent: PlannerEvent = { ...currentPlannerEvent, ...data }
+  dispatch(setPlannerEvent(updatedEvent))
+  await plannerEventApi.update(updatedEvent)
+}
+
+export const reorderPlannerEvents: (date: string | null, startIndex: number, endIndex: number) => AppThunk =
   (date, startIndex, endIndex) => async (dispatch, getState) => {
-    const allIds = getState().daily.days[date].plannerEventIds
-    const currentIds = allIds.filter(id => getState().plannerEvents.entities[id].status === 'pending')
-    const doneIds = allIds.filter(id => getState().plannerEvents.entities[id].status !== 'pending')
-    const [removed] = currentIds.splice(startIndex, 1)
-    currentIds.splice(endIndex, 0, removed)
-    dispatch(updatePlannerEventIds({ date, ids: currentIds.concat(doneIds) }))
-    await plannerEventApi.reorder(currentIds)
-    await dispatch(loadDayData(date))
+    const isOverdue = date === null
+    const allIds = [...isOverdue ? getState().plannerEvents.overdueIds : getState().daily.days[date].plannerEventIds]
+    const [removed] = allIds.splice(startIndex, 1)
+    allIds.splice(endIndex, 0, removed)
+    if (isOverdue) {
+      dispatch(reorderOverduePlannerEvents(allIds))
+    } else {
+      dispatch(updatePlannerEventIds({ date, ids: allIds }))
+    }
+    await plannerEventApi.reorder(allIds)
+    if (isOverdue) {
+      await dispatch(loadOverduePlannerEvents())
+    } else {
+      await dispatch(loadDayData(date))
+    }
   }
 
 export const setAndLoadToday = (date: Date) => (dispatch: (a: any) => any) => {
@@ -142,6 +168,15 @@ const dailySlice = createSlice({
         state.days[date] = dayInitialState(date)
       }
       state.days[date].plannerEventIds = payload.map(it => it.id)
+    })
+    builder.addCase(bulkLoadPlannerEvents.fulfilled, (state: DailyState, { payload }) => {
+      const dates = [...new Set(payload.map(e => e.eventDate))]
+      dates.forEach(date => {
+        if (state.days[date] === undefined) {
+          state.days[date] = dayInitialState(date)
+        }
+        state.days[date].plannerEventIds = payload.filter(it => it.eventDate === date).map(it => it.id)
+      })
     })
   }
 })

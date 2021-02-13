@@ -1,24 +1,27 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import DrawerLayout from '../app/DrawerLayout'
 import { makeStyles } from '@material-ui/core/styles'
-import { createStyles, Paper } from '@material-ui/core'
+import { Button, Container, createStyles, IconButton, Paper, Toolbar, Typography } from '@material-ui/core'
 import { Redirect, useParams } from 'react-router-dom'
 import { addDays, format, isMonday, parse, startOfWeek } from 'date-fns'
 import clsx from 'clsx'
 import DayInformation from './DayInformation'
-import { FormattedMessage } from 'react-intl'
-import { lastMonday, ymd, ymdToDate } from '../ymdUtils'
+import { FormattedMessage, useIntl } from 'react-intl'
+import { lastMonday, nextYmd, previousYmd, ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import linkRef from '../app/linkRef'
+import { bulkLoadPlannerEvents, loadPlannerEvents } from '../../store/commonActions'
+import { useAppDispatch } from '../../store'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     flex: '1',
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex'
-    }
+    background: '#fff'
   },
   daySlice: {
     flex: '1',
@@ -37,50 +40,56 @@ const useStyles = makeStyles((theme) => createStyles({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column'
+  },
+  title: {
+    flexGrow: '1'
+  },
+  todayButton: {
+    marginRight: theme.spacing(2)
   }
 }))
 
 export default function WeeklyPage (): React.ReactElement {
   const classes = useStyles()
+  const intl = useIntl()
+  const dispatch = useAppDispatch()
   const presentDate = useSelector<RootState, string>(state => state.daily.todayDate)
-  const { weekDate } = useParams<{ weekDate?: string }>()
-  if (weekDate === undefined) {
-    const newStartOfWeek = lastMonday(presentDate)
-    return <Redirect to={`/weekly/${newStartOfWeek}`} />
-  } else {
-    if (!isMonday(ymdToDate(weekDate))) {
-      const newStartOfWeek = lastMonday(weekDate)
-      return <Redirect to={`/weekly/${newStartOfWeek}`} />
-    }
-  }
+  const weekDate = useParams<{ weekDate?: string }>().weekDate ?? presentDate
   const dateOffset: (offset: number) => string = offset => ymd(addDays(ymdToDate(weekDate), offset))
+  const TodayLink = useMemo(() => linkRef(`/weekly/${presentDate}`), [linkRef, presentDate])
+
+  const previousDate = `/weekly/${dateOffset(-7)}`
+  const nextDate = `/weekly/${dateOffset(7)}`
+  const PreviousDateLink = useMemo(() => linkRef(previousDate), [linkRef, previousDate])
+  const NextDateLink = useMemo(() => linkRef(nextDate), [linkRef, nextDate])
+
+  const allDates = Array.from({ length: 31 }).map((_, i) => dateOffset(i))
+  useEffect(() => {
+    dispatch(bulkLoadPlannerEvents(allDates)).catch(console.error)
+  }, [dispatch, allDates])
+
   return (
     <DrawerLayout title={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>} actions={[]}>
-      <div className={classes.container}>
-        <Paper className={classes.daySlice}>
-          <DayInformation date={weekDate} presentDate={presentDate} />
-        </Paper>
-        <Paper className={classes.daySlice}>
-          <DayInformation date={dateOffset(1)} presentDate={presentDate} />
-        </Paper>
-        <Paper className={classes.daySlice}>
-          <DayInformation date={dateOffset(2)} presentDate={presentDate} />
-        </Paper>
-        <Paper className={classes.daySlice}>
-          <DayInformation date={dateOffset(3)} presentDate={presentDate} />
-        </Paper>
-        <Paper className={classes.daySlice}>
-          <DayInformation date={dateOffset(4)} presentDate={presentDate} />
-        </Paper>
-        <div className={clsx(classes.weekendContainer)}>
-          <Paper className={classes.daySlice}>
-            <DayInformation date={dateOffset(5)} presentDate={presentDate} />
-          </Paper>
-          <Paper className={classes.daySlice}>
-            <DayInformation date={dateOffset(6)} presentDate={presentDate} />
-          </Paper>
-        </div>
-      </div>
+      <Container maxWidth="md" className={classes.container}>
+        <Toolbar variant="dense">
+          <Typography component="h2" variant="h6" className={classes.title}>
+            {intl.formatDate(ymdToDate(weekDate), { month: 'long', year: 'numeric' })}
+          </Typography>
+          <Button variant="outlined" component={TodayLink} color="inherit" size="small" className={classes.todayButton}>
+            <FormattedMessage id="DailyPage.todayLink" defaultMessage="Today"/>
+          </Button>
+          <IconButton color="inherit" component={PreviousDateLink} size="small">
+            <ArrowBackIosIcon fontSize="small" />
+          </IconButton>
+          <IconButton color="inherit" component={NextDateLink} size="small">
+            <ArrowForwardIosIcon fontSize="small" />
+          </IconButton>
+        </Toolbar>
+        <DayInformation date={presentDate} overdue/>
+        {allDates.map(date => (
+          <DayInformation date={date} key={date}/>
+        ))}
+      </Container>
     </DrawerLayout>
   )
 }

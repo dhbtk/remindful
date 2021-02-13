@@ -136,7 +136,7 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
         <ListItemLink
           icon={<ViewWeekIcon/>}
           primary={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>}
-          to={`/weekly/${mondayDate}`}/>
+          to={`/weekly/${todayDate}`}/>
         <ListItemLink
           icon={<ScheduleIcon/>} primary={<FormattedMessage id="HabitsPage.title" defaultMessage="Habits"/>}
           to={'/habits'}/>

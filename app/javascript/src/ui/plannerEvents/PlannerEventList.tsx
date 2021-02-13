@@ -1,190 +1,84 @@
-import React from 'react'
-import { Box, Checkbox, createStyles, IconButton, Theme, Typography } from '@material-ui/core'
-import { FormattedMessage, useIntl } from 'react-intl'
+import React, { useState } from 'react'
+import { Button, createStyles, Theme } from '@material-ui/core'
+import { FormattedMessage } from 'react-intl'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { PlannerEvent } from '../../store/common'
 import { useAppDispatch } from '../../store'
-import { reorderPlannerEvents, saveNewPlannerEvent, updateNewPlannerEvent } from '../../store/daily'
+import { reorderPlannerEvents } from '../../store/daily'
 import { makeStyles } from '@material-ui/core/styles'
-import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
-import ListInput from '../ListInput'
 import AddIcon from '@material-ui/icons/Add'
-import DeleteIcon from '@material-ui/icons/Delete'
-import {
-  completePlannerEvent,
-  deletePlannerEvent,
-  undoCompletePlannerEvent,
-  updatePlannerEventText
-} from '../../store/plannerEvents'
-import clsx from 'clsx'
-import yellow from '@material-ui/core/colors/yellow'
-import { differenceInCalendarDays, parse } from 'date-fns'
+import { differenceInCalendarDays } from 'date-fns'
 import { ymdToDate } from '../ymdUtils'
+import PlannerEventLine from './PlannerEventLine'
+import PlannerEventForm from './PlannerEventForm'
 
 export interface PlannerEventListProps {
   date: string
+  overdue?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  listContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    '&:not(:empty)': {
-      paddingBottom: theme.spacing(1),
-      borderBottom: '1px solid rgba(0, 0, 0, 0.23)'
-    }
-  },
-  listItem: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  actions: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  dragHandle: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  overdue: {
-    background: yellow[100]
-  },
-  checkbox: {
-    padding: theme.spacing(0.5)
-  },
-  heading: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(0.5)
+  formWrapper: {
+    marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(4),
+    marginTop: theme.spacing(0.5)
   }
 }))
 
-export default function PlannerEventList ({ date }: PlannerEventListProps): React.ReactElement {
+export default function PlannerEventList ({ date, overdue }: PlannerEventListProps): React.ReactElement {
   const classes = useStyles()
+  const isOverdue = overdue !== undefined && overdue
   const plannerEvents = useSelector<RootState, PlannerEvent[]>(state => {
+    if (isOverdue) {
+      return state.plannerEvents.overdueIds.map(id => state.plannerEvents.entities[id])
+    }
     if (state.daily.days[date] === undefined) {
       return []
     }
     return state.daily.days[date].plannerEventIds.map(id => state.plannerEvents.entities[id])
   })
-  const pendingPlannerEvents = plannerEvents.filter(it => it.status === 'pending')
-  const donePlannerEvents = plannerEvents.filter(it => it.status === 'done')
-  const newPlannerEvent = useSelector<RootState, string | undefined>(state => state.daily.days[date]?.newPlannerEvent?.content) ?? ''
   const dispatch = useAppDispatch()
-  const onTextChange: (e: string) => void = (e: string) => dispatch(updateNewPlannerEvent({ date, content: e }))
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
-  const isPastDate = differenceInCalendarDays(ymdToDate(todayDate), ymdToDate(date)) > 0
-  const onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => void = async (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!e.shiftKey && e.key === 'Enter') {
-      e.preventDefault()
-      dispatch(saveNewPlannerEvent(date))
-    }
-  }
+  const isPastDate = isOverdue || differenceInCalendarDays(ymdToDate(todayDate), ymdToDate(date)) > 0
   const onDragEnd: (result: DropResult) => void = async (result: DropResult) => {
     if (result.destination === undefined || result.destination.index === result.source.index) {
       return
     }
-    dispatch(reorderPlannerEvents(date, result.source.index, result.destination.index))
+    dispatch(reorderPlannerEvents(isOverdue ? null : date, result.source.index, result.destination.index))
   }
-  const intl = useIntl()
+  const [creating, setCreating] = useState(false)
   return (
     <React.Fragment>
-      <Typography variant="subtitle2" className={classes.heading}>
-        <FormattedMessage
-          id="PlannerEventList.title"
-          defaultMessage="{count} things to do"
-          values={{ count: pendingPlannerEvents.length }}/>
-      </Typography>
-      {plannerEvents.length === 0 && (
-        <Box style={{ textAlign: 'center' }}>
-          <FormattedMessage id="PlannerEventList.empty" defaultMessage="Nothing so far!"/>
-        </Box>
-      )}
-      {plannerEvents.length !== 0 && (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="list">
-            {(provided: DroppableProvided) => (
-              <div className={classes.listContainer} ref={provided.innerRef} {...provided.droppableProps}>
-                {pendingPlannerEvents.map((plannerEvent, index) => (
-                  <Draggable draggableId={plannerEvent.id.toString()} index={index} key={plannerEvent.id}>
-                    {(draggableProvided) => (
-                      <div
-                        className={clsx(classes.listItem, plannerEvent.originalDate !== null && classes.overdue)}
-                        ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
-                        <div className={classes.actions}>
-                          <span className={classes.dragHandle} {...draggableProvided.dragHandleProps}>
-                            <DragHandleIcon/>
-                          </span>
-                          <Checkbox
-                            className={classes.checkbox}
-                            size="small"
-                            checked={false}
-                            disabled={todayDate !== date}
-                            onChange={async () => dispatch(completePlannerEvent(plannerEvent.id))}/>
-                        </div>
-                        <ListInput
-                          value={plannerEvent.content}
-                          onChange={async (text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
-                        <div className={classes.actions}>
-                          <IconButton
-                            disabled={isPastDate} size="small"
-                            onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
-                            <DeleteIcon/>
-                          </IconButton>
-                        </div>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      )}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="list">
+          {(provided: DroppableProvided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {plannerEvents.map((plannerEvent, index) => (
+                <Draggable draggableId={plannerEvent.id.toString()} index={index} key={plannerEvent.id}>
+                  {(draggableProvided) => (
+                    <PlannerEventLine
+                      draggableProvided={draggableProvided}
+                      plannerEvent={plannerEvent}/>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
       {!isPastDate && (
-        <div className={classes.listItem}>
-          <div className={classes.actions}>
-            <span className={classes.dragHandle}><AddIcon/></span>
-          </div>
-          <ListInput
-            placeholder={intl.formatMessage({ id: 'PlannerEventList.newPlannerEvent', defaultMessage: 'New entry' })}
-            value={newPlannerEvent}
-            onChange={onTextChange}
-            onKeyPress={onKeyUp}/>
+        <div className={classes.formWrapper}>
+          {creating && <PlannerEventForm date={date} onClose={() => setCreating(false)}/>}
+          {!creating && (
+            <Button variant="outlined" color="primary" size="small" startIcon={<AddIcon/>} onClick={() => setCreating(true)}>
+              <FormattedMessage id="PlannerEventList.newPlannerEvent" />
+            </Button>
+          )}
         </div>
       )}
-      {donePlannerEvents.length > 0 && (
-        <Typography variant="subtitle2" className={classes.heading}>
-          <FormattedMessage
-            id="PlannerEventList.doneItems"
-            defaultMessage="{count} done items"
-            values={{ count: donePlannerEvents.length }}/>
-        </Typography>
-      )}
-      <div className={classes.listContainer}>
-        {donePlannerEvents.map(plannerEvent => (
-          <div className={classes.listItem} key={plannerEvent.id}>
-            <div className={classes.actions}>
-              <Checkbox
-                className={classes.checkbox}
-                size="small"
-                checked
-                onChange={async () => dispatch(undoCompletePlannerEvent(plannerEvent.id))}/>
-            </div>
-            <ListInput
-              struck
-              value={plannerEvent.content}
-              onChange={async (text) => dispatch(updatePlannerEventText(plannerEvent.id, text))}/>
-            <div className={classes.actions}>
-              <IconButton size="small" onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}>
-                <DeleteIcon/>
-              </IconButton>
-            </div>
-          </div>
-        ))}
-      </div>
     </React.Fragment>
   )
 }

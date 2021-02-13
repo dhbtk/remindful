@@ -90,8 +90,18 @@ export async function formPost<T> (path: string, body: Record<string, string>): 
   }).then(handleStatus).then(toJson)
 }
 
-export async function apiGet<T> (path: string, query: Record<string, string> = {}): Promise<ResponseWrapper<T>> {
-  const formData = new URLSearchParams(snakecaseKeys(query))
+export async function apiGet<T> (path: string, query: Record<string, string | string[]> = {}): Promise<ResponseWrapper<T>> {
+  const formData = new URLSearchParams()
+  const snakecased = snakecaseKeys(query)
+  Object.keys(snakecased).forEach(key => {
+    if (typeof snakecased[key] === 'string') {
+      formData.append(key, snakecased[key])
+    } else {
+      snakecased[key].forEach(value => {
+        formData.append(`${key}[]`, value)
+      })
+    }
+  })
 
   return await fetch(`${path}?${formData.toString()}`, {
     method: 'GET',

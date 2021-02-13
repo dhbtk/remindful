@@ -15,6 +15,7 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import linkRef from '../app/linkRef'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
+import DayInformation from '../weekly/DayInformation'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -69,7 +70,8 @@ export default function DailyPage (): React.ReactElement {
       actions={actions}>
       <Container maxWidth="md" className={classes.container}>
         <DaySummary date={date}/>
-        <PlannerEventList date={date}/>
+        <DayInformation date={date} overdue/>
+        <DayInformation date={date}/>
       </Container>
     </DrawerLayout>
   )

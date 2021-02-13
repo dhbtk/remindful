@@ -4,10 +4,17 @@ import { formatISO } from 'date-fns'
 import plannerEventApi from '../api/plannerEventApi'
 import { debounce } from 'underscore'
 import { AppThunk } from './index'
-import { loadDayData, loadPlannerEvents, setPlannerEvent, unsetPlannerEvent } from './commonActions'
+import {
+  bulkLoadPlannerEvents,
+  loadDayData, loadOverduePlannerEvents,
+  loadPlannerEvents, reorderOverduePlannerEvents,
+  setPlannerEvent,
+  unsetPlannerEvent
+} from './commonActions'
 
 export interface PlannerEventsState {
   entities: { [id: number]: PlannerEvent }
+  overdueIds: number[]
 }
 
 export const completePlannerEvent: (id: number) => AppThunk = (id) => async (dispatch, getState) => {
@@ -38,7 +45,7 @@ export const deletePlannerEvent: (id: number) => AppThunk = id => async (dispatc
   await plannerEventApi.destroy(id)
 }
 
-const initialState: PlannerEventsState = { entities: {} }
+const initialState: PlannerEventsState = { entities: {}, overdueIds: [] }
 
 const plannerEvents = createReducer(initialState, builder => {
   builder.addCase(loadDayData.fulfilled, (state: PlannerEventsState, { payload }) => {
@@ -53,6 +60,23 @@ const plannerEvents = createReducer(initialState, builder => {
   })
   builder.addCase(setPlannerEvent, (state: PlannerEventsState, { payload }) => {
     state.entities[payload.id] = payload
+    if (payload.status === 'done' && state.overdueIds.includes(payload.id)) {
+      state.overdueIds = state.overdueIds.filter(it => it !== payload.id)
+    }
+  })
+  builder.addCase(bulkLoadPlannerEvents.fulfilled, (state: PlannerEventsState, { payload }) => {
+    payload.forEach(plannerEvent => {
+      state.entities[plannerEvent.id] = plannerEvent
+    })
+  })
+  builder.addCase(loadOverduePlannerEvents.fulfilled, (state: PlannerEventsState, { payload }) => {
+    payload.forEach(plannerEvent => {
+      state.entities[plannerEvent.id] = plannerEvent
+    })
+    state.overdueIds = payload.map(it => it.id)
+  })
+  builder.addCase(reorderOverduePlannerEvents, (state: PlannerEventsState, { payload }) => {
+    state.overdueIds = payload
   })
 })
 
