@@ -5,8 +5,7 @@ class User < ApplicationRecord
          :recoverable, :validatable
 
   has_many :habits, dependent: :destroy
-  has_many :habit_events, through: :habits, dependent: :destroy
-  has_many :planner_events, dependent: :destroy
+  has_many :tasks, dependent: :destroy
   has_many :water_glasses, dependent: :destroy
 
   enum pronouns: {
@@ -29,10 +28,9 @@ class User < ApplicationRecord
     end
   end
 
-  def update_current_events(date = Time.zone.today)
-    recreate_pending_habits(date)
-    create_events_for_date(date)
-    destroy_stale_events(date)
+  def update_daily_tasks(date = Time.zone.today)
+    create_tasks_for_date(date)
+    destroy_stale_tasks(date)
   end
 
   protected
@@ -47,21 +45,15 @@ class User < ApplicationRecord
 
   private
 
-  def recreate_pending_habits(date)
-    habit_events.pending.where(event_date: date.prev_day).find_each do |habit_event|
-      habit_event.recreate_pending(date)
-    end
-  end
-
-  def create_events_for_date(date)
+  def create_tasks_for_date(date)
     habits.active(date).find_each do |habit|
-      habit.habit_events.pending.create(event_date: date) if habit.visible_at(date)
+      habit.tasks.pending.create(event_date: date, content: habit.name, user: self) if habit.visible_at(date)
     end
   end
 
-  def destroy_stale_events(date)
-    habit_events.where(event_date: date, original_date: nil).includes(:habit).find_each do |habit_event|
-      habit_event.destroy unless habit_event.habit.visible_at(date)
+  def destroy_stale_tasks(date)
+    tasks.where(event_date: date).joins(:habit).includes(:habit).find_each do |task|
+      task.destroy unless task.habit.visible_at(date)
     end
   end
 end

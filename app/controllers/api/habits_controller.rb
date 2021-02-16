@@ -12,7 +12,7 @@ module Api
       @habit = current_user.habits.build(habit_params)
 
       if @habit.save
-        current_user.update_current_events
+        current_user.update_daily_tasks
         render :show
       else
         head :unprocessable_entity
@@ -23,7 +23,7 @@ module Api
 
     def update
       if @habit.update(habit_params)
-        current_user.update_current_events
+        current_user.update_daily_tasks
         render :show
       else
         head :unprocessable_entity
@@ -33,7 +33,7 @@ module Api
     def destroy
       @habit.soft_delete
 
-      current_user.update_current_events
+      current_user.update_daily_tasks
       head :no_content
     end
 

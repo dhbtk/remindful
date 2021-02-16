@@ -1,20 +1,19 @@
 import { DraggableProvided } from 'react-beautiful-dnd'
-import { PlannerEvent } from '../../store/common'
+import { Task } from '../../store/common'
 import { useAppDispatch } from '../../store'
 import React, { useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { Checkbox, Chip, IconButton, Typography } from '@material-ui/core'
-import { completePlannerEvent, deletePlannerEvent, undoCompletePlannerEvent } from '../../store/plannerEvents'
+import { completeTask, deleteTask, undoCompleteTask } from '../../store/tasks'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
-import PlannerEventForm from './PlannerEventForm'
+import TaskForm from './TaskForm'
 
 interface Props {
   draggableProvided: DraggableProvided
-  plannerEvent: PlannerEvent
+  task: Task
 }
 
 const useStyles = makeStyles(theme => createStyles({
@@ -69,15 +68,15 @@ const useStyles = makeStyles(theme => createStyles({
   }
 }))
 
-export default function PlannerEventLine ({ plannerEvent, draggableProvided }: Props): React.ReactElement {
+export default function TaskRow ({ task, draggableProvided }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const [editing, setEditing] = useState(false)
-  const togglePlannerEvent = (): void => {
-    if (plannerEvent.status === 'done') {
-      dispatch(undoCompletePlannerEvent(plannerEvent.id))
+  const toggleTaskCompletion = (): void => {
+    if (task.status === 'done') {
+      dispatch(undoCompleteTask(task.id))
     } else {
-      dispatch(completePlannerEvent(plannerEvent.id))
+      dispatch(completeTask(task.id))
     }
   }
   return (
@@ -89,18 +88,18 @@ export default function PlannerEventLine ({ plannerEvent, draggableProvided }: P
       </div>
       {editing ? (
         <div className={classes.main}>
-          <PlannerEventForm date={plannerEvent.eventDate} onClose={() => setEditing(false)} plannerEvent={plannerEvent} />
+          <TaskForm date={task.eventDate} onClose={() => setEditing(false)} task={task} />
         </div>
       ) : (
         <div className={classes.main}>
           <div className={classes.mainRow}>
             <Checkbox
               className={classes.checkbox}
-              checked={plannerEvent.status === 'done'}
-              onChange={togglePlannerEvent}
+              checked={task.status === 'done'}
+              onChange={toggleTaskCompletion}
               size="small"
             />
-            <Typography component="p" variant="body2" className={classes.content}>{plannerEvent.content}</Typography>
+            <Typography component="p" variant="body2" className={classes.content}>{task.content}</Typography>
             <IconButton
               className={clsx(classes.gone, classes.tinyButton)}
               size="small"
@@ -118,7 +117,7 @@ export default function PlannerEventLine ({ plannerEvent, draggableProvided }: P
       <div className={clsx(classes.hidden, classes.menuAction)}>
         <IconButton
           className={classes.tinyButton}
-          onClick={() => dispatch(deletePlannerEvent(plannerEvent.id))}
+          onClick={() => dispatch(deleteTask(task.id))}
           size="small">
           <DeleteIcon className={classes.tinyIcon}/>
         </IconButton>

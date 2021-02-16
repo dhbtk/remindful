@@ -2,13 +2,13 @@
 
 require 'rails_helper'
 
-RSpec.describe PlannerEvent, type: :model do
+RSpec.describe Task, type: :model do
   describe '.reorder' do
     let(:user) { create(:user) }
-    let(:planner_events) { create_list(:planner_event, 5, user: user) }
-    let(:id_list) { planner_events.map(&:id).shuffle }
+    let(:tasks) { create_list(:task, 5, user: user) }
+    let(:id_list) { tasks.map(&:id).shuffle }
 
-    before { described_class.reorder(planner_events, id_list) }
+    before { described_class.reorder(tasks, id_list) }
 
     it 'sets the correct order for each element' do
       id_list.each_with_index do |id, index|

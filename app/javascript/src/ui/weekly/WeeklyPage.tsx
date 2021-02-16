@@ -13,7 +13,7 @@ import { RootState } from '../../store/rootReducer'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import linkRef from '../app/linkRef'
-import { bulkLoadPlannerEvents, loadPlannerEvents } from '../../store/commonActions'
+import { bulkLoadTasks, loadTasks } from '../../store/commonActions'
 import { useAppDispatch } from '../../store'
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -65,7 +65,7 @@ export default function WeeklyPage (): React.ReactElement {
 
   const allDates = Array.from({ length: 31 }).map((_, i) => dateOffset(i))
   useEffect(() => {
-    dispatch(bulkLoadPlannerEvents(allDates)).catch(console.error)
+    dispatch(bulkLoadTasks(allDates)).catch(console.error)
   }, [dispatch, allDates])
 
   return (

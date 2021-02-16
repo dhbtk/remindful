@@ -6,7 +6,7 @@ import WelcomePage from '../welcome/WelcomePage'
 import LocaleProvider from './LocaleProvider'
 import { useAppDispatch } from '../../store'
 import React, { useEffect } from 'react'
-import { setAndLoadToday } from '../../store/daily'
+import { setAndLoadToday, setTodayDate } from '../../store/daily'
 import Notifier from './Notifier'
 import { SnackbarProvider } from 'notistack'
 import WeeklyPage from '../weekly/WeeklyPage'
@@ -15,7 +15,9 @@ import { RootState } from '../../store/rootReducer'
 import RegistrationPage from '../registration/RegistrationPage'
 import { useAuth } from '../../store/auth'
 import { loadUserInfo } from '../../store/user'
-import { loadOverduePlannerEvents } from '../../store/commonActions'
+import { loadOverdueTasks } from '../../store/commonActions'
+import { ymd } from '../ymdUtils'
+import TodayPage from '../today/TodayPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -35,14 +37,14 @@ function App (): React.ReactElement {
   useEffect(() => {
     if (isLoggedIn) {
       dispatch(loadUserInfo())
-      dispatch(setAndLoadToday(new Date()))
-      const interval = setInterval(() => dispatch(setAndLoadToday(new Date())), 60000)
+      dispatch(setTodayDate(ymd(new Date())))
+      const interval = setInterval(() => dispatch(setTodayDate(ymd(new Date()))), 60000)
       return () => clearInterval(interval)
     }
   }, [dispatch, isLoggedIn])
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
   useEffect(() => {
-    dispatch(loadOverduePlannerEvents()).catch(console.error)
+    dispatch(loadOverdueTasks()).catch(console.error)
   }, [dispatch, todayDate])
 
   return (
@@ -54,10 +56,7 @@ function App (): React.ReactElement {
           <BrowserRouter basename="/web_app">
             <Switch>
               <PrivateRoute exact path="/">
-                <Redirect to="/today"/>
-              </PrivateRoute>
-              <PrivateRoute exact path="/today">
-                <Redirect to={`/daily/${todayDate}`} />
+                <TodayPage/>
               </PrivateRoute>
               <PrivateRoute exact path="/daily/:date">
                 <DailyPage/>

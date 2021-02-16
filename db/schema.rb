@@ -10,22 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_05_153458) do
+ActiveRecord::Schema.define(version: 2021_02_16_192129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "habit_events", force: :cascade do |t|
-    t.bigint "habit_id", null: false
-    t.date "event_date"
-    t.string "status"
-    t.datetime "acted_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.date "original_date"
-    t.index ["event_date", "habit_id"], name: "index_habit_events_on_event_date_and_habit_id", unique: true
-    t.index ["habit_id"], name: "index_habit_events_on_habit_id"
-  end
 
   create_table "habits", force: :cascade do |t|
     t.string "name", null: false
@@ -71,20 +59,6 @@ ActiveRecord::Schema.define(version: 2021_02_05_153458) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "planner_events", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.date "event_date", null: false
-    t.date "original_date"
-    t.text "content", null: false
-    t.string "status", null: false
-    t.datetime "acted_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.datetime "deleted_at"
-    t.integer "order"
-    t.index ["user_id"], name: "index_planner_events_on_user_id"
-  end
-
   create_table "super_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -95,6 +69,21 @@ ActiveRecord::Schema.define(version: 2021_02_05_153458) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_super_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_super_users_on_reset_password_token", unique: true
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "event_date", null: false
+    t.text "content", null: false
+    t.string "status", null: false
+    t.datetime "acted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.integer "order"
+    t.bigint "habit_id"
+    t.index ["habit_id"], name: "index_tasks_on_habit_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -124,10 +113,10 @@ ActiveRecord::Schema.define(version: 2021_02_05_153458) do
     t.index ["user_id"], name: "index_water_glasses_on_user_id"
   end
 
-  add_foreign_key "habit_events", "habits"
   add_foreign_key "habits", "users"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
-  add_foreign_key "planner_events", "users"
+  add_foreign_key "tasks", "habits"
+  add_foreign_key "tasks", "users"
   add_foreign_key "water_glasses", "users"
 end

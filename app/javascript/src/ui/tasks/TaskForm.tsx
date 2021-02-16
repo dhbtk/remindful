@@ -1,4 +1,4 @@
-import { PlannerEvent } from '../../store/common'
+import { Task } from '../../store/common'
 import React, { useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Button, TextField } from '@material-ui/core'
@@ -9,10 +9,10 @@ import { nextYmd, ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store'
-import { saveNewPlannerEvent, updatePlannerEvent } from '../../store/daily'
+import { saveNewTask, updateTask } from '../../store/daily'
 
 interface Props {
-  plannerEvent?: PlannerEvent
+  task?: Task
   date: string
   onClose: () => void
 }
@@ -43,30 +43,30 @@ const useStyles = makeStyles(theme => createStyles({
     }
   }
 }))
-export default function PlannerEventForm ({ plannerEvent, date, onClose }: Props): React.ReactElement {
+export default function TaskForm ({ task, date, onClose }: Props): React.ReactElement {
   const dispatch = useAppDispatch()
   const classes = useStyles()
-  const creating = plannerEvent === undefined
-  const [content, setContent] = useState(plannerEvent?.content ?? '')
-  const [eventDate, setEventDate] = useState(plannerEvent?.eventDate ?? date)
+  const creating = task === undefined
+  const [content, setContent] = useState(task?.content ?? '')
+  const [eventDate, setEventDate] = useState(task?.eventDate ?? date)
   const intl = useIntl()
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
   const dateFormatter = (date: Date): string => {
     const ymdDate = ymd(date)
     if (todayDate === ymdDate) {
-      return intl.formatMessage({ id: 'PlannerEventForm.today' })
+      return intl.formatMessage({ id: 'TaskForm.today' })
     } else if (ymdDate === nextYmd(todayDate)) {
-      return intl.formatMessage({ id: 'PlannerEventForm.tomorrow' })
+      return intl.formatMessage({ id: 'TaskForm.tomorrow' })
     } else {
       return intl.formatDate(date, { month: 'long', day: 'numeric' })
     }
   }
   const onSubmit = (): void => {
     if (creating) {
-      dispatch(saveNewPlannerEvent(eventDate, content))
+      dispatch(saveNewTask(eventDate, content))
       setContent('')
-    } else if ('id' in plannerEvent) {
-      dispatch(updatePlannerEvent({ id: plannerEvent.id, content, eventDate }))
+    } else if ('id' in task) {
+      dispatch(updateTask({ id: task.id, content, eventDate }))
       onClose()
     }
   }
@@ -80,15 +80,15 @@ export default function PlannerEventForm ({ plannerEvent, date, onClose }: Props
             type="text"
             id="planner-event-form"
             value={content}
-            label={intl.formatMessage({ id: 'PlannerEventForm.contentLabel' })}
-            placeholder={intl.formatMessage({ id: 'PlannerEventForm.contentLabel' })}
-            aria-label={intl.formatMessage({ id: 'PlannerEventForm.contentLabel' })}
+            label={intl.formatMessage({ id: 'TaskForm.contentLabel' })}
+            placeholder={intl.formatMessage({ id: 'TaskForm.contentLabel' })}
+            aria-label={intl.formatMessage({ id: 'TaskForm.contentLabel' })}
             autoFocus
             onChange={e => setContent(e.target.value)} />
         </div>
         <DatePicker
           className={classes.dateInput}
-          label={intl.formatMessage({ id: 'PlannerEventForm.eventDate' })}
+          label={intl.formatMessage({ id: 'TaskForm.eventDate' })}
           disableToolbar
           variant="inline"
           value={ymdToDate(eventDate)}
@@ -98,10 +98,10 @@ export default function PlannerEventForm ({ plannerEvent, date, onClose }: Props
       </div>
       <div className={classes.buttons}>
         <Button type="submit" variant="contained" color="primary" size="small" disabled={content.trim().length === 0}>
-          <FormattedMessage id={creating ? 'PlannerEventForm.create' : 'PlannerEventForm.save'} defaultMessage="Save"/>
+          <FormattedMessage id={creating ? 'TaskForm.create' : 'TaskForm.save'} defaultMessage="Save"/>
         </Button>
         <Button variant="text" color="default" size="small" onClick={onClose}>
-          <FormattedMessage id="PlannerEventForm.cancel" defaultMessage="Cancel"/>
+          <FormattedMessage id="TaskForm.cancel" defaultMessage="Cancel"/>
         </Button>
       </div>
     </form>

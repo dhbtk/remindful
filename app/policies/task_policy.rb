@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class PlannerEventPolicy < ApplicationPolicy
+class TaskPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope.merge(user.planner_events)
+      scope.merge(user.tasks)
     end
   end
 

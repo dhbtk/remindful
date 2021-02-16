@@ -1,31 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { HabitEvent, LoadStatus, PlannerEvent, WaterGlass } from './common'
-import { format } from 'date-fns'
-import plannerEventApi from '../api/plannerEventApi'
+import { LoadStatus, Task, WaterGlass } from './common'
+import taskApi from '../api/taskApi'
 import { AppThunk } from './index'
 import {
-  bulkLoadPlannerEvents,
-  loadDayData, loadOverduePlannerEvents,
-  loadPlannerEvents, reorderOverduePlannerEvents,
-  setPlannerEvent,
-  unsetPlannerEvent
+  bulkLoadTasks,
+  loadDayData,
+  loadOverdueTasks,
+  loadTasks,
+  reorderOverdueTasks,
+  setTask,
+  unsetTask
 } from './commonActions'
 import { ymd } from '../ui/ymdUtils'
-import { PlannerEventsState } from './plannerEvents'
-
-export interface NewPlannerEvent {
-  content: string
-  date?: string
-}
 
 export interface DayState {
   date: string
   status: LoadStatus
-  habitEventIds: number[]
-  plannerEventIds: number[]
-  deletedPlannerEventIds: number[]
+  taskIds: number[]
+  deletedTaskIds: number[]
   waterGlassIds: number[]
-  newPlannerEvent: NewPlannerEvent
 }
 
 export interface DailyState {
@@ -35,54 +28,53 @@ export interface DailyState {
 
 export interface DayData {
   date: string
-  habitEvents: HabitEvent[]
-  plannerEvents: PlannerEvent[]
+  tasks: Task[]
   waterGlasses: WaterGlass[]
 }
 
-export const saveNewPlannerEvent: (date: string, content: string) => AppThunk = (date, content) => async (dispatch, getState) => {
-  const planners = getState().plannerEvents
+export const saveNewTask: (date: string, content: string) => AppThunk = (date, content) => async (dispatch, getState) => {
+  const planners = getState().tasks
   const tempId = (Object.values(planners.entities).length === 0) ? 1 : (Math.max(...Object.values(planners.entities).map(p => p.id)) + 1)
-  const newPlanner: PlannerEvent = {
+  const newPlanner: Task = {
     id: tempId,
     eventDate: date,
     status: 'pending',
     actedAt: null,
     content: content
   }
-  dispatch(setPlannerEvent(newPlanner))
-  await plannerEventApi.create(newPlanner)
+  dispatch(setTask(newPlanner))
+  await taskApi.create(newPlanner)
   await dispatch(loadDayData(date))
 }
 
-export const updatePlannerEvent: (data: Partial<PlannerEvent> & Pick<PlannerEvent, 'id' | 'eventDate'>) => AppThunk = data => async (dispatch, getState) => {
-  const currentPlannerEvent = getState().plannerEvents.entities[data.id]
-  if (data.eventDate !== currentPlannerEvent.eventDate) {
-    const oldDayIds = getState().daily.days[currentPlannerEvent.eventDate].plannerEventIds.filter(id => id !== data.id)
-    const newIds = [...getState().daily.days[data.eventDate].plannerEventIds, data.id]
-    dispatch(updatePlannerEventIds({ date: data.eventDate, ids: newIds }))
-    dispatch(updatePlannerEventIds({ date: currentPlannerEvent.eventDate, ids: oldDayIds }))
-    await plannerEventApi.reorder(newIds)
+export const updateTask: (data: Partial<Task> & Pick<Task, 'id' | 'eventDate'>) => AppThunk = data => async (dispatch, getState) => {
+  const currentTask = getState().tasks.entities[data.id]
+  if (data.eventDate !== currentTask.eventDate) {
+    const oldDayIds = getState().daily.days[currentTask.eventDate].taskIds.filter(id => id !== data.id)
+    const newIds = [...getState().daily.days[data.eventDate].taskIds, data.id]
+    dispatch(updateTaskIds({ date: data.eventDate, ids: newIds }))
+    dispatch(updateTaskIds({ date: currentTask.eventDate, ids: oldDayIds }))
+    await taskApi.reorder(newIds)
   }
-  const updatedEvent: PlannerEvent = { ...currentPlannerEvent, ...data }
-  dispatch(setPlannerEvent(updatedEvent))
-  await plannerEventApi.update(updatedEvent)
+  const updatedTask: Task = { ...currentTask, ...data }
+  dispatch(setTask(updatedTask))
+  await taskApi.update(updatedTask)
 }
 
-export const reorderPlannerEvents: (date: string | null, startIndex: number, endIndex: number) => AppThunk =
+export const reorderTasks: (date: string | null, startIndex: number, endIndex: number) => AppThunk =
   (date, startIndex, endIndex) => async (dispatch, getState) => {
     const isOverdue = date === null
-    const allIds = [...isOverdue ? getState().plannerEvents.overdueIds : getState().daily.days[date].plannerEventIds]
+    const allIds = [...isOverdue ? getState().tasks.overdueIds : getState().daily.days[date].taskIds]
     const [removed] = allIds.splice(startIndex, 1)
     allIds.splice(endIndex, 0, removed)
     if (isOverdue) {
-      dispatch(reorderOverduePlannerEvents(allIds))
+      dispatch(reorderOverdueTasks(allIds))
     } else {
-      dispatch(updatePlannerEventIds({ date, ids: allIds }))
+      dispatch(updateTaskIds({ date, ids: allIds }))
     }
-    await plannerEventApi.reorder(allIds)
+    await taskApi.reorder(allIds)
     if (isOverdue) {
-      await dispatch(loadOverduePlannerEvents())
+      await dispatch(loadOverdueTasks())
     } else {
       await dispatch(loadDayData(date))
     }
@@ -99,19 +91,12 @@ const initialState: DailyState = {
   days: {}
 }
 
-export interface NewPlannerEventUpdate {
-  date: string
-  content: string
-}
-
 const dayInitialState: (date: string) => DayState = date => ({
   date,
   status: 'loading',
-  habitEventIds: [],
-  plannerEventIds: [],
-  deletedPlannerEventIds: [],
-  waterGlassIds: [],
-  newPlannerEvent: { content: '' }
+  taskIds: [],
+  deletedTaskIds: [],
+  waterGlassIds: []
 })
 
 const dailySlice = createSlice({
@@ -126,11 +111,8 @@ const dailySlice = createSlice({
         state.days[payload] = dayInitialState(payload)
       }
     },
-    updateNewPlannerEvent (state: DailyState, { payload }: PayloadAction<NewPlannerEventUpdate>) {
-      state.days[payload.date].newPlannerEvent.content = payload.content
-    },
-    updatePlannerEventIds (state: DailyState, { payload }: PayloadAction<{ date: string, ids: number[] }>) {
-      state.days[payload.date].plannerEventIds = payload.ids
+    updateTaskIds (state: DailyState, { payload }: PayloadAction<{ date: string, ids: number[] }>) {
+      state.days[payload.date].taskIds = payload.ids
     }
   },
   extraReducers: builder => {
@@ -145,20 +127,19 @@ const dailySlice = createSlice({
       state.days[arg].status = 'failed'
     })
     builder.addCase(loadDayData.fulfilled, (state: DailyState, { payload }) => {
-      const { date, habitEvents, plannerEvents, waterGlasses } = payload
+      const { date, tasks, waterGlasses } = payload
       state.days[date].status = 'idle'
-      state.days[date].habitEventIds = habitEvents.map(h => h.id)
-      state.days[date].plannerEventIds = plannerEvents.map(p => p.id)
+      state.days[date].taskIds = tasks.map(p => p.id)
       state.days[date].waterGlassIds = waterGlasses.map(w => w.id)
     })
-    builder.addCase(unsetPlannerEvent, (state: DailyState, { payload }) => {
+    builder.addCase(unsetTask, (state: DailyState, { payload }) => {
       Object.values(state.days).forEach(dayState => {
-        if (dayState.plannerEventIds.includes(payload)) {
-          dayState.plannerEventIds = dayState.plannerEventIds.filter(id => id !== payload)
+        if (dayState.taskIds.includes(payload)) {
+          dayState.taskIds = dayState.taskIds.filter(id => id !== payload)
         }
       })
     })
-    builder.addCase(loadPlannerEvents.fulfilled, (state: DailyState, { payload }) => {
+    builder.addCase(loadTasks.fulfilled, (state: DailyState, { payload }) => {
       if (payload.length === 0) {
         return
       }
@@ -167,19 +148,19 @@ const dailySlice = createSlice({
       if (state.days[date] === undefined) {
         state.days[date] = dayInitialState(date)
       }
-      state.days[date].plannerEventIds = payload.map(it => it.id)
+      state.days[date].taskIds = payload.map(it => it.id)
     })
-    builder.addCase(bulkLoadPlannerEvents.fulfilled, (state: DailyState, { payload }) => {
+    builder.addCase(bulkLoadTasks.fulfilled, (state: DailyState, { payload }) => {
       const dates = [...new Set(payload.map(e => e.eventDate))]
       dates.forEach(date => {
         if (state.days[date] === undefined) {
           state.days[date] = dayInitialState(date)
         }
-        state.days[date].plannerEventIds = payload.filter(it => it.eventDate === date).map(it => it.id)
+        state.days[date].taskIds = payload.filter(it => it.eventDate === date).map(it => it.id)
       })
     })
   }
 })
 
-export const { setTodayDate, updateNewPlannerEvent, updatePlannerEventIds } = dailySlice.actions
+export const { setTodayDate, updateTaskIds } = dailySlice.actions
 export default dailySlice

@@ -21,12 +21,12 @@ RSpec.describe Api::HabitsController do
   end
 
   describe '#create' do
-    before { allow(user).to receive(:update_current_events) }
+    before { allow(user).to receive(:update_daily_tasks) }
 
     context 'when all required params are present' do
       before { post api_habits_path(habit: build(:habit_params)), headers: user_authorization }
 
-      it { expect(user).to have_received(:update_current_events) }
+      it { expect(user).to have_received(:update_daily_tasks) }
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to render_template(:show) }
     end
@@ -72,14 +72,14 @@ RSpec.describe Api::HabitsController do
   end
 
   describe '#update' do
-    before { allow(user).to receive(:update_current_events) }
+    before { allow(user).to receive(:update_daily_tasks) }
 
     context 'when all required params are present' do
       let(:habit) { create(:habit, user: user) }
 
       before { patch api_habit_path(habit, habit: build(:habit_params)), headers: user_authorization }
 
-      it { expect(user).to have_received(:update_current_events) }
+      it { expect(user).to have_received(:update_daily_tasks) }
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to render_template(:show) }
     end
@@ -97,11 +97,11 @@ RSpec.describe Api::HabitsController do
     let(:habit) { create(:habit, user: user) }
 
     before do
-      allow(user).to receive(:update_current_events)
+      allow(user).to receive(:update_daily_tasks)
       delete api_habit_path(habit), headers: user_authorization
     end
 
-    it { expect(user).to have_received(:update_current_events) }
+    it { expect(user).to have_received(:update_daily_tasks) }
     it { expect(response).to have_http_status(:no_content) }
   end
 end

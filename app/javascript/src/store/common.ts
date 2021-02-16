@@ -11,25 +11,16 @@ export interface Habit {
   deletedAt: string | null
 }
 
-export type EventStatus = 'pending' | 'done' | 'dismissed'
+export type TaskStatus = 'pending' | 'done' | 'dismissed'
 
-export interface HabitEvent {
-  id: number
-  habitId: number
-  habit?: Habit
-  eventDate: string
-  originalDate: string | null
-  status: EventStatus
-  actedAt: string | null
-}
-
-export interface PlannerEvent {
+export interface Task {
   id: number
   eventDate: string
-  originalDate?: string | null
   content: string
-  status: EventStatus
+  status: TaskStatus
   actedAt: string | null
+  habitId?: number
+  habit?: Habit
 }
 
 export interface WaterGlass {

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :planner_event do
+  factory :task do
     user
     event_date { '2021-01-08' }
     content { Faker::Hipster.sentence }
@@ -9,7 +9,7 @@ FactoryBot.define do
     acted_at { nil }
   end
 
-  factory :planner_event_params, class: Hash do
+  factory :task_params, class: Hash do
     initialize_with { attributes }
 
     content { Faker::Hipster.sentence }

@@ -8,26 +8,13 @@ RSpec.describe User, type: :model do
 
     let(:today) { Date.new(2021, 1, 7) }
 
-    context 'when a repeating habit is overdue' do
-      let(:habit) { create(:habit, user: user, start_date: today.prev_day) }
-
-      before do
-        create(:habit_event, habit: habit, event_date: today.prev_day)
-        user.update_current_events(today)
-      end
-
-      it 'creates a new HabitEvent with the original_date' do
-        expect(HabitEvent.find_by(habit: habit, event_date: today)).to have_attributes(original_date: today.prev_day)
-      end
-    end
-
     context 'when a new habit is added' do
       let!(:habit) { create(:habit, user: user, start_date: today) }
 
-      before { user.update_current_events(today) }
+      before { user.update_daily_tasks(today) }
 
-      it 'creates a HabitEvent' do
-        expect(HabitEvent.find_by(habit: habit, event_date: today)).to be_present
+      it 'creates a Task' do
+        expect(Task.find_by(habit: habit, event_date: today)).to be_present
       end
     end
 
@@ -41,32 +28,21 @@ RSpec.describe User, type: :model do
 
       it { expect(user.habits.count).not_to be_zero }
 
-      it 'creates the HabitEvents' do
-        expect { user.update_current_events(today) }.to(
-          change { user.habit_events.count }.by(user.habits.count)
+      it 'creates the Tasks' do
+        expect { user.update_daily_tasks(today) }.to(
+          change { user.tasks.joins(:habit).count }.by(user.habits.count)
         )
       end
     end
 
     context 'when a habit repeat_interval changed' do
       let(:habit) { create(:habit, user: user, start_date: today.prev_day, repeat_interval: 2) }
-      let!(:habit_event) { create(:habit_event, habit: habit, event_date: today) }
+      let!(:task) { create(:task, user: user, habit: habit, event_date: today) }
 
-      before { user.update_current_events(today) }
+      before { user.update_daily_tasks(today) }
 
-      it 'destroys the HabitEvent' do
-        expect { habit_event.reload }.to raise_exception(ActiveRecord::RecordNotFound)
-      end
-    end
-
-    context 'when a habit repeat_interval changed but the event is a recreation of a pending habit' do
-      let(:habit) { create(:habit, user: user, start_date: today.prev_day, repeat_interval: 2) }
-      let!(:habit_event) { create(:habit_event, habit: habit, event_date: today, original_date: today.prev_day) }
-
-      before { user.update_current_events(today) }
-
-      it 'does not destroy the HabitEvent' do
-        expect(habit_event.reload).to be_present
+      it 'destroys the Task' do
+        expect { task.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
     end
 
@@ -74,12 +50,12 @@ RSpec.describe User, type: :model do
       let(:habit) do
         create(:habit, user: user, start_date: today.prev_day, deleted_at: today.prev_day.beginning_of_day)
       end
-      let!(:habit_event) { create(:habit_event, habit: habit, event_date: today) }
+      let!(:task) { create(:task, user: user, habit: habit, event_date: today) }
 
-      before { user.update_current_events(today) }
+      before { user.update_daily_tasks(today) }
 
-      it 'destroys the HabitEvent' do
-        expect { habit_event.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      it 'destroys the Task' do
+        expect { task.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
     end
   end

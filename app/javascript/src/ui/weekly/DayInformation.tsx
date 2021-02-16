@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import { createStyles, Typography } from '@material-ui/core'
-import PlannerEventList from '../plannerEvents/PlannerEventList'
+import TaskList from '../tasks/TaskList'
 import { makeStyles } from '@material-ui/core/styles'
 import linkRef from '../app/linkRef'
 import { ymdToDate } from '../ymdUtils'
@@ -33,7 +33,7 @@ export default function DayInformation ({ date, overdue }: Props): React.ReactEl
   const classes = useStyles()
   const to = `/daily/${date}`
   const CustomLink = useMemo(() => linkRef(to), [to, linkRef])
-  if (isOverdue && useSelector<RootState, boolean>(s => s.plannerEvents.overdueIds.length === 0)) {
+  if (isOverdue && useSelector<RootState, boolean>(s => s.tasks.overdueIds.length === 0)) {
     return <React.Fragment />
   }
   return (
@@ -45,7 +45,7 @@ export default function DayInformation ({ date, overdue }: Props): React.ReactEl
           intl.formatDate(ymdToDate(date), { weekday: 'long', month: 'numeric', day: 'numeric' })
         )}
       </Typography>
-      <PlannerEventList date={date} overdue={overdue}/>
+      <TaskList date={date} overdue={overdue}/>
     </React.Fragment>
   )
 }

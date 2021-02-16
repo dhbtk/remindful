@@ -1,36 +1,33 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { HabitEvent, PlannerEvent, WaterGlass } from './common'
-import habitEventApi from '../api/habitEventApi'
-import plannerEventApi from '../api/plannerEventApi'
+import { Task, WaterGlass } from './common'
+import taskApi from '../api/taskApi'
 import waterGlassApi from '../api/waterGlassApi'
-import { DayData, updatePlannerEventIds } from './daily'
-import { AppThunk } from './index'
+import { DayData } from './daily'
 
-export const unsetPlannerEvent = createAction<number>('unsetPlannerEvent')
+export const unsetTask = createAction<number>('unsetTask')
 
-export const setPlannerEvent = createAction<PlannerEvent>('setPlannerEvent')
+export const setTask = createAction<Task>('setTask')
 
 export const loadDayData = createAsyncThunk('today/loadDayData', async (date: string) => {
-  const [habitEvents, plannerEvents, waterGlasses]: [HabitEvent[], PlannerEvent[], WaterGlass[]] = await Promise.all([
-    habitEventApi.forDate(date),
-    plannerEventApi.forDate(date),
+  const [tasks, waterGlasses]: [Task[], WaterGlass[]] = await Promise.all([
+    taskApi.forDate(date),
     waterGlassApi.forDate(date)
   ])
-  const dayData: DayData = { date, habitEvents, plannerEvents, waterGlasses }
+  const dayData: DayData = { date, tasks, waterGlasses }
 
   return dayData
 })
 
-export const loadPlannerEvents = createAsyncThunk('loadPlannerEvents', async (date: string) => {
-  return await plannerEventApi.forDate(date)
+export const loadTasks = createAsyncThunk('loadTasks', async (date: string) => {
+  return await taskApi.forDate(date)
 })
 
-export const bulkLoadPlannerEvents = createAsyncThunk('bulkLoadPlannerEvents', async (dates: string[]) => {
-  return await plannerEventApi.forDates(dates)
+export const bulkLoadTasks = createAsyncThunk('bulkLoadTasks', async (dates: string[]) => {
+  return await taskApi.forDates(dates)
 })
 
-export const loadOverduePlannerEvents = createAsyncThunk('loadOverduePlannerEvents', async () => {
-  return await plannerEventApi.overdue()
+export const loadOverdueTasks = createAsyncThunk('loadOverdueTasks', async () => {
+  return await taskApi.overdue()
 })
 
-export const reorderOverduePlannerEvents = createAction<number[]>('reorderOverduePlannerEvents')
+export const reorderOverdueTasks = createAction<number[]>('reorderOverdueTasks')

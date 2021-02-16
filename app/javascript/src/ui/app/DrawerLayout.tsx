@@ -131,8 +131,8 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
       )}
       <List component="nav">
         <ListItemLink
-          icon={<HomeIcon/>} primary={<FormattedMessage id="HomePage.title" defaultMessage="Home"/>}
-          to={`/daily/${todayDate}`}/>
+          icon={<HomeIcon/>} primary={<FormattedMessage id="TodayPage.title" defaultMessage="Today"/>}
+          to="/"/>
         <ListItemLink
           icon={<ViewWeekIcon/>}
           primary={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>}

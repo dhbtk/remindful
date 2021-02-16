@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../../lib/custom_failure_app'
+
 # Assuming you have not yet modified this file, each configuration option below
 # is set to its default value. Note that some are commented out while others
 # are not: uncommented lines are intended to protect your configuration from
@@ -274,6 +276,7 @@ Devise.setup do |config|
   # change the failure app, you can configure them inside the config.warden block.
   #
   config.warden do |manager|
+    manager.failure_app = CustomFailureApp
     manager.default_strategies(scope: :user).unshift :doorkeeper
   end
 

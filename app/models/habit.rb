@@ -3,7 +3,7 @@
 class Habit < ApplicationRecord
   include SoftDelete
   belongs_to :user
-  has_many :habit_events, dependent: :restrict_with_error
+  has_many :tasks, dependent: :restrict_with_error
 
   validates :name, uniqueness: { scope: %i[user] }
   validates :name, :repeat_interval, :repeat_interval_unit, :start_date, presence: true

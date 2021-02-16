@@ -2,25 +2,25 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::PlannerEventsController do
+RSpec.describe Api::TasksController do
   let(:user) { create(:user) }
 
   describe '#index' do
-    context 'when the planner already exists' do
-      let!(:planner_event) { create(:planner_event, user: user) }
+    context 'when there already are tasks' do
+      let!(:task) { create(:task, user: user) }
 
       before do
-        get api_planner_events_path(date: planner_event.event_date), headers: user_authorization
+        get api_tasks_path(date: task.event_date), headers: user_authorization
       end
 
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to render_template(:index) }
-      it { expect(assigns(:planner_events).to_a).to include(planner_event) }
+      it { expect(assigns(:tasks).to_a).to include(task) }
     end
 
-    context 'when the planner does not exist yet' do
+    context 'when there are no tasks' do
       before do
-        get api_planner_events_path(date: Time.zone.today), headers: user_authorization
+        get api_tasks_path(date: Time.zone.today), headers: user_authorization
       end
 
       it { expect(response).to have_http_status(:ok) }
@@ -30,18 +30,18 @@ RSpec.describe Api::PlannerEventsController do
 
   describe '#reorder' do
     before do
-      allow(PlannerEvent).to receive(:reorder)
-      post reorder_api_planner_events_path(ids: %w[1 2 3 4 5]), headers: user_authorization
+      allow(Task).to receive(:reorder)
+      post reorder_api_tasks_path(ids: %w[1 2 3 4 5]), headers: user_authorization
     end
 
-    it { expect(PlannerEvent).to have_received(:reorder).with(anything, [1, 2, 3, 4, 5]) }
+    it { expect(Task).to have_received(:reorder).with(anything, [1, 2, 3, 4, 5]) }
     it { expect(response).to have_http_status(:no_content) }
   end
 
   describe '#create' do
     context 'when all fields are present' do
       before do
-        post api_planner_events_path(planner_event: build(:planner_event_params)),
+        post api_tasks_path(task: build(:task_params)),
              headers: user_authorization
       end
 
@@ -50,7 +50,7 @@ RSpec.describe Api::PlannerEventsController do
 
     context 'when fields are missing' do
       before do
-        post api_planner_events_path(planner_event: { status: 'done' }),
+        post api_tasks_path(task: { status: 'done' }),
              headers: user_authorization
       end
 
@@ -60,10 +60,10 @@ RSpec.describe Api::PlannerEventsController do
 
   describe '#update' do
     context 'when required fields are present' do
-      let(:planner_event) { create(:planner_event, user: user) }
+      let(:task) { create(:task, user: user) }
 
       before do
-        patch api_planner_event_path(planner_event, planner_event: { status: 'done', acted_at: Time.current }),
+        patch api_task_path(task, task: { status: 'done', acted_at: Time.current }),
               headers: user_authorization
       end
 
@@ -71,10 +71,10 @@ RSpec.describe Api::PlannerEventsController do
     end
 
     context 'when required fields are absent' do
-      let(:planner_event) { create(:planner_event, user: user) }
+      let(:task) { create(:task, user: user) }
 
       before do
-        patch api_planner_event_path(planner_event, planner_event: { status: 'done' }),
+        patch api_task_path(task, task: { status: 'done' }),
               headers: user_authorization
       end
 
@@ -83,7 +83,7 @@ RSpec.describe Api::PlannerEventsController do
 
     context 'when the event does not exist' do
       before do
-        patch api_planner_event_path(999, planner_event: { status: 'done', acted_at: Time.current }),
+        patch api_task_path(999, task: { status: 'done', acted_at: Time.current }),
               headers: user_authorization
       end
 
@@ -91,10 +91,10 @@ RSpec.describe Api::PlannerEventsController do
     end
 
     context 'when the event belongs to someone else' do
-      let(:planner_event) { create(:planner_event) }
+      let(:task) { create(:task) }
 
       before do
-        patch api_planner_event_path(planner_event, planner_event: { status: 'done', acted_at: Time.current }),
+        patch api_task_path(task, task: { status: 'done', acted_at: Time.current }),
               headers: user_authorization
       end
 
@@ -103,10 +103,10 @@ RSpec.describe Api::PlannerEventsController do
   end
 
   describe '#destroy' do
-    let(:planner_event) { create(:planner_event, user: user) }
+    let(:task) { create(:task, user: user) }
 
     before do
-      delete api_planner_event_path(planner_event),
+      delete api_task_path(task),
              headers: user_authorization
     end
 

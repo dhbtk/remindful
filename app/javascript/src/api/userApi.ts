@@ -12,7 +12,6 @@ import { RegisteredUserInfo } from '../store/user'
 import { RegistrationFormState } from '../store/registrationForm'
 
 const CLIENT_ID = '8eI-VWlFrqAwaUHTpynIK9iuTJo9Hz0b40pxwjZwpEQ'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CLIENT_SECRET = 'Cu9z0g0sAPR1vRebVCzCweGmNR4JXF8gHtpMcmHNnek'
 
 interface LightUserResponse {

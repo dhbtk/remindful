@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Rails.application.config.middleware.insert_before 0, Rack::Cors, debug: true, logger: (-> { Rails.logger }) do
+Rails.application.config.middleware.insert_before 0, Rack::Cors, debug: false, logger: (-> { Rails.logger }) do
   allow do
     origins '*'
 

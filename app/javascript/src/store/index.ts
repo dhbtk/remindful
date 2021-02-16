@@ -1,18 +1,8 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { useDispatch } from 'react-redux'
 import { rootReducer, RootState } from './rootReducer'
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER
-} from 'redux-persist'
+import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { PersistGate } from 'redux-persist/integration/react'
 
 const persistConfig = {
   key: 'root',

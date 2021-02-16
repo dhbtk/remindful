@@ -110,13 +110,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Pull base image
         run: docker pull $(head -n 1 Dockerfile | cut -d' ' -f 2)
-      - run: echo "MONTH=$(date +%m)" >> $GITHUB_ENV
-      - uses: actions/cache@v2
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
         with:
-          path: ~/docker-tar
-          key: docker-layers-${{ env.MONTH }}
-      - run: |
-          if [[ -d $HOME/docker-tar ]]; then ls $HOME/docker-tar/*.tar | xargs -I {file} sh -c "cat {file} | docker load"; fi
+          key: main-0
+          restore-keys: main-0
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -125,7 +123,6 @@ jobs:
         run: |
           docker build --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          mkdir -p $HOME/docker-tar && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep $IMAGE_TAG | xargs -n 2 -t sh -c 'test -e $HOME/docker-tar/$1.tar || docker save $0 > $HOME/docker-tar/$1.tar'
 
   deploy:
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 DaySummary:
   today: "{today, date, full}"
-PlannerEventList:
+TaskList:
   title: |
     {count, plural,
     =0 {Tarefas}
@@ -11,13 +11,13 @@ PlannerEventList:
     one {Concluídas}
     other {{count} Concluídas}}
   empty: Nenhuma tarefa
-  newPlannerEvent: Nova tarefa
+  newTask: Nova tarefa
 DrawerLayout:
   welcomeAnonymous: Bem-vinde, anônime!
   signIn: Entrar
   register: Registrar
-HomePage:
-  title: Home
+TodayPage:
+  title: Hoje
 DailyPage:
   title: "{today, date, long}"
   todayLink: Hoje
@@ -65,7 +65,7 @@ SignInForm:
     label: Email
   password:
     label: Senha
-PlannerEventForm:
+TaskForm:
   create: Adicionar tarefa
   save: Atualizar tarefa
   cancel: Cancelar
