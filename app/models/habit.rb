@@ -25,7 +25,6 @@ class Habit < ApplicationRecord
 
   def visible_at(date)
     return false if deleted_at.present? && deleted_at < date.end_of_day
-    return false if date < created_at.to_date
 
     send(:"visible_at_#{repeat_interval_unit}", date)
   end
