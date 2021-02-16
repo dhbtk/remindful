@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react'
-import DrawerLayout from '../app/DrawerLayout'
 import { FormattedMessage } from 'react-intl'
-import { ymdToDate } from '../ymdUtils'
 import { Container, createStyles } from '@material-ui/core'
 import DaySummary from '../daily/DaySummary'
 import DayInformation from '../weekly/DayInformation'
@@ -10,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { loadDayData, loadOverdueTasks } from '../../store/commonActions'
 import { makeStyles } from '@material-ui/core/styles'
+import LayoutContent from '../app/LayoutContent'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -30,7 +29,7 @@ export default function TodayPage (): React.ReactElement {
   }, [dispatch, todayDate])
 
   return (
-    <DrawerLayout
+    <LayoutContent
       title={<FormattedMessage id="TodayPage.title"/>}
       actions={[]}>
       <Container maxWidth="md" className={classes.container}>
@@ -38,6 +37,6 @@ export default function TodayPage (): React.ReactElement {
         <DayInformation date={todayDate} overdue/>
         <DayInformation date={todayDate}/>
       </Container>
-    </DrawerLayout>
+    </LayoutContent>
   )
 }

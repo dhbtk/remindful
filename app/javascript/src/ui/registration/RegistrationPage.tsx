@@ -81,9 +81,6 @@ export default function RegistrationPage (): React.ReactElement {
   const classes = useStyles()
   const userCreated = useSelector<RootState, boolean>(state => state.user.accessToken !== null)
   const isFullUser = useSelector<RootState, boolean>(state => !state.user.user.anonymous)
-  if (userCreated && isFullUser) {
-    return <Redirect to="/"/>
-  }
   const dispatch = useAppDispatch()
   useEffect(() => {
     if (!userCreated) {
@@ -122,6 +119,9 @@ export default function RegistrationPage (): React.ReactElement {
     }
   }
 
+  if (userCreated && isFullUser) {
+    return <Redirect to="/"/>
+  }
   return (
     <UnauthenticatedLayout title={<FormattedMessage id="RegistrationPage.signUpTitle" defaultMessage="Sign Up"/>}>
       <Form

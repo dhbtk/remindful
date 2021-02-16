@@ -18,6 +18,7 @@ import { loadUserInfo } from '../../store/user'
 import { loadOverdueTasks } from '../../store/commonActions'
 import { ymd } from '../ymdUtils'
 import TodayPage from '../today/TodayPage'
+import DrawerLayout from './DrawerLayout'
 
 const theme = createMuiTheme({
   palette: {
@@ -55,24 +56,30 @@ function App (): React.ReactElement {
           <Notifier />
           <BrowserRouter basename="/web_app">
             <Switch>
-              <PrivateRoute exact path="/">
-                <TodayPage/>
-              </PrivateRoute>
-              <PrivateRoute exact path="/daily/:date">
-                <DailyPage/>
-              </PrivateRoute>
-              <PrivateRoute exact path={['/weekly', '/weekly/:weekDate']}>
-                <WeeklyPage/>
-              </PrivateRoute>
               <Route path="/welcome">
                 <WelcomePage/>
               </Route>
               <Route path="/registration">
                 <RegistrationPage/>
               </Route>
-              <Route path="*">
-                <Redirect to="/"/>
-              </Route>
+              <PrivateRoute path="*">
+                <DrawerLayout>
+                  <Switch>
+                    <PrivateRoute exact path="/">
+                      <TodayPage/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/daily/:date">
+                      <DailyPage/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path={['/weekly', '/weekly/:weekDate']}>
+                      <WeeklyPage/>
+                    </PrivateRoute>
+                    <Route path="*">
+                      <Redirect to="/"/>
+                    </Route>
+                  </Switch>
+                </DrawerLayout>
+              </PrivateRoute>
             </Switch>
           </BrowserRouter>
         </SnackbarProvider>

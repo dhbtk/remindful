@@ -40,6 +40,9 @@ const layoutSlice = createSlice({
   reducers: {
     toggleDrawer (state: LayoutState) {
       state.drawerOpen = !state.drawerOpen
+    },
+    closeDrawer (state: LayoutState) {
+      state.drawerOpen = false
     }
   },
   extraReducers: builder => {
@@ -64,5 +67,5 @@ const layoutSlice = createSlice({
   }
 })
 
-export const { toggleDrawer } = layoutSlice.actions
+export const { toggleDrawer, closeDrawer } = layoutSlice.actions
 export default layoutSlice

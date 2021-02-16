@@ -23,7 +23,7 @@ import { lastMonday } from '../ymdUtils'
 import { clearUserInfo } from '../../store/user'
 import linkRef from './linkRef'
 
-const drawerWidth = 240
+export const drawerWidth = 240
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,17 +89,14 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  title: React.ReactNode
-  actions?: React.ReactNode
   children: React.ReactNode
 }
 
-export default function DrawerLayout ({ title, actions, children }: Props): React.ReactElement {
+export default function DrawerLayout ({ children }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const drawerOpen = useSelector<RootState, boolean>(state => state.layout.drawerOpen)
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
-  const mondayDate = lastMonday(todayDate)
   const toggleDrawerAction: () => void = () => dispatch(toggleDrawer())
   const auth = useAuth()
   const WelcomeLink = useMemo(() => linkRef('/welcome'), [linkRef])
@@ -146,23 +143,6 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar variant="dense">
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={toggleDrawerAction}
-            className={classes.menuButton}
-          >
-            <MenuIcon/>
-          </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            {title}
-          </Typography>
-          {actions}
-        </Toolbar>
-      </AppBar>
       <nav className={classes.drawer} aria-label="navigation">
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
@@ -192,10 +172,7 @@ export default function DrawerLayout ({ title, actions, children }: Props): Reac
           </Drawer>
         </Hidden>
       </nav>
-      <main className={classes.content}>
-        <div className={classes.toolbar}/>
-        {children}
-      </main>
+      {children}
     </div>
   )
 }

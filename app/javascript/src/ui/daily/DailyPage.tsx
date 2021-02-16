@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
-import clsx from 'clsx'
 import { Button, Container, createStyles, IconButton } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DaySummary from './DaySummary'
-import TaskList from '../tasks/TaskList'
-import DrawerLayout from '../app/DrawerLayout'
 import { FormattedMessage } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { loadDayData } from '../../store/commonActions'
@@ -16,6 +13,7 @@ import linkRef from '../app/linkRef'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import DayInformation from '../weekly/DayInformation'
+import LayoutContent from '../app/LayoutContent'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -65,7 +63,7 @@ export default function DailyPage (): React.ReactElement {
   )
 
   return (
-    <DrawerLayout
+    <LayoutContent
       title={<FormattedMessage id="DailyPage.title" defaultMessage="{today, date, long}" values={{ today: ymdToDate(date) }}/>}
       actions={actions}>
       <Container maxWidth="md" className={classes.container}>
@@ -73,6 +71,6 @@ export default function DailyPage (): React.ReactElement {
         <DayInformation date={date} overdue/>
         <DayInformation date={date}/>
       </Container>
-    </DrawerLayout>
+    </LayoutContent>
   )
 }

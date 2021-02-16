@@ -1,20 +1,19 @@
 import React, { useEffect, useMemo } from 'react'
-import DrawerLayout from '../app/DrawerLayout'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container, createStyles, IconButton, Paper, Toolbar, Typography } from '@material-ui/core'
-import { Redirect, useParams } from 'react-router-dom'
-import { addDays, format, isMonday, parse, startOfWeek } from 'date-fns'
-import clsx from 'clsx'
+import { Button, Container, createStyles, IconButton, Toolbar, Typography } from '@material-ui/core'
+import { useParams } from 'react-router-dom'
+import { addDays } from 'date-fns'
 import DayInformation from './DayInformation'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { lastMonday, nextYmd, previousYmd, ymd, ymdToDate } from '../ymdUtils'
+import { ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import linkRef from '../app/linkRef'
-import { bulkLoadTasks, loadTasks } from '../../store/commonActions'
+import { bulkLoadTasks } from '../../store/commonActions'
 import { useAppDispatch } from '../../store'
+import LayoutContent from '../app/LayoutContent'
 
 const useStyles = makeStyles((theme) => createStyles({
   container: {
@@ -69,7 +68,7 @@ export default function WeeklyPage (): React.ReactElement {
   }, [dispatch, allDates])
 
   return (
-    <DrawerLayout title={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>} actions={[]}>
+    <LayoutContent title={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>} actions={[]}>
       <Container maxWidth="md" className={classes.container}>
         <Toolbar variant="dense">
           <Typography component="h2" variant="h6" className={classes.title}>
@@ -90,6 +89,6 @@ export default function WeeklyPage (): React.ReactElement {
           <DayInformation date={date} key={date}/>
         ))}
       </Container>
-    </DrawerLayout>
+    </LayoutContent>
   )
 }
