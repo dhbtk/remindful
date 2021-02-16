@@ -1,9 +1,8 @@
 import { Task } from '../../store/common'
 import React, { FormEvent, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Button, InputAdornment, TextField, TextFieldProps } from '@material-ui/core'
+import { Button, InputAdornment, TextField } from '@material-ui/core'
 import { FormattedMessage, useIntl } from 'react-intl'
-import clsx from 'clsx'
 import { DatePicker } from '@material-ui/pickers'
 import { nextYmd, ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
@@ -11,7 +10,7 @@ import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store'
 import { saveNewTask, updateTask } from '../../store/daily'
 import AssignmentIcon from '@material-ui/icons/AssignmentOutlined'
-import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined';
+import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
 
 interface Props {
   task?: Task

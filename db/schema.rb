@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_16_192129) do
+ActiveRecord::Schema.define(version: 2021_02_16_210218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,13 @@ ActiveRecord::Schema.define(version: 2021_02_16_192129) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
     t.integer "order"
+    t.boolean "repeat_sunday", default: false
+    t.boolean "repeat_monday", default: false
+    t.boolean "repeat_tuesday", default: false
+    t.boolean "repeat_wednesday", default: false
+    t.boolean "repeat_thursday", default: false
+    t.boolean "repeat_friday", default: false
+    t.boolean "repeat_saturday", default: false
     t.index ["name", "user_id"], name: "index_habits_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_habits_on_user_id"
   end

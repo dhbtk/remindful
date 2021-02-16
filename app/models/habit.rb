@@ -12,7 +12,10 @@ class Habit < ApplicationRecord
   enum repeat_interval_unit: {
     day: 'day',
     week: 'week',
-    month: 'month'
+    month: 'month',
+    business_day: 'business_day',
+    weekend: 'weekend',
+    weekday: 'weekday'
   }, _prefix: :repeat_interval
 
   def self.active(date)
@@ -22,6 +25,7 @@ class Habit < ApplicationRecord
 
   def visible_at(date)
     return false if deleted_at.present? && deleted_at < date.end_of_day
+    return false if date < created_at.to_date
 
     send(:"visible_at_#{repeat_interval_unit}", date)
   end
@@ -39,5 +43,20 @@ class Habit < ApplicationRecord
 
   def visible_at_month(date)
     start_date.day == date.day
+  end
+
+  def visible_at_business_day(date)
+    !date.saturday? && !date.sunday?(date)
+  end
+
+  def visible_at_weekend(date)
+    date.saturday? || date.sunday?
+  end
+
+  def visible_at_weekday(date)
+    days = %i[sunday monday tuesday wednesday thursday friday saturday]
+    days.any? do |day|
+      date.public_send("#{day}?") && send("visible_#{day}")
+    end
   end
 end
