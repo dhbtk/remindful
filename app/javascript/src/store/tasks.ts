@@ -25,6 +25,13 @@ export const completeTask: (id: number) => AppThunk = (id) => async (dispatch, g
   await taskApi.update(updatedTask)
 }
 
+export const dismissTask: (id: number) => AppThunk = (id) => async (dispatch, getState) => {
+  const task = getState().tasks.entities[id]
+  const updatedTask: Task = { ...task, status: 'dismissed', actedAt: formatISO(new Date()) }
+  dispatch(setTask(updatedTask))
+  await taskApi.update(updatedTask)
+}
+
 export const undoCompleteTask: (id: number) => AppThunk = (id) => async (dispatch, getState) => {
   const task = getState().tasks.entities[id]
   const updatedTask: Task = { ...task, status: 'pending', actedAt: null }

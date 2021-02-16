@@ -1,7 +1,7 @@
 import { Task } from '../../store/common'
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Button, TextField } from '@material-ui/core'
+import { Button, InputAdornment, TextField, TextFieldProps } from '@material-ui/core'
 import { FormattedMessage, useIntl } from 'react-intl'
 import clsx from 'clsx'
 import { DatePicker } from '@material-ui/pickers'
@@ -10,6 +10,8 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store'
 import { saveNewTask, updateTask } from '../../store/daily'
+import AssignmentIcon from '@material-ui/icons/AssignmentOutlined'
+import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined';
 
 interface Props {
   task?: Task
@@ -27,6 +29,7 @@ const useStyles = makeStyles(theme => createStyles({
   root: {},
   buttons: {
     marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(0.5),
     '& > *:not(:last-child)': {
       marginRight: theme.spacing(1)
     }
@@ -35,14 +38,21 @@ const useStyles = makeStyles(theme => createStyles({
     width: '100%',
     '& > .MuiInputBase-root > .MuiInput-input': {
       ...theme.typography.body2
+    },
+    '& > .MuiInputBase-root.Mui-focused > .MuiInputAdornment-root > .MuiSvgIcon-root': {
+      fill: theme.palette.primary.main
     }
   },
   dateInput: {
     '& > .MuiInputBase-root > .MuiInput-input': {
       ...theme.typography.body2
+    },
+    '& > .MuiInputBase-root.Mui-focused > .MuiInputAdornment-root > .MuiSvgIcon-root': {
+      fill: theme.palette.primary.main
     }
   }
 }))
+
 export default function TaskForm ({ task, date, onClose }: Props): React.ReactElement {
   const dispatch = useAppDispatch()
   const classes = useStyles()
@@ -61,7 +71,8 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
       return intl.formatDate(date, { month: 'long', day: 'numeric' })
     }
   }
-  const onSubmit = (): void => {
+  const onSubmit = (e: FormEvent): void => {
+    e.preventDefault()
     if (creating) {
       dispatch(saveNewTask(eventDate, content))
       setContent('')
@@ -84,6 +95,13 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
             placeholder={intl.formatMessage({ id: 'TaskForm.contentLabel' })}
             aria-label={intl.formatMessage({ id: 'TaskForm.contentLabel' })}
             autoFocus
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AssignmentIcon />
+                </InputAdornment>
+              )
+            }}
             onChange={e => setContent(e.target.value)} />
         </div>
         <DatePicker
@@ -94,6 +112,13 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
           value={ymdToDate(eventDate)}
           onChange={newDate => setEventDate(ymd(newDate))}
           labelFunc={dateFormatter}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EventNoteOutlinedIcon />
+              </InputAdornment>
+            )
+          }}
         />
       </div>
       <div className={classes.buttons}>

@@ -6,10 +6,11 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { Checkbox, Chip, IconButton, Typography } from '@material-ui/core'
-import { completeTask, deleteTask, undoCompleteTask } from '../../store/tasks'
+import { completeTask, deleteTask, dismissTask, undoCompleteTask } from '../../store/tasks'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import TaskForm from './TaskForm'
+import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBoxOutlined'
 
 interface Props {
   draggableProvided: DraggableProvided
@@ -73,12 +74,20 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
   const dispatch = useAppDispatch()
   const [editing, setEditing] = useState(false)
   const toggleTaskCompletion = (): void => {
-    if (task.status === 'done') {
+    if (task.status !== 'pending') {
       dispatch(undoCompleteTask(task.id))
     } else {
       dispatch(completeTask(task.id))
     }
   }
+  const toggleTaskDismissed = (): void => {
+    if (task.status !== 'pending') {
+      dispatch(undoCompleteTask(task.id))
+    } else {
+      dispatch(dismissTask(task.id))
+    }
+  }
+
   return (
     <div className={clsx(classes.root, editing && classes.editing)} ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
       <div className={clsx(classes.hidden)}>
@@ -95,7 +104,8 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
           <div className={classes.mainRow}>
             <Checkbox
               className={classes.checkbox}
-              checked={task.status === 'done'}
+              checked={task.status !== 'pending'}
+              indeterminate={task.status === 'dismissed'}
               onChange={toggleTaskCompletion}
               size="small"
             />
@@ -105,6 +115,12 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
               size="small"
               onClick={() => setEditing(true)}>
               <EditOutlinedIcon className={classes.tinyIcon}/>
+            </IconButton>
+            <IconButton
+              className={clsx(classes.gone, classes.tinyButton)}
+              size="small"
+              onClick={toggleTaskDismissed}>
+              <IndeterminateCheckBoxIcon className={classes.tinyIcon}/>
             </IconButton>
           </div>
           <div className={classes.chips}>
