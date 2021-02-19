@@ -5,15 +5,14 @@ import { RootState } from '../../store/rootReducer'
 import { Redirect } from 'react-router-dom'
 import { useAppDispatch } from '../../store'
 import { registerLightUser, setUserInfo } from '../../store/user'
-import RootLayout from '../app/RootLayout'
 import { RegistrationFormState } from '../../store/registrationForm'
 import { Form, FormSpy } from 'react-final-form'
 import { Checkboxes, makeValidate, RadioData, Radios, TextField } from 'mui-rff'
-import { Avatar, Button, Typography } from '@material-ui/core'
+import { Avatar, Button } from '@material-ui/core'
 import { md5 } from 'pure-md5'
 import useDebounce from '../useDebounce'
 import * as Yup from 'yup'
-import { FormattedMessage, useIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import { useTranslator } from '../forms'
 import { FORM_ERROR } from 'final-form'
 import userApi from '../../api/userApi'
@@ -101,7 +100,7 @@ export default function RegistrationPage (): React.ReactElement {
   const [formLoading, setFormLoading] = useState(false)
   const { translateServerErrors, translator } = useTranslator('RegistrationForm')
 
-  async function onSubmit (values: RegistrationFormState): Promise<any> {
+  async function onSubmit (values: RegistrationFormState): Promise<Record<string, string>> {
     const fullData: RegistrationFormState = { ...values, avatarUrl: debouncedAvatarUrl }
     if (formLoading) return
     setFormLoading(true)

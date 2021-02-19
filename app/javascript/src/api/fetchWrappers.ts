@@ -56,6 +56,14 @@ function headers (): Record<string, string> {
   }
 }
 
+export interface FetchError extends Error {
+  response: Response
+}
+
+export function isFetchError (error: Error): error is FetchError {
+  return 'response' in error
+}
+
 async function handleStatus (response: Response): Promise<Response> {
   if (response.ok || response.status === 422) {
     return response
@@ -64,11 +72,13 @@ async function handleStatus (response: Response): Promise<Response> {
     if (response.status === 401) {
       store.dispatch(clearUserInfo())
     }
-    throw new Error(response.status.toString())
+    const error: FetchError = new Error(response.status.toString()) as FetchError
+    error.response = response
+    throw error
   }
 }
 
-async function toJson <T> (response: Response): Promise<ResponseWrapper<T>> {
+async function toJson<T> (response: Response): Promise<ResponseWrapper<T>> {
   if (response.status === 204) {
     return { status: 204 }
   }
@@ -110,7 +120,7 @@ export async function apiGet<T> (path: string, query: Record<string, string | st
 }
 
 function jsonBody (method: string) {
-  return async function <T>(path: string, body: any = {}): Promise<ResponseWrapper<T>> {
+  return async function <T> (path: string, body: any = {}): Promise<ResponseWrapper<T>> {
     return await fetch(path, {
       method,
       headers: { ...headers(), 'Content-Type': 'application/json; charset=utf-8' },

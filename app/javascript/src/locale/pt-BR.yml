@@ -16,6 +16,7 @@ DrawerLayout:
   welcomeAnonymous: Bem-vinde, anônime!
   signIn: Entrar
   register: Registrar
+  signOut: Sair
 TodayPage:
   title: Hoje
 DailyPage:

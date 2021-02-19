@@ -3,11 +3,14 @@ import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Typography from '@material-ui/core/Typography'
-import { AppBar, Theme } from '@material-ui/core'
+import { AppBar, Avatar, Theme } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { useAppDispatch } from '../../store'
 import { toggleDrawer } from '../../store/layout'
 import { drawerWidth } from './DrawerLayout'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store/rootReducer'
+import { clearUserInfo, UserInfo } from '../../store/user'
 
 interface Props {
   title: React.ReactNode
@@ -47,6 +50,15 @@ export default function LayoutContent ({ title, actions, children }: Props): Rea
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const toggleDrawerAction = (): void => dispatch(toggleDrawer())
+  const user = useSelector<RootState, UserInfo>(state => state.user.user)
+  const signOut = (): void => dispatch(clearUserInfo())
+
+  const userButton = user.anonymous ? [] : (
+    <IconButton
+      edge="end">
+      <Avatar alt="user avatar" src={user.avatarUrl} />
+    </IconButton>
+  )
 
   return (
     <React.Fragment>
@@ -65,6 +77,7 @@ export default function LayoutContent ({ title, actions, children }: Props): Rea
             {title}
           </Typography>
           {actions}
+          {userButton}
         </Toolbar>
       </AppBar>
       <main className={classes.content}>

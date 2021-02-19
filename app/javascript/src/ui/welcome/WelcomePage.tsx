@@ -16,6 +16,7 @@ import { FORM_ERROR } from 'final-form'
 import { makeValidate, TextField } from 'mui-rff'
 import { Alert } from '@material-ui/lab'
 import { Form } from 'react-final-form'
+import { isFetchError } from '../../api/fetchWrappers'
 
 const useStyles = makeStyles((theme) => createStyles({
   form: {
@@ -80,6 +81,9 @@ export default function WelcomePage (): React.ReactElement {
         dispatch(setAccessToken(response.accessToken))
       }
     } catch (e: Error) {
+      if (isFetchError(e) && e.response.status === 401) {
+        return { [FORM_ERROR]: 'bubi' }
+      }
       return { [FORM_ERROR]: `${e.name} - ${e.message}` }
     }
   }
