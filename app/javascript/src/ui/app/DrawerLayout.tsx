@@ -1,5 +1,5 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { AppBar, Button, Divider, List, Theme } from '@material-ui/core'
+import { Button, Divider, List, Theme } from '@material-ui/core'
 import React, { useMemo } from 'react'
 import { useAppDispatch } from '../../store'
 import { useSelector } from 'react-redux'
@@ -7,9 +7,6 @@ import { RootState } from '../../store/rootReducer'
 import { toggleDrawer } from '../../store/layout'
 import Drawer from '@material-ui/core/Drawer'
 import Hidden from '@material-ui/core/Hidden'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import ListItemLink from './ListItemLink'
 import HomeIcon from '@material-ui/icons/Home'
@@ -17,10 +14,8 @@ import ViewWeekIcon from '@material-ui/icons/ViewWeek'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import clsx from 'clsx'
 import logo from '../logo.svg'
-import { useAuth } from '../../store/auth'
 import { FormattedMessage } from 'react-intl'
-import { lastMonday } from '../ymdUtils'
-import { clearUserInfo, UserInfo } from '../../store/user'
+import { UserInfo } from '../../store/user'
 import linkRef from './linkRef'
 
 export const drawerWidth = 240
@@ -101,7 +96,6 @@ export default function DrawerLayout ({ children }: Props): React.ReactElement {
   const WelcomeLink = useMemo(() => linkRef('/welcome'), [linkRef])
   const RegisterLink = useMemo(() => linkRef('/registration'), [linkRef])
   const user = useSelector<RootState, UserInfo>(state => state.user.user)
-  const signOut = (): void => dispatch(clearUserInfo())
 
   const drawer = (
     <div>
@@ -109,7 +103,7 @@ export default function DrawerLayout ({ children }: Props): React.ReactElement {
         <img className={classes.logo} alt="Remindful" src={logo}/>
       </div>
       <Divider/>
-      {user.anonymous ? (
+      {user.anonymous && (
         <React.Fragment>
           <div className={classes.anonymousUserInfo}>
             <Typography className={classes.anonymousHello} variant="body2">
@@ -121,20 +115,6 @@ export default function DrawerLayout ({ children }: Props): React.ReactElement {
               </Button>
               <Button variant="text" component={RegisterLink}>
                 <FormattedMessage id="DrawerLayout.register" defaultMessage="Register"/>
-              </Button>
-            </div>
-          </div>
-          <Divider/>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <div className={classes.anonymousUserInfo}>
-            <Typography className={classes.anonymousHello} variant="body2" component="p">
-              {user.email}
-            </Typography>
-            <div className={classes.anonymousActions}>
-              <Button variant="text" onClick={signOut}>
-                <FormattedMessage id="DrawerLayout.signOut" defaultMessage="Sign Out"/>
               </Button>
             </div>
           </div>

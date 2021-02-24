@@ -11,6 +11,10 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import TaskForm from './TaskForm'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBoxOutlined'
+import TaskDateDisplay from './TaskDateDisplay'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store/rootReducer'
+import { ymdToDate } from '../ymdUtils'
 
 interface Props {
   draggableProvided: DraggableProvided
@@ -52,13 +56,15 @@ const useStyles = makeStyles(theme => createStyles({
     padding: theme.spacing(1),
     '& > *:not(:last-child)': {
       marginRight: theme.spacing(0.5)
-    }
+    },
+    display: 'flex',
+    alignItems: 'center'
   },
   mainRow: {
     display: 'flex'
   },
   content: {
-    flexGrow: '1'
+    flexGrow: 1
   },
   checkbox: {
     padding: 0,
@@ -87,6 +93,9 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
       dispatch(dismissTask(task.id))
     }
   }
+
+  const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
+  const isOverdue = task.status === 'pending' && (ymdToDate(todayDate) > ymdToDate(task.eventDate))
 
   return (
     <div className={clsx(classes.root, editing && classes.editing)} ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
@@ -124,6 +133,7 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
             </IconButton>
           </div>
           <div className={classes.chips}>
+            {isOverdue && <TaskDateDisplay task={task}/>}
             <Chip label="chip" size="small" onDelete={() => {}}/>
             <Chip label="chip" size="small" onDelete={() => {}}/>
             <Chip label="chip" size="small" onDelete={() => {}}/>

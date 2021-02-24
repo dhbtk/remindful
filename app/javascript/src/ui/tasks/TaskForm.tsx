@@ -11,6 +11,7 @@ import { useAppDispatch } from '../../store'
 import { saveNewTask, updateTask } from '../../store/daily'
 import AssignmentIcon from '@material-ui/icons/AssignmentOutlined'
 import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 
 interface Props {
   task?: Task
@@ -60,7 +61,11 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
   const [eventDate, setEventDate] = useState(task?.eventDate ?? date)
   const intl = useIntl()
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
-  const dateFormatter = (date: Date): string => {
+  const dateFormatter = (date: MaterialUiPickersDate, invalidLabel: string): string => {
+    if (date === null) {
+      return invalidLabel
+    }
+
     const ymdDate = ymd(date)
     if (todayDate === ymdDate) {
       return intl.formatMessage({ id: 'TaskForm.today' })
@@ -72,10 +77,10 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
   }
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault()
-    if (creating) {
+    if (task === undefined) {
       dispatch(saveNewTask(eventDate, content))
       setContent('')
-    } else if ('id' in task) {
+    } else {
       dispatch(updateTask({ id: task.id, content, eventDate }))
       onClose()
     }
@@ -109,7 +114,7 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
           disableToolbar
           variant="inline"
           value={ymdToDate(eventDate)}
-          onChange={newDate => setEventDate(ymd(newDate))}
+          onChange={newDate => (newDate !== null) && setEventDate(ymd(newDate))}
           labelFunc={dateFormatter}
           InputProps={{
             startAdornment: (

@@ -37,12 +37,17 @@ function App (): React.ReactElement {
   const isLoggedIn = auth.isAuthenticated()
   useEffect(() => {
     if (isLoggedIn) {
-      dispatch(loadUserInfo())
       dispatch(setTodayDate(ymd(new Date())))
       const interval = setInterval(() => dispatch(setTodayDate(ymd(new Date()))), 60000)
       return () => clearInterval(interval)
     }
   }, [dispatch, isLoggedIn])
+  const accessToken = useSelector<RootState, string | null>(state => state.user.accessToken)
+  useEffect(() => {
+    if (accessToken !== null) {
+      dispatch(loadUserInfo())
+    }
+  }, [dispatch, accessToken])
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
   useEffect(() => {
     dispatch(loadOverdueTasks()).catch(console.error)

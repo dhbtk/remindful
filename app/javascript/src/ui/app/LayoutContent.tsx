@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { MouseEventHandler, useState } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Typography from '@material-ui/core/Typography'
-import { AppBar, Avatar, Theme } from '@material-ui/core'
+import { AppBar, Avatar, Menu, MenuItem, Theme } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { useAppDispatch } from '../../store'
 import { toggleDrawer } from '../../store/layout'
@@ -42,6 +42,10 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       display: 'flex',
       flexDirection: 'column'
+    },
+    avatar: {
+      width: theme.spacing(4),
+      height: theme.spacing(4)
     }
   })
 )
@@ -49,19 +53,39 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function LayoutContent ({ title, actions, children }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
-  const toggleDrawerAction = (): void => dispatch(toggleDrawer())
+  const toggleDrawerAction = (): void => { dispatch(toggleDrawer()) }
   const user = useSelector<RootState, UserInfo>(state => state.user.user)
-  const signOut = (): void => dispatch(clearUserInfo())
+  const signOut = (): void => { dispatch(clearUserInfo()) }
+  const [anchorElement, setAnchorElement] = useState<Element | null>(null)
+
+  const openMenu: MouseEventHandler = e => setAnchorElement(e.currentTarget)
+  const closeMenu = (): void => setAnchorElement(null)
 
   const userButton = user.anonymous ? [] : (
     <IconButton
+      aria-controls="profile-menu"
+      aria-haspopup="true"
+      size="small"
+      onClick={openMenu}
       edge="end">
-      <Avatar alt="user avatar" src={user.avatarUrl} />
+      <Avatar alt="user avatar" src={user.avatarUrl} className={classes.avatar}/>
     </IconButton>
   )
 
   return (
     <React.Fragment>
+      <Menu
+        id="profile-menu"
+        open={Boolean(anchorElement)}
+        anchorEl={anchorElement}
+        keepMounted
+        onClose={closeMenu}>
+        <MenuItem onClick={closeMenu}>Profile</MenuItem>
+        <MenuItem onClick={() => {
+          signOut()
+          closeMenu()
+        }}>Sign Out</MenuItem>
+      </Menu>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar variant="dense">
           <IconButton

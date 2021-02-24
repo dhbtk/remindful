@@ -20,6 +20,11 @@
     "noEmit": true,
     "jsx": "react"
   },
+  "include": [
+    "custom.d.ts",
+    "app/javascript/**/*.ts",
+    "app/javascript/**/*.tsx"
+  ],
   "exclude": [
     "**/*.spec.ts",
     "node_modules",

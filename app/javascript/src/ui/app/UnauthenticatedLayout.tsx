@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => createStyles({
   toolbar: theme.mixins.toolbar,
   title: {
     flexGrow: 1
-  },
+  }
 }))
 
 export default function UnauthenticatedLayout ({ title, children }: { title: React.ReactNode, children: React.ReactNode }): React.ReactElement {
