@@ -108,21 +108,16 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Pull base image
-        run: docker pull $(head -n 1 Dockerfile | cut -d' ' -f 2)
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-        with:
-          key: main-0
-          restore-keys: main-0
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MASTER_KEY: ${{ secrets.MASTER_KEY }}
         run: |
-          docker build --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker build --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg MASTER_KEY=$MASTER_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy:
     runs-on: ubuntu-latest

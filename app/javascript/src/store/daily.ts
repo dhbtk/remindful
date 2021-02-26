@@ -12,6 +12,7 @@ import {
   unsetTask
 } from './commonActions'
 import { ymd } from '../ui/ymdUtils'
+import { RootState } from './rootReducer'
 
 export interface DayState {
   date: string
@@ -35,30 +36,39 @@ export interface DayData {
 export const saveNewTask: (date: string, content: string) => AppThunk = (date, content) => async (dispatch, getState) => {
   const planners = getState().tasks
   const tempId = (Object.values(planners.entities).length === 0) ? 1 : (Math.max(...Object.values(planners.entities).map(p => p.id)) + 1)
-  const newPlanner: Task = {
+  const newTask: Task = {
     id: tempId,
     eventDate: date,
     status: 'pending',
     actedAt: null,
     content: content
   }
-  dispatch(setTask(newPlanner))
-  await taskApi.create(newPlanner)
+  dispatch(setTask(newTask))
+  await taskApi.create(newTask)
   await dispatch(loadDayData(date))
 }
 
 export const updateTask: (data: Partial<Task> & Pick<Task, 'id' | 'eventDate'>) => AppThunk = data => async (dispatch, getState) => {
-  const currentTask = getState().tasks.entities[data.id]
+  const state: RootState = getState()
+  const currentTask = state.tasks.entities[data.id]
   if (data.eventDate !== currentTask.eventDate) {
-    const oldDayIds = getState().daily.days[currentTask.eventDate].taskIds.filter(id => id !== data.id)
-    const newIds = [...getState().daily.days[data.eventDate].taskIds, data.id]
-    dispatch(updateTaskIds({ date: data.eventDate, ids: newIds }))
+    const oldDayIds = state.daily.days[currentTask.eventDate]?.taskIds?.filter(id => id !== data.id) ?? []
     dispatch(updateTaskIds({ date: currentTask.eventDate, ids: oldDayIds }))
-    await taskApi.reorder(newIds)
+    if (state.daily.days[data.eventDate] !== undefined) {
+      const newIds = [...state.daily.days[data.eventDate].taskIds, data.id]
+      dispatch(updateTaskIds({ date: data.eventDate, ids: newIds }))
+      await taskApi.reorder(newIds)
+    }
   }
   const updatedTask: Task = { ...currentTask, ...data }
   dispatch(setTask(updatedTask))
   await taskApi.update(updatedTask)
+  dispatch(loadTasks(data.eventDate)).catch(console.error)
+  if (state.tasks.overdueIds.includes(data.id)) {
+    dispatch(loadOverdueTasks()).catch(console.error)
+  } else if (data.eventDate !== currentTask.eventDate) {
+    dispatch(loadTasks(currentTask.eventDate)).catch(console.error)
+  }
 }
 
 export const reorderTasks: (date: string | null, startIndex: number, endIndex: number) => AppThunk =
@@ -112,6 +122,9 @@ const dailySlice = createSlice({
       }
     },
     updateTaskIds (state: DailyState, { payload }: PayloadAction<{ date: string, ids: number[] }>) {
+      if (state.days[payload.date] === undefined) {
+        state.days[payload.date] = dayInitialState(payload.date)
+      }
       state.days[payload.date].taskIds = payload.ids
     }
   },

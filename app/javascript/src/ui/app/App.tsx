@@ -19,6 +19,7 @@ import { loadOverdueTasks } from '../../store/commonActions'
 import { ymd } from '../ymdUtils'
 import TodayPage from '../today/TodayPage'
 import DrawerLayout from './DrawerLayout'
+import HabitsPage from '../habits/HabitsPage'
 
 const theme = createMuiTheme({
   palette: {
@@ -78,6 +79,9 @@ function App (): React.ReactElement {
                     </PrivateRoute>
                     <PrivateRoute exact path={['/weekly', '/weekly/:weekDate']}>
                       <WeeklyPage/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/habits">
+                      <HabitsPage/>
                     </PrivateRoute>
                     <Route path="*">
                       <Redirect to="/"/>
