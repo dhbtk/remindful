@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { FormattedMessage } from 'react-intl'
-import { Container, createStyles } from '@material-ui/core'
+import { Container, createStyles, Paper } from '@material-ui/core'
 import DaySummary from '../daily/DaySummary'
 import DayInformation from '../weekly/DayInformation'
 import { useAppDispatch } from '../../store'
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => createStyles({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     flex: '1',
-    background: '#fff'
+    backgroundColor: theme.palette.background.paper
   }
 }))
 

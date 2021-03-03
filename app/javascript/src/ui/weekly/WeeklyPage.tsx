@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => createStyles({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     flex: '1',
-    background: '#fff'
+    background: theme.palette.background.paper
   },
   daySlice: {
     flex: '1',

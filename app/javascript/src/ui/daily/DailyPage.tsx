@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => createStyles({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     flex: '1',
-    background: '#fff'
+    background: theme.palette.background.paper
   },
   paper: {
     padding: theme.spacing(2),

@@ -42,7 +42,8 @@ const useStyles = makeStyles(theme => createStyles({
   },
   main: {
     flex: '1',
-    borderBottom: '1px solid rgba(0, 0, 0, .08)'
+    borderBottom: '1px solid',
+    borderColor: theme.palette.divider
   },
   tinyButton: {
     padding: '0'

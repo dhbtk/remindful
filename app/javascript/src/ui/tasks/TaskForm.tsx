@@ -1,7 +1,7 @@
 import { Task } from '../../store/common'
 import React, { FormEvent, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Button, InputAdornment, TextField } from '@material-ui/core'
+import { Button, InputAdornment, Paper, TextField } from '@material-ui/core'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { DatePicker } from '@material-ui/pickers'
 import { nextYmd, ymd, ymdToDate } from '../ymdUtils'
@@ -21,8 +21,6 @@ interface Props {
 
 const useStyles = makeStyles(theme => createStyles({
   content: {
-    border: '1px solid rgba(0, 0, 0, .2)',
-    borderRadius: '3px',
     padding: theme.spacing(1),
     paddingTop: 0
   },
@@ -88,7 +86,7 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
 
   return (
     <form noValidate autoComplete="off" className={classes.root} onSubmit={onSubmit}>
-      <div className={classes.content}>
+      <Paper variant="outlined" className={classes.content}>
         <div>
           <TextField
             className={classes.contentInput}
@@ -124,7 +122,7 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
             )
           }}
         />
-      </div>
+      </Paper>
       <div className={classes.buttons}>
         <Button type="submit" variant="contained" color="primary" size="small" disabled={content.trim().length === 0}>
           <FormattedMessage id={creating ? 'TaskForm.create' : 'TaskForm.save'} defaultMessage="Save"/>

@@ -19,7 +19,7 @@ export interface TasksState {
   overdueIds: number[]
 }
 
-async function updateAndReload (task: Task, dispatch: AppDispatch, getState: () => RootState) {
+async function updateAndReload (task: Task, dispatch: AppDispatch, getState: () => RootState): Promise<void> {
   dispatch(setTask(task))
   const isOverdue = getState().tasks.overdueIds.includes(task.id)
   if (isOverdue) {
@@ -49,8 +49,7 @@ export const dismissTask: (id: number) => AppThunk = (id) => async (dispatch, ge
 export const undoCompleteTask: (id: number) => AppThunk = (id) => async (dispatch, getState) => {
   const task = getState().tasks.entities[id]
   const updatedTask: Task = { ...task, status: 'pending', actedAt: null }
-  dispatch(setTask(updatedTask))
-  await taskApi.update(updatedTask)
+  await updateAndReload(updatedTask, dispatch, getState)
 }
 
 export const deleteTask: (id: number) => AppThunk = id => async (dispatch, getState) => {

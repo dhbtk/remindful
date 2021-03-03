@@ -1,12 +1,12 @@
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import DailyPage from '../daily/DailyPage'
-import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core'
+import { createMuiTheme, CssBaseline, ThemeProvider, useMediaQuery } from '@material-ui/core'
 import { PrivateRoute } from './PrivateRoute'
 import WelcomePage from '../welcome/WelcomePage'
 import LocaleProvider from './LocaleProvider'
 import { useAppDispatch } from '../../store'
-import React, { useEffect } from 'react'
-import { setAndLoadToday, setTodayDate } from '../../store/daily'
+import React, { useEffect, useMemo } from 'react'
+import { setTodayDate } from '../../store/daily'
 import Notifier from './Notifier'
 import { SnackbarProvider } from 'notistack'
 import WeeklyPage from '../weekly/WeeklyPage'
@@ -20,17 +20,6 @@ import { ymd } from '../ymdUtils'
 import TodayPage from '../today/TodayPage'
 import DrawerLayout from './DrawerLayout'
 import HabitsPage from '../habits/HabitsPage'
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#8c82fc'
-    },
-    secondary: {
-      main: '#ff9de2'
-    }
-  }
-})
 
 function App (): React.ReactElement {
   const dispatch = useAppDispatch()
@@ -53,6 +42,18 @@ function App (): React.ReactElement {
   useEffect(() => {
     dispatch(loadOverdueTasks()).catch(console.error)
   }, [dispatch, todayDate])
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const theme = useMemo(() => createMuiTheme({
+    palette: {
+      primary: {
+        main: '#8c82fc'
+      },
+      secondary: {
+        main: '#ff9de2'
+      },
+      type: prefersDarkMode ? 'dark' : 'light'
+    }
+  }), [prefersDarkMode])
 
   return (
     <LocaleProvider>

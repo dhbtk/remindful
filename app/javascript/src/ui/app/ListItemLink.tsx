@@ -15,7 +15,7 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   current: {
-    background: theme.palette.grey[200]
+    background: 'rgba(0, 0, 0, .12)'
   }
 }))
 
