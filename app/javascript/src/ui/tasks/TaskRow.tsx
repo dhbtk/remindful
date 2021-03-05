@@ -148,9 +148,9 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
           </div>
           <div className={classes.chips}>
             {isOverdue && <TaskDateDisplay task={task}/>}
-            <Chip label="chip" size="small" onDelete={() => {}}/>
-            <Chip label="chip" size="small" onDelete={() => {}}/>
-            <Chip label="chip" size="small" onDelete={() => {}}/>
+            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
           </div>
         </div>
       )}
