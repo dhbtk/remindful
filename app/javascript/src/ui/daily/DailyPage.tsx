@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { Button, Container, createStyles, IconButton } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Button, IconButton } from '@material-ui/core'
 import DaySummary from './DaySummary'
 import { FormattedMessage } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -14,27 +13,9 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import DayInformation from '../weekly/DayInformation'
 import LayoutContent from '../app/LayoutContent'
-
-const useStyles = makeStyles((theme) => createStyles({
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    flex: '1',
-    background: theme.palette.background.paper
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'auto',
-    flexDirection: 'column'
-  },
-  fixedHeight: {
-    height: 240
-  }
-}))
+import LayoutContainer from '../app/LayoutContainer'
 
 export default function DailyPage (): React.ReactElement {
-  const classes = useStyles()
   const { date } = useParams<{ date: string }>()
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -66,11 +47,11 @@ export default function DailyPage (): React.ReactElement {
     <LayoutContent
       title={<FormattedMessage id="DailyPage.title" defaultMessage="{today, date, long}" values={{ today: ymdToDate(date) }}/>}
       actions={actions}>
-      <Container maxWidth="md" className={classes.container}>
+      <LayoutContainer maxWidth="md">
         <DaySummary date={date}/>
         <DayInformation date={date} overdue/>
         <DayInformation date={date}/>
-      </Container>
+      </LayoutContainer>
     </LayoutContent>
   )
 }

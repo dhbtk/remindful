@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useState } from 'react'
+import React, { MouseEventHandler, useMemo, useState } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -11,10 +11,13 @@ import { drawerWidth } from './DrawerLayout'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { clearUserInfo, UserInfo } from '../../store/user'
+import linkRef from './linkRef'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 interface Props {
   title: React.ReactNode
   actions?: React.ReactNode
+  parentLink?: string
   children: React.ReactNode
 }
 
@@ -41,7 +44,13 @@ const useStyles = makeStyles((theme: Theme) =>
     content: {
       flexGrow: 1,
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      position: 'relative',
+      '& .MuiFab-root': {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2)
+      }
     },
     avatar: {
       width: theme.spacing(4),
@@ -50,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export default function LayoutContent ({ title, actions, children }: Props): React.ReactElement {
+export default function LayoutContent ({ title, actions, children, parentLink }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const toggleDrawerAction = (): void => { dispatch(toggleDrawer()) }
@@ -60,6 +69,7 @@ export default function LayoutContent ({ title, actions, children }: Props): Rea
 
   const openMenu: MouseEventHandler = e => setAnchorElement(e.currentTarget)
   const closeMenu = (): void => setAnchorElement(null)
+  const ParentLink = useMemo(() => linkRef(parentLink ?? ''), [linkRef, parentLink])
 
   const userButton = user.anonymous ? [] : (
     <IconButton
@@ -88,15 +98,25 @@ export default function LayoutContent ({ title, actions, children }: Props): Rea
       </Menu>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar variant="dense">
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={toggleDrawerAction}
-            className={classes.menuButton}
-          >
-            <MenuIcon/>
-          </IconButton>
+          {(parentLink === undefined ? (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={toggleDrawerAction}
+              className={classes.menuButton}
+            >
+              <MenuIcon/>
+            </IconButton>
+          ) : (
+            <IconButton
+              color="inherit"
+              aria-label="back"
+              edge="start"
+              component={ParentLink}>
+              <ArrowBackIcon/>
+            </IconButton>
+          ))}
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {title}
           </Typography>

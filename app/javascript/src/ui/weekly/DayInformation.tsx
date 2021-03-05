@@ -7,6 +7,7 @@ import linkRef from '../app/linkRef'
 import { ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
+import { themeColors } from '../app/App'
 
 export interface Props {
   date: string
@@ -19,8 +20,7 @@ const useStyles = makeStyles((theme) => createStyles({
     textDecoration: 'none',
     color: 'inherit',
     display: 'block',
-    borderBottom: '1px solid',
-    borderColor: theme.palette.divider,
+    borderBottom: `1px solid ${themeColors.divider}`,
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     marginBottom: 0,

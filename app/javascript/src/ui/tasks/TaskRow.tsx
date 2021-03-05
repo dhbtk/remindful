@@ -15,6 +15,7 @@ import TaskDateDisplay from './TaskDateDisplay'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { ymdToDate } from '../ymdUtils'
+import { themeColors } from '../app/App'
 
 interface Props {
   draggableProvided: DraggableProvided
@@ -42,8 +43,7 @@ const useStyles = makeStyles(theme => createStyles({
   },
   main: {
     flex: '1',
-    borderBottom: '1px solid',
-    borderColor: theme.palette.divider
+    borderBottom: `1px solid ${themeColors.divider}`
   },
   tinyButton: {
     padding: '0'
@@ -65,7 +65,14 @@ const useStyles = makeStyles(theme => createStyles({
     display: 'flex'
   },
   content: {
-    flexGrow: 1
+    flexGrow: 1,
+    transition: 'color 300ms linear, text-decoration-color 300ms linear',
+    textDecorationColor: 'rgba(0, 0, 0, 0)'
+  },
+  contentCompleted: {
+    color: theme.palette.text.disabled,
+    textDecorationColor: theme.palette.text.disabled,
+    textDecoration: 'line-through'
   },
   checkbox: {
     padding: 0,
@@ -119,7 +126,13 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
               onChange={toggleTaskCompletion}
               size="small"
             />
-            <Typography component="p" variant="body2" className={classes.content}>{task.content}</Typography>
+            <Typography
+              component="p"
+              variant="body2"
+              className={clsx(classes.content, task.status !== 'pending' && classes.contentCompleted)}
+            >
+              {task.content}
+            </Typography>
             <IconButton
               className={clsx(classes.gone, classes.tinyButton)}
               size="small"

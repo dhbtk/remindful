@@ -20,6 +20,13 @@ import { ymd } from '../ymdUtils'
 import TodayPage from '../today/TodayPage'
 import DrawerLayout from './DrawerLayout'
 import HabitsPage from '../habits/HabitsPage'
+import NewHabitPage from '../habits/NewHabitPage'
+
+export const themeColors = {
+  primary: '#8c82fc',
+  secondary: '#ff9de2',
+  divider: 'rgba(0, 0, 0, .12)'
+}
 
 function App (): React.ReactElement {
   const dispatch = useAppDispatch()
@@ -35,7 +42,7 @@ function App (): React.ReactElement {
   const accessToken = useSelector<RootState, string | null>(state => state.user.accessToken)
   useEffect(() => {
     if (accessToken !== null) {
-      dispatch(loadUserInfo())
+      dispatch(loadUserInfo()).catch(console.error)
     }
   }, [dispatch, accessToken])
   const todayDate = useSelector<RootState, string>(state => state.daily.todayDate)
@@ -46,10 +53,10 @@ function App (): React.ReactElement {
   const theme = useMemo(() => createMuiTheme({
     palette: {
       primary: {
-        main: '#8c82fc'
+        main: themeColors.primary
       },
       secondary: {
-        main: '#ff9de2'
+        main: themeColors.secondary
       },
       type: prefersDarkMode ? 'dark' : 'light'
     }
@@ -83,6 +90,9 @@ function App (): React.ReactElement {
                     </PrivateRoute>
                     <PrivateRoute exact path="/habits">
                       <HabitsPage/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/habits/new">
+                      <NewHabitPage/>
                     </PrivateRoute>
                     <Route path="*">
                       <Redirect to="/"/>

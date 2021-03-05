@@ -76,3 +76,48 @@ TaskForm:
   tomorrow: Amanhã
 DayInformation:
   overdue: Atrasadas
+NewHabitPage:
+  title: Novo hábito
+HabitForm:
+  name:
+    label: Nome
+    helperText: Este será o texto que aparecerá nas suas tarefas do dia.
+  repeatIntervalUnit:
+    label: Repetição
+    values:
+      business_day: Em dias úteis
+      weekend: Aos finais de semana
+      weekday: Em dias específicos da semana
+      day: A cada número de dias
+      week: A cada número de semanas
+      month: Em um dia específico do mês
+  daysToRepeat: "Dias para repetir:"
+  repeatSunday:
+    label: Repetir aos domingos
+    abbr: D
+  repeatMonday:
+    label: Repetir às segundas-feiras
+    abbr: S
+  repeatTuesday:
+    label: Repetir às terças-feiras
+    abbr: T
+  repeatWednesday:
+    label: Repetir às quartas-feiras
+    abbr: Q
+  repeatThursday:
+    label: Repetir às quintas-feiras
+    abbr: Q
+  repeatFriday:
+    label: Repetir às sextas-feiras
+    abbr: S
+  repeatSaturday:
+    label: Repetir aos sábados
+    abbr: S
+  repeat_day:
+    label: Dias
+  repeat_week:
+    label: Semanas
+  repeat_month:
+    label: Dia do mês
+  startDate:
+    label: Data de início

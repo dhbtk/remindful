@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import linkRef from './linkRef'
 import { useAppDispatch } from '../../store'
 import { closeDrawer } from '../../store/layout'
+import { themeColors } from './App'
 
 interface Props {
   icon: React.ReactNode
@@ -15,7 +16,7 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   current: {
-    background: 'rgba(0, 0, 0, .12)'
+    background: themeColors.divider
   }
 }))
 
@@ -29,7 +30,9 @@ export default function ListItemLink (props: Props): React.ReactElement {
     () => linkRef(to),
     [to, linkRef]
   )
-  const onClick = (): void => dispatch(closeDrawer())
+  const onClick = (): void => {
+    dispatch(closeDrawer())
+  }
 
   return (
     <li className={clsx(pathname === to && classes.current)}>

@@ -7,8 +7,8 @@ import ptBrDateMap from 'date-fns/locale/pt-BR'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 
-function flattenObject (sourceObject: any): { [key: string]: string } {
-  const toReturn = {}
+function flattenObject (sourceObject: any): Record<string, string> {
+  const toReturn: Record<string, string> = {}
   Object.keys(sourceObject).forEach(key => {
     if (sourceObject[key] !== null && typeof sourceObject[key] === 'object') {
       const flatObject = flattenObject(sourceObject[key])

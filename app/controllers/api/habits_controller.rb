@@ -46,7 +46,8 @@ module Api
 
     def habit_params
       params.require(:habit).permit(:name, :repeat_interval, :repeat_interval_unit, :start_date, :notify,
-                                    :notification_time)
+                                    :notification_time, :repeat_sunday, :repeat_monday, :repeat_tuesday,
+                                    :repeat_wednesday, :repeat_thursday, :repeat_friday, :repeat_saturday)
     end
   end
 end

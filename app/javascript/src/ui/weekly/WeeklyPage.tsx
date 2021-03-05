@@ -14,14 +14,9 @@ import linkRef from '../app/linkRef'
 import { bulkLoadTasks } from '../../store/commonActions'
 import { useAppDispatch } from '../../store'
 import LayoutContent from '../app/LayoutContent'
+import LayoutContainer from '../app/LayoutContainer'
 
 const useStyles = makeStyles((theme) => createStyles({
-  container: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    flex: '1',
-    background: theme.palette.background.paper
-  },
   daySlice: {
     flex: '1',
     margin: theme.spacing(1),
@@ -41,7 +36,7 @@ const useStyles = makeStyles((theme) => createStyles({
     flexDirection: 'column'
   },
   title: {
-    flexGrow: '1'
+    flexGrow: 1
   },
   todayButton: {
     marginRight: theme.spacing(2)
@@ -69,7 +64,7 @@ export default function WeeklyPage (): React.ReactElement {
 
   return (
     <LayoutContent title={<FormattedMessage id="WeeklyPage.title" defaultMessage="My Week"/>} actions={[]}>
-      <Container maxWidth="md" className={classes.container}>
+      <LayoutContainer maxWidth="md">
         <Toolbar variant="dense">
           <Typography component="h2" variant="h6" className={classes.title}>
             {intl.formatDate(ymdToDate(weekDate), { month: 'long', year: 'numeric' })}
@@ -88,7 +83,7 @@ export default function WeeklyPage (): React.ReactElement {
         {allDates.map(date => (
           <DayInformation date={date} key={date}/>
         ))}
-      </Container>
+      </LayoutContainer>
     </LayoutContent>
   )
 }
