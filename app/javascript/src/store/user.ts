@@ -3,6 +3,7 @@ import userApi from '../api/userApi'
 import { LoadStatus } from './common'
 import { Pronouns } from './registrationForm'
 import { string } from 'yup'
+import { resetState } from './commonActions'
 
 export interface AnonymousUserInfo {
   anonymous: true
@@ -58,6 +59,7 @@ const userInfoSlice = createSlice({
     }
   },
   extraReducers: builder => {
+    builder.addCase(resetState, () => ({ ...initialState }))
     builder.addCase(registerLightUser.pending, (state: UserState) => {
       state.status = 'loading'
     })

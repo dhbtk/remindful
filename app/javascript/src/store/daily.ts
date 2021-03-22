@@ -8,6 +8,7 @@ import {
   loadOverdueTasks,
   loadTasks,
   reorderOverdueTasks,
+  resetState,
   setTask,
   unsetTask
 } from './commonActions'
@@ -74,19 +75,19 @@ export const updateTask: (data: Partial<Task> & Pick<Task, 'id' | 'eventDate'>) 
 export const reorderTasks: (date: string | null, startIndex: number, endIndex: number) => AppThunk =
   (date, startIndex, endIndex) => async (dispatch, getState) => {
     const isOverdue = date === null
-    const allIds = [...isOverdue ? getState().tasks.overdueIds : getState().daily.days[date].taskIds]
+    const allIds = [...date === null ? getState().tasks.overdueIds : getState().daily.days[date].taskIds]
     const [removed] = allIds.splice(startIndex, 1)
     allIds.splice(endIndex, 0, removed)
     if (isOverdue) {
       dispatch(reorderOverdueTasks(allIds))
     } else {
-      dispatch(updateTaskIds({ date, ids: allIds }))
+      dispatch(updateTaskIds({ date: date as string, ids: allIds }))
     }
     await taskApi.reorder(allIds)
     if (isOverdue) {
       await dispatch(loadOverdueTasks())
     } else {
-      await dispatch(loadDayData(date))
+      await dispatch(loadDayData(date as string))
     }
   }
 
@@ -129,6 +130,12 @@ const dailySlice = createSlice({
     }
   },
   extraReducers: builder => {
+    builder.addCase(resetState, () => {
+      return {
+        todayDate: ymd(new Date()),
+        days: {}
+      }
+    })
     builder.addCase(loadDayData.pending, (state: DailyState, { meta: { arg } }) => {
       if (state.days[arg] !== undefined) {
         state.days[arg].status = 'loading'
@@ -164,7 +171,7 @@ const dailySlice = createSlice({
       state.days[date].taskIds = payload.map(it => it.id)
     })
     builder.addCase(bulkLoadTasks.fulfilled, (state: DailyState, { payload }) => {
-      const dates = [...new Set(payload.map(e => e.eventDate))]
+      const dates = Array.from(new Set(payload.map(e => e.eventDate)))
       dates.forEach(date => {
         if (state.days[date] === undefined) {
           state.days[date] = dayInitialState(date)

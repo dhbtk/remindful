@@ -1,3 +1,5 @@
+import { HabitFormState } from '../ui/habits/HabitForm'
+
 export type LoadStatus = 'idle' | 'loading' | 'failed'
 export type RepeatIntervalUnit = 'day' | 'week' | 'month' | 'business_day' | 'weekend' | 'weekday'
 
@@ -20,6 +22,8 @@ export interface Habit {
 }
 
 export const repeatIntervalUnits: RepeatIntervalUnit[] = ['business_day', 'weekend', 'weekday', 'day', 'week', 'month']
+export const weekdayOptions: Array<keyof Habit> = ['repeatSunday', 'repeatMonday', 'repeatTuesday',
+  'repeatWednesday', 'repeatThursday', 'repeatFriday', 'repeatSaturday']
 
 export type TaskStatus = 'pending' | 'done' | 'dismissed'
 

@@ -47,7 +47,7 @@ class User < ApplicationRecord
 
   def create_tasks_for_date(date)
     habits.active(date).find_each do |habit|
-      habit.tasks.pending.create(event_date: date, content: habit.name, user: self) if habit.visible_at(date)
+      habit.create_task(date)
     end
   end
 

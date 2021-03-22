@@ -14,6 +14,7 @@ class Task < ApplicationRecord
   validates :status, presence: true
   validates :acted_at, presence: true, unless: -> { pending? }
   validates :content, :event_date, presence: true
+  validates :event_date, uniqueness: { scope: %i[habit] }, if: -> { habit.present? }
 
   def self.for_display
     includes(:habit).not_deleted.order(Arel.sql('event_date, coalesce("order", id)'))

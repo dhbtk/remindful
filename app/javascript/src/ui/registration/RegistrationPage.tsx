@@ -18,6 +18,7 @@ import { FORM_ERROR } from 'final-form'
 import userApi from '../../api/userApi'
 import { Alert } from '@material-ui/lab'
 import UnauthenticatedLayout from '../app/UnauthenticatedLayout'
+import { AnySchema } from 'yup'
 
 const useStyles = makeStyles((theme) => createStyles({
   form: {
@@ -60,8 +61,10 @@ const schema = Yup.object().shape({
   name: Yup.string().required(),
   password: Yup.string().min(8).required(),
   passwordConfirmation: Yup.string().required().oneOf([Yup.ref('password')]),
-  agreeToTerms: Yup.boolean().oneOf([true])
-})
+  agreeToTerms: Yup.boolean().oneOf([true]),
+  avatarUrl: Yup.string(),
+  pronouns: Yup.string()
+}) as AnySchema<RegistrationFormState>
 
 const gravatar: (email: string | null | undefined) => string = email => {
   if (email === null || email === undefined || email.trim() === '') {
@@ -100,7 +103,7 @@ export default function RegistrationPage (): React.ReactElement {
   const [formLoading, setFormLoading] = useState(false)
   const { translateServerErrors, translator } = useTranslator('RegistrationForm')
 
-  async function onSubmit (values: RegistrationFormState): Promise<Record<string, string>> {
+  async function onSubmit (values: RegistrationFormState): Promise<Record<string, string> | undefined> {
     const fullData: RegistrationFormState = { ...values, avatarUrl: debouncedAvatarUrl }
     if (formLoading) return
     setFormLoading(true)
@@ -112,9 +115,10 @@ export default function RegistrationPage (): React.ReactElement {
       } else {
         dispatch(setUserInfo(response))
       }
-    } catch (e: Error) {
+    } catch (e) {
       setFormLoading(false)
-      return { [FORM_ERROR]: `${e.name} - ${e.message}` }
+      const err = e as Error
+      return { [FORM_ERROR]: `${err.name} - ${err.message}` }
     }
   }
 

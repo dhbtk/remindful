@@ -1,7 +1,7 @@
 import store from '../store'
 import camelcaseKeys from 'camelcase-keys'
 import snakecaseKeys from 'snakecase-keys'
-import { clearUserInfo } from '../store/user'
+import { resetState } from '../store/commonActions'
 
 export interface ErrorResponse {
   errors: ApiError[]
@@ -41,7 +41,7 @@ export function unwrap<T> (response: ResponseWrapper<T>): T {
   if (isSuccessResponse(response)) {
     return response.successBody
   } else if (response.status === 204) {
-    return undefined as T
+    return undefined as unknown as T
   }
   throw new Error('Unsuccessful response')
 }
@@ -70,7 +70,7 @@ async function handleStatus (response: Response): Promise<Response> {
   } else {
     console.error(response)
     if (response.status === 401) {
-      store.dispatch(clearUserInfo())
+      store.dispatch(resetState())
     }
     const error: FetchError = new Error(response.status.toString()) as FetchError
     error.response = response
@@ -92,12 +92,13 @@ async function toJson<T> (response: Response): Promise<ResponseWrapper<T>> {
 
 export async function formPost<T> (path: string, body: Record<string, string>): Promise<ResponseWrapper<T>> {
   const formData = new URLSearchParams(snakecaseKeys(body))
-
-  return await fetch(path, {
+  const response = await fetch(path, {
     method: 'POST',
     headers: headers(),
     body: formData
-  }).then(handleStatus).then(toJson)
+  }).then(handleStatus)
+
+  return await toJson(response)
 }
 
 export async function apiGet<T> (path: string, query: Record<string, string | string[]> = {}): Promise<ResponseWrapper<T>> {
@@ -107,25 +108,28 @@ export async function apiGet<T> (path: string, query: Record<string, string | st
     if (typeof snakecased[key] === 'string') {
       formData.append(key, snakecased[key])
     } else {
-      snakecased[key].forEach(value => {
+      snakecased[key].forEach((value: string) => {
         formData.append(`${key}[]`, value)
       })
     }
   })
 
-  return await fetch(`${path}?${formData.toString()}`, {
+  const response = await fetch(`${path}?${formData.toString()}`, {
     method: 'GET',
     headers: headers()
-  }).then(handleStatus).then(toJson)
+  }).then(handleStatus)
+
+  return await toJson(response)
 }
 
 function jsonBody (method: string) {
   return async function <T> (path: string, body: any = {}): Promise<ResponseWrapper<T>> {
-    return await fetch(path, {
+    const response = await fetch(path, {
       method,
       headers: { ...headers(), 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(snakecaseKeys(body))
-    }).then(handleStatus).then(toJson)
+    }).then(handleStatus)
+    return await toJson(response)
   }
 }
 

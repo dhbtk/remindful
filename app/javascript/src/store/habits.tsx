@@ -1,10 +1,31 @@
-import { Habit } from './common'
-import { createAction } from '@reduxjs/toolkit'
+import { Habit, LoadStatus } from './common'
+import { createAction, createReducer } from '@reduxjs/toolkit'
+import { loadHabits, resetState } from './commonActions'
 
 export interface HabitsState {
   entities: { [id: number]: Habit }
   ids: number[]
-  newHabit: Habit
+  status: LoadStatus
 }
 
-export const updateNewHabit = createAction<Partial<Habit>>('updateNewHabit')
+const initialState: HabitsState = {
+  entities: {},
+  ids: [],
+  status: 'idle'
+}
+
+export const habits = createReducer(initialState, builder => {
+  builder.addCase(resetState, () => {
+    return { ...initialState }
+  })
+  builder.addCase(loadHabits.pending, state => {
+    state.status = 'loading'
+  })
+  builder.addCase(loadHabits.fulfilled, (state, { payload }) => {
+    state.status = 'idle'
+    state.ids = payload.map(it => it.id)
+    payload.forEach(habit => {
+      state.entities[habit.id] = habit
+    })
+  })
+})

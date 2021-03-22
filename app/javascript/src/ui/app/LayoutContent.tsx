@@ -10,9 +10,10 @@ import { toggleDrawer } from '../../store/layout'
 import { drawerWidth } from './DrawerLayout'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import { clearUserInfo, UserInfo } from '../../store/user'
+import { UserInfo } from '../../store/user'
 import linkRef from './linkRef'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import { resetState } from '../../store/commonActions'
 
 interface Props {
   title: React.ReactNode
@@ -64,7 +65,7 @@ export default function LayoutContent ({ title, actions, children, parentLink }:
   const dispatch = useAppDispatch()
   const toggleDrawerAction = (): void => { dispatch(toggleDrawer()) }
   const user = useSelector<RootState, UserInfo>(state => state.user.user)
-  const signOut = (): void => { dispatch(clearUserInfo()) }
+  const signOut = (): void => { dispatch(resetState()) }
   const [anchorElement, setAnchorElement] = useState<Element | null>(null)
 
   const openMenu: MouseEventHandler = e => setAnchorElement(e.currentTarget)

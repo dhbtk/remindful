@@ -8,7 +8,7 @@ import {
   loadDayData,
   loadOverdueTasks,
   loadTasks,
-  reorderOverdueTasks,
+  reorderOverdueTasks, resetState,
   setTask,
   unsetTask
 } from './commonActions'
@@ -60,6 +60,7 @@ export const deleteTask: (id: number) => AppThunk = id => async (dispatch, getSt
 const initialState: TasksState = { entities: {}, overdueIds: [] }
 
 const tasks = createReducer(initialState, builder => {
+  builder.addCase(resetState, () => ({ ...initialState }))
   builder.addCase(loadDayData.fulfilled, (state: TasksState, { payload }) => {
     payload.tasks.forEach(task => {
       state.entities[task.id] = task
@@ -89,6 +90,9 @@ const tasks = createReducer(initialState, builder => {
   })
   builder.addCase(reorderOverdueTasks, (state: TasksState, { payload }) => {
     state.overdueIds = payload
+  })
+  builder.addCase(unsetTask, (state: TasksState, { payload }) => {
+    state.overdueIds = state.overdueIds.filter(id => id !== payload)
   })
 })
 

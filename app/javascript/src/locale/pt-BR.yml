@@ -121,3 +121,27 @@ HabitForm:
     label: Dia do mês
   startDate:
     label: Data de início
+  notify:
+    label: Enviar notificação
+  notificationTime:
+    label: Horário da notificação
+  submit: Salvar
+HabitListPage:
+  repeatInterval:
+    day: |
+      {interval, plural,
+      one {Todos os dias}
+      other {A cada {interval} dias}
+      }, iniciando {startDate, date, short}
+    week: |
+      {interval, plural,
+      one {Toda semana}
+      other {A cada {interval} semanas}
+      }, iniciando {startDate, date, short}
+    month: |
+      No dia {interval, plural,
+      one {1º}
+      other {{interval}}
+      } de cada mês, a partir de {startDate, date, short}
+    business_day: Todo dia útil, a partir de {startDate, date, short}
+    weekend: Aos sábados e domingos, a partir de {startDate, date, short}

@@ -9,11 +9,11 @@ Yup.setLocale({
   mixed: {
     default: 'invalid',
     required: 'required',
-    oneOf: ({ oneOf }) => ({ key: 'oneOf', values: { oneOf } })
+    oneOf: ({ oneOf }: { oneOf: any }) => ({ key: 'oneOf', values: { oneOf } })
   },
   string: {
     email: 'email',
-    min: ({ min }) => ({ key: 'min', values: { min } })
+    min: ({ min }: { min: any }) => ({ key: 'min', values: { min } })
   }
 })
 

@@ -23,6 +23,13 @@ class Habit < ApplicationRecord
       .where(arel_table[:start_date].lteq(date))
   end
 
+  def create_task(date)
+    return unless visible_at(date)
+    return if tasks.exists?(event_date: date)
+
+    tasks.pending.create(event_date: date, content: name, user: user)
+  end
+
   def visible_at(date)
     return false if deleted_at.present? && deleted_at < date.end_of_day
 
@@ -45,7 +52,7 @@ class Habit < ApplicationRecord
   end
 
   def visible_at_business_day(date)
-    !date.saturday? && !date.sunday?(date)
+    !date.saturday? && !date.sunday?
   end
 
   def visible_at_weekend(date)
@@ -55,7 +62,7 @@ class Habit < ApplicationRecord
   def visible_at_weekday(date)
     days = %i[sunday monday tuesday wednesday thursday friday saturday]
     days.any? do |day|
-      date.public_send("#{day}?") && send("visible_#{day}")
+      date.public_send("#{day}?") && send("repeat_#{day}")
     end
   end
 end

@@ -3,10 +3,13 @@ import { Task, WaterGlass } from './common'
 import taskApi from '../api/taskApi'
 import waterGlassApi from '../api/waterGlassApi'
 import { DayData } from './daily'
+import habitApi from '../api/habitApi'
 
 export const unsetTask = createAction<number>('unsetTask')
 
 export const setTask = createAction<Task>('setTask')
+
+export const resetState = createAction('resetState')
 
 export const loadDayData = createAsyncThunk('today/loadDayData', async (date: string) => {
   const [tasks, waterGlasses]: [Task[], WaterGlass[]] = await Promise.all([
@@ -28,6 +31,10 @@ export const bulkLoadTasks = createAsyncThunk('bulkLoadTasks', async (dates: str
 
 export const loadOverdueTasks = createAsyncThunk('loadOverdueTasks', async () => {
   return await taskApi.overdue()
+})
+
+export const loadHabits = createAsyncThunk('loadHabits', async () => {
+  return await habitApi.getAll()
 })
 
 export const reorderOverdueTasks = createAction<number[]>('reorderOverdueTasks')

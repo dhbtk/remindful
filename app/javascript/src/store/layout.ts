@@ -1,5 +1,6 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
 import { OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack'
+import { resetState } from './commonActions'
 
 export interface SnackNotification {
   message: SnackbarMessage
@@ -46,6 +47,7 @@ const layoutSlice = createSlice({
     }
   },
   extraReducers: builder => {
+    builder.addCase(resetState, () => ({ ...initialState }))
     builder.addCase(enqueueNotification, (state: LayoutState, { payload }) => {
       state.notifications.push(payload)
     })

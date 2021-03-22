@@ -19,7 +19,7 @@ import { loadOverdueTasks } from '../../store/commonActions'
 import { ymd } from '../ymdUtils'
 import TodayPage from '../today/TodayPage'
 import DrawerLayout from './DrawerLayout'
-import HabitsPage from '../habits/HabitsPage'
+import HabitListPage from '../habits/HabitListPage/HabitListPage'
 import NewHabitPage from '../habits/NewHabitPage'
 
 export const themeColors = {
@@ -89,7 +89,7 @@ function App (): React.ReactElement {
                       <WeeklyPage/>
                     </PrivateRoute>
                     <PrivateRoute exact path="/habits">
-                      <HabitsPage/>
+                      <HabitListPage/>
                     </PrivateRoute>
                     <PrivateRoute exact path="/habits/new">
                       <NewHabitPage/>
