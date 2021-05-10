@@ -1,18 +1,26 @@
 import React, { useEffect, useMemo } from 'react'
-import LayoutContent from '../../app/LayoutContent'
+import LayoutContent from '../../layout/DrawerLayout/LayoutContent'
 import { FormattedMessage } from 'react-intl'
-import LayoutContainer from '../../app/LayoutContainer'
-import { Fab, List } from '@material-ui/core'
+import { Fab, LinearProgress, List, Theme } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
-import linkRef from '../../app/linkRef'
+import linkRef from '../../App/linkRef'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import { loadHabits } from '../../../store/commonActions'
 import { RootState } from '../../../store/rootReducer'
 import { Habit } from '../../../store/common'
 import HabitListItem from './HabitListItem'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
+import LayoutContainer from '../../layout/DrawerLayout/LayoutContainer'
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  listContainer: {
+    paddingTop: 0
+  }
+}))
 
 export default function HabitListPage (): React.ReactElement {
+  const classes = useStyles()
   const NewHabitLink = useMemo(() => linkRef('/habits/new'), [linkRef])
   const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
@@ -22,9 +30,10 @@ export default function HabitListPage (): React.ReactElement {
   const isLoading = useSelector<RootState, boolean>(state => state.habits.status === 'loading')
   return (
     <LayoutContent title={<FormattedMessage id="HabitsPage.title"/>}>
-      <LayoutContainer maxWidth="md">
+      <LayoutContainer noPadding className={classes.listContainer} maxWidth="md">
+        <LinearProgress style={isLoading ? {} : { visibility: 'hidden' }} />
         <List>
-          {habits.map(habit => <HabitListItem habit={habit} />)}
+          {habits.map(habit => <HabitListItem habit={habit} key={habit.id} />)}
         </List>
         <Fab color="primary" component={NewHabitLink} aria-label="add">
           <AddIcon/>

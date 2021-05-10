@@ -15,7 +15,7 @@ import TaskDateDisplay from './TaskDateDisplay'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { ymdToDate } from '../ymdUtils'
-import { themeColors } from '../app/App'
+import { themeColors } from '../App/App'
 
 interface Props {
   draggableProvided: DraggableProvided

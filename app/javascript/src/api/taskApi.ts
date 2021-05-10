@@ -6,10 +6,13 @@ const taskApi = {
     return await apiGet<Task[]>('/api/tasks', { date }).then(unwrap)
   },
   forDates: async (dates: string[]): Promise<Task[]> => {
-    return await apiGet<Task[]>('/api/tasks', { date: dates }).then(unwrap)
+    return await apiGet<Task[]>('/api/tasks', { dates }).then(unwrap)
   },
   overdue: async (): Promise<Task[]> => {
     return await apiGet<Task[]>('/api/tasks', { overdue: 'true' }).then(unwrap)
+  },
+  forHabit: async (habitId: number): Promise<Task[]> => {
+    return await apiGet<Task[]>('/api/tasks', { habitId }).then(unwrap)
   },
   create: async (task: Task): Promise<void> => {
     await apiPost('/api/tasks', { task: task })

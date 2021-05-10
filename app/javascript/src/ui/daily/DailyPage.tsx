@@ -8,12 +8,12 @@ import { useAppDispatch } from '../../store'
 import { nextYmd, previousYmd, ymdToDate } from '../ymdUtils'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
-import linkRef from '../app/linkRef'
+import linkRef from '../App/linkRef'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import DayInformation from '../weekly/DayInformation'
-import LayoutContent from '../app/LayoutContent'
-import LayoutContainer from '../app/LayoutContainer'
+import LayoutContent from '../layout/DrawerLayout/LayoutContent'
+import LayoutContainer from '../layout/DrawerLayout/LayoutContainer'
 
 export default function DailyPage (): React.ReactElement {
   const { date } = useParams<{ date: string }>()

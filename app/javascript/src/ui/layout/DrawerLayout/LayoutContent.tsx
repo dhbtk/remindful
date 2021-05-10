@@ -3,64 +3,26 @@ import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Typography from '@material-ui/core/Typography'
-import { AppBar, Avatar, Menu, MenuItem, Theme } from '@material-ui/core'
-import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { useAppDispatch } from '../../store'
-import { toggleDrawer } from '../../store/layout'
-import { drawerWidth } from './DrawerLayout'
+import { AppBar, Avatar, Menu, MenuItem } from '@material-ui/core'
+import { useAppDispatch } from '../../../store'
+import { toggleDrawer } from '../../../store/layout'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store/rootReducer'
-import { UserInfo } from '../../store/user'
-import linkRef from './linkRef'
+import { RootState } from '../../../store/rootReducer'
+import { UserInfo } from '../../../store/user'
+import linkRef from '../../App/linkRef'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import { resetState } from '../../store/commonActions'
+import { resetState } from '../../../store/commonActions'
+import { useStyles } from './styles'
 
 interface Props {
   title: React.ReactNode
   actions?: React.ReactNode
   parentLink?: string
   children: React.ReactNode
+  secondaryToolbar?: React.ReactNode
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBar: {
-      [theme.breakpoints.up('sm')]: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth
-      }
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        display: 'none'
-      }
-    },
-    title: {
-      flexGrow: 1
-    },
-    toolbar: {
-      minHeight: '48px'
-    },
-    content: {
-      flexGrow: 1,
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      '& .MuiFab-root': {
-        position: 'absolute',
-        bottom: theme.spacing(2),
-        right: theme.spacing(2)
-      }
-    },
-    avatar: {
-      width: theme.spacing(4),
-      height: theme.spacing(4)
-    }
-  })
-)
-
-export default function LayoutContent ({ title, actions, children, parentLink }: Props): React.ReactElement {
+export default function LayoutContent ({ title, actions, children, parentLink, secondaryToolbar }: Props): React.ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const toggleDrawerAction = (): void => { dispatch(toggleDrawer()) }
@@ -124,9 +86,11 @@ export default function LayoutContent ({ title, actions, children, parentLink }:
           {actions}
           {userButton}
         </Toolbar>
+        {secondaryToolbar}
       </AppBar>
       <main className={classes.content}>
         <div className={classes.toolbar}/>
+        {secondaryToolbar !== undefined && <div className={classes.toolbar}/>}
         {children}
       </main>
     </React.Fragment>

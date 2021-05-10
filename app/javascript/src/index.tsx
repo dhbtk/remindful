@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
 import store, { persistor } from './store'
-import App from './ui/app/App'
+import App from './ui/App/App'
 import { PersistGate } from 'redux-persist/integration/react'
 
 export default function start (): void {

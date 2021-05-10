@@ -30,6 +30,10 @@ class Task < ApplicationRecord
     pending.where(arel_table[:event_date].lt(date)).for_display
   end
 
+  def self.for_habit(habit_id)
+    where(habit_id: habit_id).order(:event_date).includes(:habit)
+  end
+
   def self.reorder(entities, sorted_ids)
     sorted_ids.each_with_index do |id, index|
       entities.find { |e| e.id == id }.update(order: index)

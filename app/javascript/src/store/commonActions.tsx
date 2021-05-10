@@ -37,4 +37,8 @@ export const loadHabits = createAsyncThunk('loadHabits', async () => {
   return await habitApi.getAll()
 })
 
+export const loadHabitTasks = createAsyncThunk('loadHabitTasks', async (habitId: number) => {
+  return await taskApi.forHabit(habitId)
+})
+
 export const reorderOverdueTasks = createAction<number[]>('reorderOverdueTasks')

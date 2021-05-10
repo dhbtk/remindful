@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import LayoutContent from '../app/LayoutContent'
+import LayoutContent from '../layout/DrawerLayout/LayoutContent'
 import { FormattedMessage } from 'react-intl'
-import LayoutContainer from '../app/LayoutContainer'
+import LayoutContainer from '../layout/DrawerLayout/LayoutContainer'
 import HabitForm from './HabitForm'
 import { Redirect } from 'react-router-dom'
 

@@ -9,13 +9,22 @@ const useStyles = makeStyles((theme) => createStyles({
     paddingBottom: theme.spacing(2),
     flex: '1',
     background: theme.palette.background.paper
+  },
+  noPadding: {
+    paddingLeft: 0,
+    paddingRight: 0
   }
 }))
 
-export default function LayoutContainer ({ className, children, ...other }: ContainerProps): React.ReactElement {
+interface Props extends ContainerProps {
+  noPadding?: boolean
+}
+
+export default function LayoutContainer ({ className, children, noPadding, ...other }: Props): React.ReactElement {
+  const isNoPadding = noPadding === false || noPadding === undefined
   const classes = useStyles()
   return (
-    <Container className={clsx(classes.container, className)} {...other}>
+    <Container className={clsx(classes.container, isNoPadding && classes.noPadding, className)} {...other}>
       {children}
     </Container>
   )

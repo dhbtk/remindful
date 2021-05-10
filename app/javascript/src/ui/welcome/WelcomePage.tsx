@@ -4,10 +4,10 @@ import { Button, Grid, Link } from '@material-ui/core'
 import { useAuth } from '../../store/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import {loadUserInfo, registerLightUser, setAccessToken} from '../../store/user'
+import { loadUserInfo, registerLightUser, setAccessToken } from '../../store/user'
 import React, { useState } from 'react'
-import linkRef from '../app/linkRef'
-import RootLayout from '../app/RootLayout'
+import linkRef from '../App/linkRef'
+import RootLayout from '../layout/RootLayout'
 import { FormattedMessage } from 'react-intl'
 import * as Yup from 'yup'
 import { useTranslator } from '../forms'
@@ -17,6 +17,8 @@ import { makeValidate, TextField } from 'mui-rff'
 import { Alert } from '@material-ui/lab'
 import { Form } from 'react-final-form'
 import { isFetchError } from '../../api/fetchWrappers'
+import { AnySchema } from 'yup'
+import { useAppSelector } from '../../store'
 
 const useStyles = makeStyles((theme) => createStyles({
   form: {
@@ -44,7 +46,7 @@ const initialValues: SignInForm = {
 const schema = Yup.object().shape({
   email: Yup.string().trim().lowercase().email().required(),
   password: Yup.string().required()
-})
+}) as AnySchema<SignInForm>
 
 const fieldLabel: (s: string) => React.ReactNode = (s) => (
   <FormattedMessage
@@ -54,10 +56,10 @@ const fieldLabel: (s: string) => React.ReactNode = (s) => (
 
 export default function WelcomePage (): React.ReactElement {
   const classes = useStyles()
-  const location = useLocation()
+  const location = useLocation<{ from: string } | undefined>()
   const auth = useAuth()
   const dispatch = useDispatch()
-  const userStatus = useSelector<RootState>(state => state.user.status)
+  const userStatus = useAppSelector(state => state.user.status)
   const [formActed, setFormActed] = useState(false)
 
   if (formActed && auth.isAuthenticated()) {
@@ -80,11 +82,12 @@ export default function WelcomePage (): React.ReactElement {
       } else {
         dispatch(setAccessToken(response.accessToken))
       }
-    } catch (e: Error) {
+    } catch (e) {
       if (isFetchError(e) && e.response.status === 401) {
         return { [FORM_ERROR]: 'bubi' }
       }
-      return { [FORM_ERROR]: `${e.name} - ${e.message}` }
+      const err = e as Error
+      return { [FORM_ERROR]: `${err.name} - ${err.message}` }
     }
   }
 

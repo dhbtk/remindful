@@ -3,11 +3,11 @@ import { useIntl } from 'react-intl'
 import { createStyles, Typography } from '@material-ui/core'
 import TaskList from '../tasks/TaskList'
 import { makeStyles } from '@material-ui/core/styles'
-import linkRef from '../app/linkRef'
+import linkRef from '../App/linkRef'
 import { ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import { themeColors } from '../app/App'
+import { themeColors } from '../App/App'
 
 export interface Props {
   date: string

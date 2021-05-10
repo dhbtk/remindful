@@ -2,7 +2,7 @@ import { useAuth } from '../../store/auth'
 import { Route, RouteProps, Redirect } from 'react-router-dom'
 import React from 'react'
 
-export function PrivateRoute ({ children, ...rest }: RouteProps): React.ReactElement {
+export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   const auth = useAuth()
   return (
     <Route {...rest} render={({ location }) => (

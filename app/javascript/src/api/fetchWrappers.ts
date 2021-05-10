@@ -101,7 +101,7 @@ export async function formPost<T> (path: string, body: Record<string, string>): 
   return await toJson(response)
 }
 
-export async function apiGet<T> (path: string, query: Record<string, string | string[]> = {}): Promise<ResponseWrapper<T>> {
+export async function apiGet<T> (path: string, query: Record<string, string | string[] | number> = {}): Promise<ResponseWrapper<T>> {
   const formData = new URLSearchParams()
   const snakecased = snakecaseKeys(query)
   Object.keys(snakecased).forEach(key => {

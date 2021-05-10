@@ -3,11 +3,7 @@
 module Api
   class TasksController < ApiController
     def index
-      @tasks = if params[:overdue].present?
-                 policy_scope(Task).overdue(Time.zone.today)
-               else
-                 policy_scope(Task).for_date(params[:date].presence || Time.zone.today)
-               end
+      @tasks = TaskIndex.new(policy_scope(Task), index_params).index
     end
 
     def reorder
@@ -43,6 +39,10 @@ module Api
     end
 
     private
+
+    def index_params
+      params.permit(:date, :overdue, :habit_id, dates: [])
+    end
 
     def reorder_params
       Array(params.permit(ids: [])&.dig(:ids)).map(&:to_i)

@@ -4,7 +4,7 @@ import logo from '../logo.svg'
 import { AppBar, Container, IconButton, Toolbar } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import linkRef from './linkRef'
+import linkRef from '../App/linkRef'
 
 const useStyles = makeStyles((theme) => createStyles({
   root: {

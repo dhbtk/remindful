@@ -6,8 +6,8 @@ import { useAppDispatch } from '../../store'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { loadDayData, loadOverdueTasks } from '../../store/commonActions'
-import LayoutContent from '../app/LayoutContent'
-import LayoutContainer from '../app/LayoutContainer'
+import LayoutContent from '../layout/DrawerLayout/LayoutContent'
+import LayoutContainer from '../layout/DrawerLayout/LayoutContainer'
 
 export default function TodayPage (): React.ReactElement {
   const dispatch = useAppDispatch()

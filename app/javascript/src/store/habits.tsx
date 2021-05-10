@@ -1,5 +1,5 @@
 import { Habit, LoadStatus } from './common'
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createReducer } from '@reduxjs/toolkit'
 import { loadHabits, resetState } from './commonActions'
 
 export interface HabitsState {

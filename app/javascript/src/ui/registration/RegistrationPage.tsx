@@ -17,7 +17,7 @@ import { useTranslator } from '../forms'
 import { FORM_ERROR } from 'final-form'
 import userApi from '../../api/userApi'
 import { Alert } from '@material-ui/lab'
-import UnauthenticatedLayout from '../app/UnauthenticatedLayout'
+import UnauthenticatedLayout from '../layout/UnauthenticatedLayout'
 import { AnySchema } from 'yup'
 
 const useStyles = makeStyles((theme) => createStyles({
