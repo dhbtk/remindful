@@ -17,7 +17,7 @@ const HabitRepeatInterval: React.FC<{ habit: Habit }> = ({ habit }) => {
     return (
       <React.Fragment>
         {weekdayOptions.map(day => (
-          <span key={day} className={habit[day] ? classes.active : classes.inactive}>
+          <span key={day} className={habit[day] === true ? classes.active : classes.inactive}>
             <FormattedMessage id={`HabitForm.${day}.abbr`}/>
           </span>
         ))}

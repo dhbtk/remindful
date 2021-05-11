@@ -2,7 +2,7 @@ import * as Yup from 'yup'
 import { IntlShape } from 'react-intl/src/types'
 import { Translator } from 'mui-rff/dist/Validation'
 import { useIntl } from 'react-intl'
-import { ErrorResponse } from '../api/fetchWrappers'
+import { ErrorResponse } from '../../api/fetchWrappers'
 import { SubmissionErrors } from 'final-form'
 
 Yup.setLocale({

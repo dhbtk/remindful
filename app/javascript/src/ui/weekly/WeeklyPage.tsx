@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container, createStyles, IconButton, Toolbar, Typography } from '@material-ui/core'
+import { Button, createStyles, IconButton, Toolbar, Typography } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
 import { addDays } from 'date-fns'
 import DayInformation from './DayInformation'
