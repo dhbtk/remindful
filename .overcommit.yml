@@ -6,7 +6,7 @@ PreCommit:
   ALL:
     exclude:
       - vendor/**/*
-      - App/assets/fonts/**/*
+      - app/assets/fonts/**/*
       - tmp/**/*
       - log/**/*
       - bin/**/*
@@ -26,7 +26,7 @@ PreCommit:
     enabled: true
     exclude:
       - vendor/**/*
-      - App/assets/fonts/**/*
+      - app/assets/fonts/**/*
       - tmp/**/*
       - log/**/*
       - bin/**/*
@@ -36,10 +36,10 @@ PreCommit:
 #    enabled: true
 #    required_executable: 'node_modules/.bin/eslint'
 #    include:
-#      - App/javascript/**/*
+#      - app/javascript/**/*
 #      - .eslintrc
 #    exclude:
-#      - App/javascript/vendor/**/*
+#      - app/javascript/vendor/**/*
 #    command: ['node_modules/.bin/eslint']
 
   TrailingWhitespace:

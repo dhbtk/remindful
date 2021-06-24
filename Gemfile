@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.0'
+ruby '3.0.1'
 
 gem 'aws-sdk-cloudwatchlogs'
 gem 'aws-sdk-s3'
@@ -47,7 +47,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'listen', '~> 3.3'
+  gem 'listen', '>=3.0.5', '<4.0'
   gem 'rack-mini-profiler', '~> 2.0'
   gem 'spring'
   gem 'web-console', '>= 4.1.0'
