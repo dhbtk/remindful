@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Habit, repeatIntervalUnits, weekdayOptions } from '../../store/common'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { Form, FormRenderProps } from 'react-final-form'
@@ -15,6 +14,7 @@ import createDecorator from 'final-form-calculate'
 import { Decorator } from 'final-form'
 import { IntlShape } from 'react-intl/src/types'
 import habitApi from '../../api/habitApi'
+import { Habit, repeatIntervalUnits, weekdayOptions } from '../../models/habits'
 
 interface Props {
   onClose?: () => void

@@ -6,12 +6,12 @@ import AddIcon from '@material-ui/icons/Add'
 import linkRef from '../../App/linkRef'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { loadHabits } from '../../../store/commonActions'
+import { loadHabits } from '../../../store/common/commonActions'
 import { RootState } from '../../../store/rootReducer'
-import { Habit } from '../../../store/common'
 import HabitListItem from './HabitListItem'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import LayoutContainer from '../../layout/DrawerLayout/LayoutContainer'
+import { Habit } from '../../../models/habits'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   listContainer: {

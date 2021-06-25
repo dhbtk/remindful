@@ -1,4 +1,4 @@
-module.exports = function(api) {
+module.exports = function (api) {
   var validEnv = ['development', 'test', 'production']
   var currentEnv = api.env()
   var isDevelopmentEnv = api.env('development')
@@ -45,7 +45,7 @@ module.exports = function(api) {
           useBuiltIns: true
         }
       ],
-      ['@babel/preset-typescript', { 'allExtensions': true, 'isTSX': true }]
+      ['@babel/preset-typescript', { allExtensions: true, isTSX: true }]
     ].filter(Boolean),
     plugins: [
       'babel-plugin-macros',

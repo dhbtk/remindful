@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import userApi from '../api/userApi'
-import { LoadStatus } from './common'
-import { Pronouns } from './registrationForm'
-import { resetState } from './commonActions'
+import userApi from '../../api/userApi'
+import { LoadStatus } from '../../models/common'
+import { Pronouns } from '../../models/registrationForm'
+import { resetState } from '../common/commonActions'
 
 export interface AnonymousUserInfo {
   anonymous: true

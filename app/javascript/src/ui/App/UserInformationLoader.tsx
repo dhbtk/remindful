@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../store'
-import { loadUserInfo } from '../../store/user'
+import { loadUserInfo } from '../../store/user/user'
 
 export const UserInformationLoader: React.FC = () => {
   const dispatch = useAppDispatch()

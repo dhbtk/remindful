@@ -1,6 +1,6 @@
 import { UserState } from './user'
 import { useSelector } from 'react-redux'
-import { RootState } from './rootReducer'
+import { RootState } from '../rootReducer'
 
 export class Authentication {
   private readonly user: UserState

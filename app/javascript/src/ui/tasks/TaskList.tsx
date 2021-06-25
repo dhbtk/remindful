@@ -3,9 +3,8 @@ import { Button, createStyles, Theme } from '@material-ui/core'
 import { FormattedMessage } from 'react-intl'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import { Task } from '../../store/common'
 import { useAppDispatch } from '../../store'
-import { reorderTasks } from '../../store/daily'
+import { reorderTasks } from '../../store/common/daily'
 import { makeStyles } from '@material-ui/core/styles'
 import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
 import AddIcon from '@material-ui/icons/Add'
@@ -13,6 +12,7 @@ import { differenceInCalendarDays } from 'date-fns'
 import { ymdToDate } from '../ymdUtils'
 import TaskRow from './TaskRow'
 import TaskForm from './TaskForm'
+import { Task } from '../../models/tasks'
 
 interface TaskListProps {
   date: string

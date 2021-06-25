@@ -1,12 +1,11 @@
 import { DraggableProvided } from 'react-beautiful-dnd'
-import { Task } from '../../store/common'
 import { useAppDispatch } from '../../store'
 import React, { useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { Checkbox, IconButton, Typography } from '@material-ui/core'
-import { completeTask, deleteTask, dismissTask, undoCompleteTask } from '../../store/tasks'
+import { completeTask, deleteTask, dismissTask, undoCompleteTask } from '../../store/tasks/tasks'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import TaskForm from './TaskForm'
@@ -16,6 +15,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { ymdToDate } from '../ymdUtils'
 import { themeColors } from '../App/App'
+import { Task } from '../../models/tasks'
 
 interface Props {
   draggableProvided: DraggableProvided

@@ -5,7 +5,7 @@ import DayInformation from '../weekly/DayInformation'
 import { useAppDispatch } from '../../store'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
-import { loadDayData, loadOverdueTasks } from '../../store/commonActions'
+import { loadDayData, loadOverdueTasks } from '../../store/common/commonActions'
 import LayoutContent from '../layout/DrawerLayout/LayoutContent'
 import LayoutContainer from '../layout/DrawerLayout/LayoutContainer'
 

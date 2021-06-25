@@ -1,4 +1,3 @@
-import { Task } from '../../store/common'
 import React, { FormEvent, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Button, InputAdornment, Paper, TextField } from '@material-ui/core'
@@ -8,10 +7,11 @@ import { nextYmd, ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store'
-import { saveNewTask, updateTask } from '../../store/daily'
+import { saveNewTask, updateTask } from '../../store/common/daily'
 import AssignmentIcon from '@material-ui/icons/AssignmentOutlined'
 import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
+import { Task } from '../../models/tasks'
 
 interface Props {
   task?: Task

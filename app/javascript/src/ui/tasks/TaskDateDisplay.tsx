@@ -1,10 +1,10 @@
-import { Task } from '../../store/common'
 import { createStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { makeStyles } from '@material-ui/core/styles'
 import EventIcon from '@material-ui/icons/Event'
 import { ymdToDate } from '../ymdUtils'
+import { Task } from '../../models/tasks'
 
 const useStyles = makeStyles(theme => createStyles({
   root: {

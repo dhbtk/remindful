@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import linkRef from '../../App/linkRef'
 import { useAppDispatch } from '../../../store'
-import { closeDrawer } from '../../../store/layout'
+import { closeDrawer } from '../../../store/common/layout'
 import { themeColors } from '../../App/App'
 
 interface Props {

@@ -8,8 +8,8 @@ import {
   ResponseWrapper,
   unwrap
 } from './fetchWrappers'
-import { RegisteredUserInfo } from '../store/user'
-import { RegistrationFormState } from '../store/registrationForm'
+import { RegisteredUserInfo } from '../store/user/user'
+import { RegistrationFormState } from '../models/registrationForm'
 
 const CLIENT_ID = '8eI-VWlFrqAwaUHTpynIK9iuTJo9Hz0b40pxwjZwpEQ'
 const CLIENT_SECRET = 'Cu9z0g0sAPR1vRebVCzCweGmNR4JXF8gHtpMcmHNnek'

@@ -26,7 +26,6 @@
     "app/javascript/**/*.tsx"
   ],
   "exclude": [
-    "**/*.spec.ts",
     "node_modules",
     "vendor",
     "public"
