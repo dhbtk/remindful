@@ -19,8 +19,9 @@ const App: React.FC = () => (
       <SnackbarProvider>
         <Notifier/>
         <DayTimer/>
-        <UserInformationLoader/>
-        <AppRoutes/>
+        <UserInformationLoader>
+          <AppRoutes/>
+        </UserInformationLoader>
       </SnackbarProvider>
     </AppThemeProvider>
   </LocaleProvider>

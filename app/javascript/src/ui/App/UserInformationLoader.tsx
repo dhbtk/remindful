@@ -1,14 +1,30 @@
-import React, { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../../store'
-import { loadUserInfo } from '../../store/user/user'
+import React, { Fragment, useEffect, useState } from 'react'
+import { useAppDispatch } from '../../store'
+import { use } from '../../store/use'
+import { getInitialLoadState } from '../../store/user/selectors'
+import { initialUserLoad } from '../../store/user/actions'
 
-export const UserInformationLoader: React.FC = () => {
+export const UserInformationLoader: React.FC = ({ children }) => {
   const dispatch = useAppDispatch()
-  const accessToken = useAppSelector(state => state.user.accessToken)
+  const initialLoadDone = use(getInitialLoadState)
+  const [loadError, setLoadError] = useState(false)
   useEffect(() => {
-    if (accessToken !== null) {
-      dispatch(loadUserInfo()).catch(console.error)
+    if (!initialLoadDone) {
+      setLoadError(false)
+      dispatch(initialUserLoad()).catch((err: any) => {
+        console.error(err)
+        setLoadError(true)
+      })
     }
-  }, [dispatch, accessToken])
-  return <React.Fragment/>
+  }, [initialLoadDone])
+
+  if (loadError) {
+    return <div>Load error. Check console</div>
+  }
+
+  if (initialLoadDone) {
+    return <Fragment>{children}</Fragment>
+  } else {
+    return <div>Loading...</div>
+  }
 }
