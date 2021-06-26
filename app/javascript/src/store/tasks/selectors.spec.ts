@@ -1,4 +1,10 @@
-import { getDayTasks, getOverdueTasks, getRangeOfDaysWithTasks, getTodayTasks } from './selectors'
+import {
+  getDayTasks,
+  getFutureDaysWithTasks,
+  getOverdueTasks,
+  getRangeOfDaysWithTasks,
+  getTodayTasks
+} from './selectors'
 import { RootState } from '../rootReducer'
 import { ymd, ymdToDate } from '../../ui/ymdUtils'
 import { Task } from '../../models/tasks'
@@ -120,6 +126,19 @@ describe('store/tasks/selectors.ts', () => {
       it('returns an array with intermediary dates removed', () => {
         expect(result).toEqual(expected)
       })
+    })
+  })
+
+  describe('getFutureDaysWithTasks', () => {
+    const allDays = ['2021-06-01', '2021-06-02', '2021-06-03', '2021-06-04', '2021-06-05']
+    let result: string[]
+
+    beforeEach(() => {
+      result = getFutureDaysWithTasks(stateFactory(allDays, '2021-06-02'))
+    })
+
+    it('returns only future dates', () => {
+      expect(result).toEqual(['2021-06-03', '2021-06-04', '2021-06-05'])
     })
   })
 })

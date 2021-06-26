@@ -1,7 +1,7 @@
 import { RootState } from '../rootReducer'
 import { Task } from '../../models/tasks'
 import { createSelector } from 'reselect'
-import { getTodayDate } from '../common/selectors'
+import { getHomeScreenDays, getTodayDate } from '../common/selectors'
 import { ymd, ymdToDate } from '../../ui/ymdUtils'
 import { addDays, compareAsc, differenceInCalendarDays, isBefore } from 'date-fns'
 import createCachedSelector from 're-reselect'
@@ -53,6 +53,18 @@ export const getDaysWithTasks = createSelector(
     const dates = Array.from(new Set(allTasks.map(task => task.eventDate)))
     dates.sort((a, b) => compareAsc(ymdToDate(a), ymdToDate(b)))
     return dates
+  }
+)
+
+export const getFutureDaysWithTasks = createSelector(
+  [getDaysWithTasks, getTodayDate],
+  (daysWithTasks, todayDate) => daysWithTasks.filter(day => day !== todayDate)
+)
+
+export const getVisibleHomeScreenDays = createSelector(
+  [getTodayDate, getHomeScreenDays, getFutureDaysWithTasks],
+  (todayDate, homeScreenDays, futureDays) => {
+    return homeScreenDays.filter(day => day === todayDate || futureDays.includes(day))
   }
 )
 

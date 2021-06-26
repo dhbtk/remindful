@@ -55,6 +55,10 @@
     ],
     "parserOptions": {
       "project": "./tsconfig.json"
+    },
+    "rules": {
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/explicit-function-return-type": "off"
     }
   },
   "devDependencies": {

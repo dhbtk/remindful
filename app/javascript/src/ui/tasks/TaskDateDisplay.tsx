@@ -21,7 +21,8 @@ const useStyles = makeStyles(theme => createStyles({
   text: {
     fontSize: '0.75rem',
     color: theme.palette.warning.main,
-    paddingLeft: theme.spacing(0.5)
+    paddingLeft: theme.spacing(0.5),
+    whiteSpace: 'nowrap'
   }
 }))
 
