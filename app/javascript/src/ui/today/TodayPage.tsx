@@ -45,15 +45,23 @@ export default function TodayPage (): React.ReactElement {
     const interval = setInterval(refresh, 60000)
     return () => clearInterval(interval)
   }, [dispatch, homeScreenDays])
+  useEffect(() => {
+    const listener = () => {
+      if (document.visibilityState === 'visible') {
+        refresh()
+      }
+    }
+    document.addEventListener('visibilitychange', listener)
+    return () => document.removeEventListener('visibilitychange', listener)
+  }, [dispatch, homeScreenDays])
 
   return (
     <LayoutContent
       title={<FormattedMessage id="TodayPage.title"/>}
       actions={[]}>
       <LayoutContainer maxWidth="md">
-        {loading && 'Loading...'}
         {error && 'Error!!!'}
-        <DaySummary date={todayDate}/>
+        <DaySummary date={todayDate} onRefresh={refresh} loading={loading}/>
         { initialLoadDone ? (
           <React.Fragment>
             <DayInformation date={todayDate} overdue/>
