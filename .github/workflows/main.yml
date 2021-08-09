@@ -125,10 +125,9 @@ jobs:
         run: |
           docker buildx build \
             --platform arm64 \
-            --build-arg MASTER_KEY=$MASTER_KEY \
-            --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            --file ./Dockerfile \
-            --output type=image,push=true .
+            --build-arg "MASTER_KEY=$MASTER_KEY" \
+            --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+            --output "type=image,push=true" .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
