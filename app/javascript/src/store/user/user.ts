@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import userApi from '../api/userApi'
-import { LoadStatus } from './common'
-import { Pronouns } from './registrationForm'
-import { resetState } from './commonActions'
+import userApi from '../../api/userApi'
+import { LoadStatus } from '../../models/common'
+import { Pronouns } from '../../models/registrationForm'
+import { resetState } from '../common/commonActions'
+
+export const ACCESS_TOKEN_KEY = 'userToken'
 
 export interface AnonymousUserInfo {
   anonymous: true
@@ -19,16 +21,20 @@ export interface RegisteredUserInfo {
 export type UserInfo = AnonymousUserInfo | RegisteredUserInfo
 
 export interface UserState {
+  initialLoadDone: boolean
   status: LoadStatus
   user: UserInfo
   accessToken: string | null
 }
 
-const initialState: UserState = { status: 'idle', user: { anonymous: true }, accessToken: null }
+const initialState: UserState = { initialLoadDone: false, status: 'idle', user: { anonymous: true }, accessToken: null }
 
 export const registerLightUser = createAsyncThunk('user/registerLightUser', async () => {
-  return await userApi.registerLightUser()
+  const accessToken = await userApi.registerLightUser()
+  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
+  return accessToken
 })
+
 export const loadUserInfo = createAsyncThunk('user/loadUserInfo', async () => {
   return await userApi.loadUserInfo()
 })
@@ -55,6 +61,9 @@ const userInfoSlice = createSlice({
     },
     loadingFail (state: UserState) {
       state.status = 'failed'
+    },
+    setInitialLoad (state: UserState, action: PayloadAction<boolean>) {
+      state.initialLoadDone = action.payload
     }
   },
   extraReducers: builder => {
@@ -79,6 +88,6 @@ const userInfoSlice = createSlice({
   }
 })
 
-export const { setUserInfo, clearUserInfo, setAccessToken, loadingStart, loadingFinish, loadingFail } = userInfoSlice.actions
+export const { setUserInfo, clearUserInfo, setAccessToken, loadingStart, loadingFinish, loadingFail, setInitialLoad } = userInfoSlice.actions
 
 export default userInfoSlice

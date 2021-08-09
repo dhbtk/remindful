@@ -1,6 +1,6 @@
-import { Habit } from '../store/common'
 import { HabitFormState } from '../ui/habits/HabitForm'
 import { apiGet, apiPatch, apiPost, ErrorResponse, isFailedResponse, ResponseWrapper, unwrap } from './fetchWrappers'
+import { Habit } from '../models/habits'
 
 const habitApi = {
   create: async (habit: HabitFormState): Promise<undefined | ErrorResponse> => {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_16_210218) do
+ActiveRecord::Schema.define(version: 2021_06_27_162334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,8 @@ ActiveRecord::Schema.define(version: 2021_02_16_210218) do
     t.datetime "deleted_at"
     t.integer "order"
     t.bigint "habit_id"
+    t.boolean "notify", default: false, null: false
+    t.time "notification_time"
     t.index ["habit_id"], name: "index_tasks_on_habit_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end

@@ -1,8 +1,9 @@
-import { Habit, weekdayOptions } from '../../../store/common'
+
 import React from 'react'
 import { FormattedMessage } from 'react-intl'
 import { ymdToDate } from '../../ymdUtils'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
+import { Habit, weekdayOptions } from '../../../models/habits'
 
 const useStyles = makeStyles(theme => createStyles({
   active: {},

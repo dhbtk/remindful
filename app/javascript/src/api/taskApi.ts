@@ -1,5 +1,5 @@
-import { Task } from '../store/common'
 import { apiDelete, apiGet, apiPatch, apiPost, unwrap } from './fetchWrappers'
+import { Task } from '../models/tasks'
 
 const taskApi = {
   forDate: async (date: string): Promise<Task[]> => {

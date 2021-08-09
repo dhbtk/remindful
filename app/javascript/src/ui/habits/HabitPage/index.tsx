@@ -5,7 +5,6 @@ import LayoutContainer from '../../layout/DrawerLayout/LayoutContainer'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/rootReducer'
-import { Habit, Task } from '../../../store/common'
 import {
   Box,
   Divider,
@@ -24,10 +23,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import linkRef from '../../App/linkRef'
 import EditIcon from '@material-ui/icons/Edit'
 import { useAppDispatch } from '../../../store'
-import { loadHabitTasks } from '../../../store/commonActions'
+import { loadHabitTasks } from '../../../store/common/commonActions'
 import { ymdToDate } from '../../ymdUtils'
 import DoneIcon from '@material-ui/icons/Done'
 import ClearIcon from '@material-ui/icons/Clear'
+import { Habit } from '../../../models/habits'
+import { Task } from '../../../models/tasks'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   title: {

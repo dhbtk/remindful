@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { LoadStatus, Task, WaterGlass } from './common'
-import taskApi from '../api/taskApi'
-import { AppThunk } from './index'
+import { LoadStatus} from '../../models/common'
+import taskApi from '../../api/taskApi'
+import { AppThunk } from '../index'
 import {
   bulkLoadTasks,
   loadDayData,
@@ -12,8 +12,10 @@ import {
   setTask,
   unsetTask
 } from './commonActions'
-import { ymd } from '../ui/ymdUtils'
-import { RootState } from './rootReducer'
+import { ymd } from '../../ui/ymdUtils'
+import { RootState } from '../rootReducer'
+import { Task } from '../../models/tasks'
+import { WaterGlass } from '../../models/waterGlasses'
 
 export interface DayState {
   date: string
@@ -42,7 +44,8 @@ export const saveNewTask: (date: string, content: string) => AppThunk = (date, c
     eventDate: date,
     status: 'pending',
     actedAt: null,
-    content: content
+    content: content,
+    order: 0
   }
   dispatch(setTask(newTask))
   await taskApi.create(newTask)

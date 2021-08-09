@@ -1,6 +1,7 @@
-import { Habit, LoadStatus } from './common'
+import { LoadStatus } from '../../models/common'
 import { createReducer } from '@reduxjs/toolkit'
-import { loadHabits, resetState } from './commonActions'
+import { loadHabits, resetState } from '../common/commonActions'
+import { Habit } from '../../models/habits'
 
 export interface HabitsState {
   entities: { [id: number]: Habit }

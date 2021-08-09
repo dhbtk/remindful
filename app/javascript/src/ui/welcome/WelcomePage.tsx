@@ -1,9 +1,9 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Redirect, useLocation } from 'react-router-dom'
 import { Button, Grid, Link } from '@material-ui/core'
-import { useAuth } from '../../store/auth'
+import { useAuth } from '../../store/user/auth'
 import { useDispatch } from 'react-redux'
-import { registerLightUser, setAccessToken } from '../../store/user'
+import { registerLightUser, setAccessToken } from '../../store/user/user'
 import React, { useState } from 'react'
 import linkRef from '../App/linkRef'
 import RootLayout from '../layout/RootLayout'
@@ -17,7 +17,8 @@ import { makeValidate, TextField } from 'mui-rff'
 import { Alert } from '@material-ui/lab'
 import { Form } from 'react-final-form'
 import { isFetchError } from '../../api/fetchWrappers'
-import { useAppSelector } from '../../store'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { logIn } from '../../store/user/actions'
 
 const useStyles = makeStyles((theme) => createStyles({
   form: {
@@ -57,7 +58,7 @@ export default function WelcomePage (): React.ReactElement {
   const classes = useStyles()
   const location = useLocation<{ from: string } | undefined>()
   const auth = useAuth()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const userStatus = useAppSelector(state => state.user.status)
   const [formActed, setFormActed] = useState(false)
 
@@ -65,21 +66,19 @@ export default function WelcomePage (): React.ReactElement {
     return <Redirect to={location.state?.from ?? '/'}/>
   }
   const startNow: () => void = () => {
-    if (!auth.isAuthenticated()) {
-      dispatch(registerLightUser())
-    }
     setFormActed(true)
+    if (!auth.isAuthenticated()) {
+      dispatch(registerLightUser()).catch(() => setFormActed(false))
+    }
   }
   const { translateServerErrors, translator } = useTranslator('SignInForm')
 
   async function onSubmit (values: SignInForm): Promise<any> {
     setFormActed(true)
     try {
-      const response = await userApi.logIn(values.email, values.password)
-      if ('errors' in response) {
+      const response = await dispatch(logIn(values.email, values.password))
+      if (response !== null) {
         return translateServerErrors(response)
-      } else {
-        dispatch(setAccessToken(response.accessToken))
       }
     } catch (e) {
       if (isFetchError(e) && e.response.status === 401) {

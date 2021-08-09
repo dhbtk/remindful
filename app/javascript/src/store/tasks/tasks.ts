@@ -1,8 +1,7 @@
-import { Task } from './common'
 import { createReducer } from '@reduxjs/toolkit'
 import { formatISO } from 'date-fns'
-import taskApi from '../api/taskApi'
-import { AppDispatch, AppThunk } from './index'
+import taskApi from '../../api/taskApi'
+import { AppDispatch, AppThunk } from '../index'
 import {
   bulkLoadTasks,
   loadDayData,
@@ -11,8 +10,9 @@ import {
   reorderOverdueTasks, resetState,
   setTask,
   unsetTask
-} from './commonActions'
-import { RootState } from './rootReducer'
+} from '../common/commonActions'
+import { RootState } from '../rootReducer'
+import { Task } from '../../models/tasks'
 
 export interface TasksState {
   entities: { [id: number]: Task }

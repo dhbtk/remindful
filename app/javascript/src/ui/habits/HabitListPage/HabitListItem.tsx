@@ -1,8 +1,8 @@
-import { Habit } from '../../../store/common'
 import React from 'react'
 import { ListItem, ListItemText } from '@material-ui/core'
 import HabitRepeatInterval from './HabitRepeatInterval'
 import linkRef from '../../App/linkRef'
+import { Habit } from '../../../models/habits'
 
 const HabitListItem: React.FC<{ habit: Habit }> = ({ habit }) => {
   const CustomLink = React.useMemo(

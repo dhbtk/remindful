@@ -1,21 +1,19 @@
 import { DraggableProvided } from 'react-beautiful-dnd'
-import { Task } from '../../store/common'
 import { useAppDispatch } from '../../store'
 import React, { useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { Checkbox, IconButton, Typography } from '@material-ui/core'
-import { completeTask, deleteTask, dismissTask, undoCompleteTask } from '../../store/tasks'
-import DeleteIcon from '@material-ui/icons/Delete'
+import { completeTask, dismissTask, undoCompleteTask } from '../../store/tasks/tasks'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import TaskForm from './TaskForm'
-import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBoxOutlined'
 import TaskDateDisplay from './TaskDateDisplay'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { ymdToDate } from '../ymdUtils'
 import { themeColors } from '../App/App'
+import { Task } from '../../models/tasks'
 
 interface Props {
   draggableProvided: DraggableProvided
@@ -53,16 +51,15 @@ const useStyles = makeStyles(theme => createStyles({
     height: '20px'
   },
   chips: {
-    height: '40px',
-    padding: theme.spacing(1),
-    '& > *:not(:last-child)': {
-      marginRight: theme.spacing(0.5)
-    },
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
     display: 'flex',
     alignItems: 'center'
   },
   mainRow: {
-    display: 'flex'
+    display: 'flex',
+    marginBottom: theme.spacing(0.5),
+    alignItems: 'flex-start'
   },
   content: {
     flexGrow: 1,
@@ -133,33 +130,21 @@ export default function TaskRow ({ task, draggableProvided }: Props): React.Reac
             >
               {task.content}
             </Typography>
-            <IconButton
-              className={clsx(classes.gone, classes.tinyButton)}
-              size="small"
-              onClick={() => setEditing(true)}>
-              <EditOutlinedIcon className={classes.tinyIcon}/>
-            </IconButton>
-            <IconButton
-              className={clsx(classes.gone, classes.tinyButton)}
-              size="small"
-              onClick={toggleTaskDismissed}>
-              <IndeterminateCheckBoxIcon className={classes.tinyIcon}/>
-            </IconButton>
-          </div>
-          <div className={classes.chips}>
-            {isOverdue && <TaskDateDisplay task={task}/>}
-            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
-            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
-            {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+            <div className={classes.chips}>
+              {isOverdue && <TaskDateDisplay task={task}/>}
+              {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+              {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+              {/* <Chip label="chip" size="small" onDelete={() => {}}/> */}
+            </div>
           </div>
         </div>
       )}
       <div className={clsx(classes.hidden, classes.menuAction)}>
         <IconButton
           className={classes.tinyButton}
-          onClick={() => dispatch(deleteTask(task.id))}
-          size="small">
-          <DeleteIcon className={classes.tinyIcon}/>
+          size="small"
+          onClick={() => setEditing(true)}>
+          <EditOutlinedIcon className={classes.tinyIcon}/>
         </IconButton>
       </div>
     </div>

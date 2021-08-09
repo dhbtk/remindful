@@ -1,17 +1,19 @@
-import { Task } from '../../store/common'
 import React, { FormEvent, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Button, InputAdornment, Paper, TextField } from '@material-ui/core'
+import { Button, IconButton, InputAdornment, Paper, TextField } from '@material-ui/core'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { DatePicker } from '@material-ui/pickers'
 import { nextYmd, ymd, ymdToDate } from '../ymdUtils'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store'
-import { saveNewTask, updateTask } from '../../store/daily'
+import { saveNewTask, updateTask } from '../../store/common/daily'
 import AssignmentIcon from '@material-ui/icons/AssignmentOutlined'
 import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
+import { Task } from '../../models/tasks'
+import { deleteTask } from '../../store/tasks/tasks'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 interface Props {
   task?: Task
@@ -130,6 +132,13 @@ export default function TaskForm ({ task, date, onClose }: Props): React.ReactEl
         <Button variant="text" color="default" size="small" onClick={onClose}>
           <FormattedMessage id="TaskForm.cancel" defaultMessage="Cancel"/>
         </Button>
+        {task !== undefined && (
+          <IconButton
+            onClick={() => dispatch(deleteTask(task.id))}
+            size="small">
+            <DeleteIcon/>
+          </IconButton>
+        )}
       </div>
     </form>
   )

@@ -1,8 +1,8 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import userInfoSlice from './user'
-import tasks from './tasks'
-import dailySlice from './daily'
-import layoutSlice from './layout'
+import userInfoSlice from './user/user'
+import tasks from './tasks/tasks'
+import dailySlice from './common/daily'
+import layoutSlice from './common/layout'
 import { habits } from './habits'
 
 export const rootReducer = combineReducers({

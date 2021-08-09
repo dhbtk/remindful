@@ -1,7 +1,7 @@
 import store from '../store'
 import camelcaseKeys from 'camelcase-keys'
 import snakecaseKeys from 'snakecase-keys'
-import { resetState } from '../store/commonActions'
+import { resetState } from '../store/common/commonActions'
 
 export interface ErrorResponse {
   errors: ApiError[]

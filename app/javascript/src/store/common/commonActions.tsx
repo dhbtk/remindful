@@ -1,9 +1,10 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { Task, WaterGlass } from './common'
-import taskApi from '../api/taskApi'
-import waterGlassApi from '../api/waterGlassApi'
+import taskApi from '../../api/taskApi'
+import waterGlassApi from '../../api/waterGlassApi'
 import { DayData } from './daily'
-import habitApi from '../api/habitApi'
+import habitApi from '../../api/habitApi'
+import { Task } from '../../models/tasks'
+import { WaterGlass } from '../../models/waterGlasses'
 
 export const unsetTask = createAction<number>('unsetTask')
 
