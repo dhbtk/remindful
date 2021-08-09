@@ -123,13 +123,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MASTER_KEY: ${{ secrets.MASTER_KEY }}
         run: |
-          docker buildx build \
-            --platform arm64 \
-            --build-arg "MASTER_KEY=$MASTER_KEY" \
-            --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-            --output "type=image,push=true" .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker buildx build --platform arm64 --build-arg "MASTER_KEY=$MASTER_KEY" --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" --output "type=image,push=true" .
 
   deploy:
     runs-on: ubuntu-latest
