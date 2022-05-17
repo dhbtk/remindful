@@ -109,11 +109,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: arm64
-      -
         name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -123,4 +118,4 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           MASTER_KEY: ${{ secrets.MASTER_KEY }}
         run: |
-          docker buildx build --platform arm64 --build-arg "MASTER_KEY=$MASTER_KEY" --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" --output "type=image,push=true" .
+          docker buildx build --build-arg "MASTER_KEY=$MASTER_KEY" --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" --tag "$ECR_REGISTRY/$ECR_REPOSITORY:latest" --output "type=image,push=true" .
